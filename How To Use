@@ -1,14 +1,9 @@
---[[
-    =========================================
-    EXEMPLO DE USO (HOW TO USE)
-    =========================================
-
-    local Library = loadstring(game:HttpGet("LINK_DO_SEU_RAW_NO_GITHUB"))()
+local Library = loadstring(game:HttpGet("LINK_DO_SEU_RAW_NO_GITHUB"))()
 
     local Window = Library:CreateWindow({
         Name = "Titan Script Hub",
         KeySystem = true, -- Ative para testar
-        KeyName = "Titan Key",
+        KeyName = "KeySystem Key",
         Key = "1234",
         GrabKeyFromSite = false, -- Se true, ele pega a Key do site abaixo
         KeySite = "https://pastebin.com/raw/..."
@@ -47,4 +42,3 @@
     Tab2:Keybind("Fly Key", Enum.KeyCode.F, function()
         print("Flight toggled")
     end)
-]]
