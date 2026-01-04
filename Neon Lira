@@ -1,3 +1,9 @@
+--[[ 
+    ========================================================
+            INICIO DA LIBRARY (Seu código original)
+    ========================================================
+]]
+
 local Library = {}
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -16,7 +22,7 @@ local theme = {
     CornerRadius = UDim.new(0, 6)
 }
 
---// Função Utilitária para proteger a UI (se for exploit) ou usar PlayerGui (se for Studio)
+--// Função Utilitária para proteger a UI
 local function getParent()
     local success, result = pcall(function()
         return CoreGui
@@ -108,7 +114,6 @@ function Library:Window(titleText)
     SidebarCorner.CornerRadius = theme.CornerRadius
     SidebarCorner.Parent = Sidebar
     
-    -- Correção visual para o canto da sidebar não arredondar o topo errado
     local SidebarFix = Instance.new("Frame")
     SidebarFix.Parent = Sidebar
     SidebarFix.BackgroundColor3 = theme.Sidebar
@@ -135,9 +140,7 @@ function Library:Window(titleText)
     local WindowFunctions = {}
     local firstTab = true
     
-    --// Função: Criar Aba (Tab)
     function WindowFunctions:Tab(name)
-        -- Botão na Sidebar
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = Sidebar
         TabButton.BackgroundColor3 = Color3.new(1,1,1)
@@ -152,7 +155,6 @@ function Library:Window(titleText)
         TabCorner.CornerRadius = UDim.new(0,4)
         TabCorner.Parent = TabButton
 
-        -- Página de Conteúdo
         local Page = Instance.new("ScrollingFrame")
         Page.Parent = PageContainer
         Page.Active = true
@@ -176,22 +178,18 @@ function Library:Window(titleText)
         PagePadding.PaddingTop = UDim.new(0, 5)
         PagePadding.PaddingBottom = UDim.new(0, 5)
 
-        -- Lógica de Seleção de Aba
         local function UpdateTab()
-            -- Reseta todos os botões
             for _, child in pairs(Sidebar:GetChildren()) do
                 if child:IsA("TextButton") then
                     TweenService:Create(child, TweenInfo.new(0.3), {BackgroundTransparency = 1, TextColor3 = theme.TextDark}):Play()
                 end
             end
-            -- Esconde todas as páginas
             for _, child in pairs(PageContainer:GetChildren()) do
                 if child:IsA("ScrollingFrame") then
                     child.Visible = false
                 end
             end
             
-            -- Ativa a atual
             TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundTransparency = 0.9, TextColor3 = theme.Accent}):Play()
             Page.Visible = true
         end
@@ -203,10 +201,8 @@ function Library:Window(titleText)
             UpdateTab()
         end
         
-        --// Funções dentro da Aba
         local TabFunctions = {}
 
-        -- 1. Section (Divisor)
         function TabFunctions:Section(text)
             local SectionFrame = Instance.new("Frame")
             SectionFrame.Parent = Page
@@ -225,10 +221,8 @@ function Library:Window(titleText)
             SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
         end
 
-        -- 2. Button
         function TabFunctions:Button(text, callback)
             callback = callback or function() end
-            
             local ButtonFrame = Instance.new("TextButton")
             ButtonFrame.Parent = Page
             ButtonFrame.BackgroundColor3 = theme.Element
@@ -251,7 +245,6 @@ function Library:Window(titleText)
             end)
         end
 
-        -- 3. Toggle
         function TabFunctions:Toggle(text, default, callback)
             callback = callback or function() end
             local toggled = default or false
@@ -300,18 +293,14 @@ function Library:Window(titleText)
             
             ToggleFrame.MouseButton1Click:Connect(function()
                 toggled = not toggled
-                
                 local targetPos = toggled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
                 local targetColor = toggled and theme.Accent or Color3.fromRGB(60,60,60)
-                
                 TweenService:Create(SwitchCircle, TweenInfo.new(0.2), {Position = targetPos}):Play()
                 TweenService:Create(SwitchBg, TweenInfo.new(0.2), {BackgroundColor3 = targetColor}):Play()
-                
                 callback(toggled)
             end)
         end
 
-        -- 4. Slider
         function TabFunctions:Slider(text, min, max, default, callback)
             callback = callback or function() end
             local dragging = false
@@ -375,7 +364,6 @@ function Library:Window(titleText)
             local function UpdateSlide(input)
                 local pos = UDim2.new(math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1), 0, 1, 0)
                 SliderFill.Size = pos
-                
                 local value = math.floor(((pos.X.Scale * (max - min)) + min) * 10) / 10
                 ValueLabel.Text = tostring(value)
                 callback(value)
@@ -401,7 +389,6 @@ function Library:Window(titleText)
             end)
         end
         
-        -- 5. Dropdown
         function TabFunctions:Dropdown(text, list, callback)
             callback = callback or function() end
             local open = false
@@ -439,7 +426,6 @@ function Library:Window(titleText)
             ListLayout.Padding = UDim.new(0, 2)
             
             local function RefreshList()
-                 -- Limpa antigos
                 for _, v in pairs(DropList:GetChildren()) do
                     if v:IsA("TextButton") then v:Destroy() end
                 end
@@ -462,7 +448,6 @@ function Library:Window(titleText)
                     ItemBtn.MouseButton1Click:Connect(function()
                         DropBtn.Text = text .. ": " .. item
                         callback(item)
-                        -- Fecha
                         open = false
                         TweenService:Create(DropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 32)}):Play()
                     end)
@@ -483,7 +468,6 @@ function Library:Window(titleText)
             end)
         end
         
-        -- 6. KeyBind
         function TabFunctions:KeyBind(text, defaultKey, callback)
             callback = callback or function() end
             local key = defaultKey
@@ -549,4 +533,58 @@ function Library:Window(titleText)
     return WindowFunctions
 end
 
-return Library
+--[[ 
+    ========================================================
+             FIM DA LIBRARY - INÍCIO DO EXEMPLO
+    ========================================================
+]]
+
+-- 1. Cria a Janela
+local Window = Library:Window("Meu Script Hub")
+
+-- 2. Cria uma Aba (Tab) chamada "Farm"
+local FarmTab = Window:Tab("Farm")
+
+-- 3. Adiciona uma Seção (Divisor)
+FarmTab:Section("Autofarm Principal")
+
+-- 4. Adiciona um Toggle (Interruptor)
+FarmTab:Toggle("Auto Click", false, function(state)
+    print("Auto Click está:", state)
+    -- Aqui você coloca seu código de loop, ex:
+    -- _G.AutoClick = state
+    -- while _G.AutoClick do click() wait() end
+end)
+
+-- 5. Adiciona um Slider (Barra deslizante)
+FarmTab:Slider("Velocidade (WalkSpeed)", 16, 200, 16, function(value)
+    print("Nova velocidade:", value)
+    if game.Players.LocalPlayer.Character then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+    end
+end)
+
+-- 6. Adiciona um Botão Simples
+FarmTab:Button("Resetar Personagem", function()
+    game.Players.LocalPlayer.Character:BreakJoints()
+end)
+
+-- 7. Cria outra Aba chamada "Misc"
+local MiscTab = Window:Tab("Misc")
+
+MiscTab:Section("Configurações Extras")
+
+-- 8. Adiciona um Dropdown (Lista de seleção)
+MiscTab:Dropdown("Escolha o Time", {"Vermelho", "Azul", "Espectador"}, function(selected)
+    print("Time selecionado:", selected)
+end)
+
+-- 9. Adiciona um Keybind (Atalho de teclado)
+MiscTab:KeyBind("Imprimir no Console", Enum.KeyCode.P, function()
+    print("Você apertou a tecla de atalho!")
+end)
+
+MiscTab:Button("Destruir GUI", function()
+    -- Lógica simples para deletar a UI (normalmente você guardaria a ScreenGui numa variável)
+    game.CoreGui:FindFirstChild("ModernUI"):Destroy()
+end)
