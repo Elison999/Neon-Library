@@ -1,13 +1,6 @@
---[[ 
-    ========================================================
-            INICIO DA LIBRARY (Seu código original)
-    ========================================================
-]]
-
 local Library = {}
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 
 --// Configurações de Design
@@ -17,8 +10,8 @@ local theme = {
     Element = Color3.fromRGB(35, 35, 35),
     Text = Color3.fromRGB(240, 240, 240),
     TextDark = Color3.fromRGB(150, 150, 150),
-    Accent = Color3.fromRGB(0, 170, 255), -- Azul Neon
-    AccentHover = Color3.fromRGB(0, 140, 210),
+    Accent = Color3.fromRGB(0, 170, 255),
+    TopBar = Color3.fromRGB(20, 20, 20), -- Cor um pouco mais escura para o topo
     CornerRadius = UDim.new(0, 6)
 }
 
@@ -33,21 +26,28 @@ local function getParent()
     return result
 end
 
---// Função de Arrastar Janela
+--// Função de Arrastar (Compatível com PC e Mobile)
 local function makeDraggable(topbar, object)
     local dragging, dragInput, dragStart, startPos
-    
+
     local function update(input)
         local delta = input.Position - dragStart
-        object.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local targetPos = UDim2.new(
+            startPos.X.Scale, 
+            startPos.X.Offset + delta.X, 
+            startPos.Y.Scale, 
+            startPos.Y.Offset + delta.Y
+        )
+        -- Usa Tween para movimento mais suave
+        TweenService:Create(object, TweenInfo.new(0.05), {Position = targetPos}):Play()
     end
-    
+
     topbar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = object.Position
-            
+
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -55,13 +55,13 @@ local function makeDraggable(topbar, object)
             end)
         end
     end)
-    
+
     topbar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
-    
+
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             update(input)
@@ -72,10 +72,11 @@ end
 --// Criar a Janela Principal
 function Library:Window(titleText)
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "ModernUI"
+    ScreenGui.Name = "NeonUI"
     ScreenGui.Parent = getParent()
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+    -- Frame Principal (Container)
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
@@ -83,30 +84,72 @@ function Library:Window(titleText)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
     MainFrame.Size = UDim2.new(0, 500, 0, 350)
     MainFrame.BorderSizePixel = 0
+    MainFrame.ClipsDescendants = true -- Importante para animação de fechar
 
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = theme.CornerRadius
     UICorner.Parent = MainFrame
 
-    -- Título / Topbar
+    --// TopBar (Área arrastável e Título)
+    local TopBar = Instance.new("Frame")
+    TopBar.Name = "TopBar"
+    TopBar.Parent = MainFrame
+    TopBar.BackgroundColor3 = theme.TopBar
+    TopBar.Size = UDim2.new(1, 0, 0, 40)
+    TopBar.BorderSizePixel = 0
+    
+    local TopBarCorner = Instance.new("UICorner")
+    TopBarCorner.CornerRadius = theme.CornerRadius
+    TopBarCorner.Parent = TopBar
+    
+    -- Correção visual (para a parte de baixo da Topbar ser reta)
+    local TopBarFix = Instance.new("Frame")
+    TopBarFix.Parent = TopBar
+    TopBarFix.BackgroundColor3 = theme.TopBar
+    TopBarFix.BorderSizePixel = 0
+    TopBarFix.Position = UDim2.new(0, 0, 1, -10)
+    TopBarFix.Size = UDim2.new(1, 0, 0, 10)
+    TopBarFix.ZIndex = 1
+
+    -- Título
     local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Parent = MainFrame
+    TitleLabel.Parent = TopBar
     TitleLabel.BackgroundTransparency = 1
     TitleLabel.Position = UDim2.new(0, 15, 0, 0)
-    TitleLabel.Size = UDim2.new(1, -15, 0, 40)
+    TitleLabel.Size = UDim2.new(1, -60, 1, 0)
     TitleLabel.Font = Enum.Font.GothamBold
     TitleLabel.Text = titleText
     TitleLabel.TextColor3 = theme.Text
     TitleLabel.TextSize = 18
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLabel.ZIndex = 2
     
-    makeDraggable(TitleLabel, MainFrame)
+    -- Botão de Fechar/Abrir (Minimizar)
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Name = "CloseButton"
+    CloseButton.Parent = TopBar
+    CloseButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    CloseButton.Position = UDim2.new(1, -35, 0.5, -12) -- Canto direito
+    CloseButton.Size = UDim2.new(0, 24, 0, 24)
+    CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.Text = "-"
+    CloseButton.TextColor3 = theme.Text
+    CloseButton.TextSize = 18
+    CloseButton.AutoButtonColor = false
+    CloseButton.ZIndex = 2
 
-    -- Sidebar (Menu de Abas)
+    local CloseCorner = Instance.new("UICorner")
+    CloseCorner.CornerRadius = UDim.new(0, 4)
+    CloseCorner.Parent = CloseButton
+
+    -- Lógica de Arrastar (Aplicada na TopBar)
+    makeDraggable(TopBar, MainFrame)
+
+    -- Sidebar (Menu Lateral)
     local Sidebar = Instance.new("Frame")
     Sidebar.Parent = MainFrame
     Sidebar.BackgroundColor3 = theme.Sidebar
-    Sidebar.Position = UDim2.new(0, 0, 0, 40)
+    Sidebar.Position = UDim2.new(0, 0, 0, 40) -- Logo abaixo da TopBar
     Sidebar.Size = UDim2.new(0, 130, 1, -40)
     Sidebar.BorderSizePixel = 0
     
@@ -114,6 +157,7 @@ function Library:Window(titleText)
     SidebarCorner.CornerRadius = theme.CornerRadius
     SidebarCorner.Parent = Sidebar
     
+    -- Correção visual Sidebar
     local SidebarFix = Instance.new("Frame")
     SidebarFix.Parent = Sidebar
     SidebarFix.BackgroundColor3 = theme.Sidebar
@@ -137,10 +181,48 @@ function Library:Window(titleText)
     PageContainer.Position = UDim2.new(0, 140, 0, 45)
     PageContainer.Size = UDim2.new(1, -150, 1, -55)
 
+    --// Lógica do Botão Fechar/Abrir
+    local minimized = false
+    local openSize = UDim2.new(0, 500, 0, 350)
+    local closedSize = UDim2.new(0, 500, 0, 40) -- Altura apenas da TopBar
+
+    CloseButton.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            -- Fecha a UI
+            CloseButton.Text = "+"
+            TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {Size = closedSize}):Play()
+            -- Esconde Sidebar e Conteúdo para não vazar
+            task.delay(0.1, function()
+                if minimized then
+                    Sidebar.Visible = false
+                    PageContainer.Visible = false
+                end
+            end)
+        else
+            -- Abre a UI
+            CloseButton.Text = "-"
+            Sidebar.Visible = true
+            PageContainer.Visible = true
+            TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Size = openSize}):Play()
+        end
+    end)
+
+    -- Hover effect no botão fechar
+    CloseButton.MouseEnter:Connect(function()
+        TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = theme.Accent}):Play()
+    end)
+    CloseButton.MouseLeave:Connect(function()
+        TweenService:Create(CloseButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40,40,40)}):Play()
+    end)
+
+
+    --// Sistema de Abas (Tabs)
     local WindowFunctions = {}
     local firstTab = true
     
     function WindowFunctions:Tab(name)
+        -- Botão na Sidebar
         local TabButton = Instance.new("TextButton")
         TabButton.Parent = Sidebar
         TabButton.BackgroundColor3 = Color3.new(1,1,1)
@@ -155,6 +237,7 @@ function Library:Window(titleText)
         TabCorner.CornerRadius = UDim.new(0,4)
         TabCorner.Parent = TabButton
 
+        -- Página de Conteúdo
         local Page = Instance.new("ScrollingFrame")
         Page.Parent = PageContainer
         Page.Active = true
@@ -203,12 +286,12 @@ function Library:Window(titleText)
         
         local TabFunctions = {}
 
+        -- Elementos (Section, Button, Toggle, etc)
         function TabFunctions:Section(text)
             local SectionFrame = Instance.new("Frame")
             SectionFrame.Parent = Page
             SectionFrame.BackgroundTransparency = 1
             SectionFrame.Size = UDim2.new(1, 0, 0, 25)
-            
             local SectionLabel = Instance.new("TextLabel")
             SectionLabel.Parent = SectionFrame
             SectionLabel.BackgroundTransparency = 1
@@ -232,11 +315,9 @@ function Library:Window(titleText)
             ButtonFrame.Text = text
             ButtonFrame.TextColor3 = theme.Text
             ButtonFrame.TextSize = 14
-            
             local BtnCorner = Instance.new("UICorner")
             BtnCorner.CornerRadius = theme.CornerRadius
             BtnCorner.Parent = ButtonFrame
-            
             ButtonFrame.MouseButton1Click:Connect(function()
                 TweenService:Create(ButtonFrame, TweenInfo.new(0.1), {BackgroundColor3 = theme.Accent}):Play()
                 task.wait(0.1)
@@ -248,18 +329,15 @@ function Library:Window(titleText)
         function TabFunctions:Toggle(text, default, callback)
             callback = callback or function() end
             local toggled = default or false
-            
             local ToggleFrame = Instance.new("TextButton")
             ToggleFrame.Parent = Page
             ToggleFrame.BackgroundColor3 = theme.Element
             ToggleFrame.Size = UDim2.new(1, 0, 0, 32)
             ToggleFrame.AutoButtonColor = false
             ToggleFrame.Text = ""
-            
             local TogCorner = Instance.new("UICorner")
             TogCorner.CornerRadius = theme.CornerRadius
             TogCorner.Parent = ToggleFrame
-            
             local TogLabel = Instance.new("TextLabel")
             TogLabel.Parent = ToggleFrame
             TogLabel.BackgroundTransparency = 1
@@ -270,27 +348,22 @@ function Library:Window(titleText)
             TogLabel.TextColor3 = theme.Text
             TogLabel.TextSize = 14
             TogLabel.TextXAlignment = Enum.TextXAlignment.Left
-            
             local SwitchBg = Instance.new("Frame")
             SwitchBg.Parent = ToggleFrame
             SwitchBg.BackgroundColor3 = toggled and theme.Accent or Color3.fromRGB(60,60,60)
             SwitchBg.Position = UDim2.new(1, -50, 0.5, -10)
             SwitchBg.Size = UDim2.new(0, 40, 0, 20)
-            
             local SwitchCorner = Instance.new("UICorner")
             SwitchCorner.CornerRadius = UDim.new(1, 0)
             SwitchCorner.Parent = SwitchBg
-            
             local SwitchCircle = Instance.new("Frame")
             SwitchCircle.Parent = SwitchBg
             SwitchCircle.BackgroundColor3 = Color3.fromRGB(255,255,255)
             SwitchCircle.Position = toggled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
             SwitchCircle.Size = UDim2.new(0, 16, 0, 16)
-            
             local CircleCorner = Instance.new("UICorner")
             CircleCorner.CornerRadius = UDim.new(1, 0)
             CircleCorner.Parent = SwitchCircle
-            
             ToggleFrame.MouseButton1Click:Connect(function()
                 toggled = not toggled
                 local targetPos = toggled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
@@ -304,16 +377,13 @@ function Library:Window(titleText)
         function TabFunctions:Slider(text, min, max, default, callback)
             callback = callback or function() end
             local dragging = false
-            
             local SliderFrame = Instance.new("Frame")
             SliderFrame.Parent = Page
             SliderFrame.BackgroundColor3 = theme.Element
             SliderFrame.Size = UDim2.new(1, 0, 0, 45)
-            
             local SlidCorner = Instance.new("UICorner")
             SlidCorner.CornerRadius = theme.CornerRadius
             SlidCorner.Parent = SliderFrame
-            
             local SlidLabel = Instance.new("TextLabel")
             SlidLabel.Parent = SliderFrame
             SlidLabel.BackgroundTransparency = 1
@@ -324,7 +394,6 @@ function Library:Window(titleText)
             SlidLabel.TextColor3 = theme.Text
             SlidLabel.TextSize = 14
             SlidLabel.TextXAlignment = Enum.TextXAlignment.Left
-            
             local ValueLabel = Instance.new("TextLabel")
             ValueLabel.Parent = SliderFrame
             ValueLabel.BackgroundTransparency = 1
@@ -335,32 +404,26 @@ function Library:Window(titleText)
             ValueLabel.TextColor3 = theme.TextDark
             ValueLabel.TextSize = 14
             ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-
             local SliderBar = Instance.new("Frame")
             SliderBar.Parent = SliderFrame
             SliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
             SliderBar.Position = UDim2.new(0, 10, 0, 30)
             SliderBar.Size = UDim2.new(1, -20, 0, 6)
-            
             local BarCorner = Instance.new("UICorner")
             BarCorner.CornerRadius = UDim.new(1,0)
             BarCorner.Parent = SliderBar
-            
             local SliderFill = Instance.new("Frame")
             SliderFill.Parent = SliderBar
             SliderFill.BackgroundColor3 = theme.Accent
             SliderFill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-            
             local FillCorner = Instance.new("UICorner")
             FillCorner.CornerRadius = UDim.new(1,0)
             FillCorner.Parent = SliderFill
-            
             local Trigger = Instance.new("TextButton")
             Trigger.Parent = SliderBar
             Trigger.BackgroundTransparency = 1
             Trigger.Size = UDim2.new(1, 0, 1, 0)
             Trigger.Text = ""
-
             local function UpdateSlide(input)
                 local pos = UDim2.new(math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1), 0, 1, 0)
                 SliderFill.Size = pos
@@ -368,22 +431,19 @@ function Library:Window(titleText)
                 ValueLabel.Text = tostring(value)
                 callback(value)
             end
-            
             Trigger.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     dragging = true
                     UpdateSlide(input)
                 end
             end)
-            
             UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                     dragging = false
                 end
             end)
-            
             UserInputService.InputChanged:Connect(function(input)
-                if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                     UpdateSlide(input)
                 end
             end)
@@ -392,17 +452,14 @@ function Library:Window(titleText)
         function TabFunctions:Dropdown(text, list, callback)
             callback = callback or function() end
             local open = false
-            
             local DropdownFrame = Instance.new("Frame")
             DropdownFrame.Parent = Page
             DropdownFrame.BackgroundColor3 = theme.Element
             DropdownFrame.Size = UDim2.new(1, 0, 0, 32)
             DropdownFrame.ClipsDescendants = true
-            
             local DropCorner = Instance.new("UICorner")
             DropCorner.CornerRadius = theme.CornerRadius
             DropCorner.Parent = DropdownFrame
-            
             local DropBtn = Instance.new("TextButton")
             DropBtn.Parent = DropdownFrame
             DropBtn.BackgroundTransparency = 1
@@ -411,7 +468,6 @@ function Library:Window(titleText)
             DropBtn.Text = text .. " v"
             DropBtn.TextColor3 = theme.Text
             DropBtn.TextSize = 14
-            
             local DropList = Instance.new("ScrollingFrame")
             DropList.Parent = DropdownFrame
             DropList.Active = true
@@ -419,17 +475,14 @@ function Library:Window(titleText)
             DropList.Position = UDim2.new(0, 0, 0, 35)
             DropList.Size = UDim2.new(1, 0, 0, 100)
             DropList.ScrollBarThickness = 2
-            
             local ListLayout = Instance.new("UIListLayout")
             ListLayout.Parent = DropList
             ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
             ListLayout.Padding = UDim.new(0, 2)
-            
             local function RefreshList()
                 for _, v in pairs(DropList:GetChildren()) do
                     if v:IsA("TextButton") then v:Destroy() end
                 end
-                
                 for _, item in pairs(list) do
                     local ItemBtn = Instance.new("TextButton")
                     ItemBtn.Parent = DropList
@@ -440,11 +493,9 @@ function Library:Window(titleText)
                     ItemBtn.Text = item
                     ItemBtn.TextColor3 = theme.TextDark
                     ItemBtn.TextSize = 13
-                    
                     local ItemCorner = Instance.new("UICorner")
                     ItemCorner.CornerRadius = UDim.new(0,4)
                     ItemCorner.Parent = ItemBtn
-                    
                     ItemBtn.MouseButton1Click:Connect(function()
                         DropBtn.Text = text .. ": " .. item
                         callback(item)
@@ -452,12 +503,9 @@ function Library:Window(titleText)
                         TweenService:Create(DropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 32)}):Play()
                     end)
                 end
-                
                 DropList.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y)
             end
-            
             RefreshList()
-            
             DropBtn.MouseButton1Click:Connect(function()
                 open = not open
                 if open then
@@ -472,16 +520,13 @@ function Library:Window(titleText)
             callback = callback or function() end
             local key = defaultKey
             local waiting = false
-            
             local BindFrame = Instance.new("Frame")
             BindFrame.Parent = Page
             BindFrame.BackgroundColor3 = theme.Element
             BindFrame.Size = UDim2.new(1, 0, 0, 32)
-            
             local BindCorner = Instance.new("UICorner")
             BindCorner.CornerRadius = theme.CornerRadius
             BindCorner.Parent = BindFrame
-            
             local BindLabel = Instance.new("TextLabel")
             BindLabel.Parent = BindFrame
             BindLabel.BackgroundTransparency = 1
@@ -492,7 +537,6 @@ function Library:Window(titleText)
             BindLabel.TextColor3 = theme.Text
             BindLabel.TextSize = 14
             BindLabel.TextXAlignment = Enum.TextXAlignment.Left
-            
             local BindBtn = Instance.new("TextButton")
             BindBtn.Parent = BindFrame
             BindBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
@@ -502,17 +546,14 @@ function Library:Window(titleText)
             BindBtn.Text = key.Name
             BindBtn.TextColor3 = theme.Text
             BindBtn.TextSize = 12
-            
             local BtnCorner = Instance.new("UICorner")
             BtnCorner.CornerRadius = UDim.new(0, 4)
             BtnCorner.Parent = BindBtn
-            
             BindBtn.MouseButton1Click:Connect(function()
                 waiting = true
                 BindBtn.Text = "..."
                 BindBtn.TextColor3 = theme.Accent
             end)
-            
             UserInputService.InputBegan:Connect(function(input)
                 if waiting then
                     if input.UserInputType == Enum.UserInputType.Keyboard then
@@ -533,58 +574,4 @@ function Library:Window(titleText)
     return WindowFunctions
 end
 
---[[ 
-    ========================================================
-             FIM DA LIBRARY - INÍCIO DO EXEMPLO
-    ========================================================
-]]
-
--- 1. Cria a Janela
-local Window = Library:Window("Meu Script Hub")
-
--- 2. Cria uma Aba (Tab) chamada "Farm"
-local FarmTab = Window:Tab("Farm")
-
--- 3. Adiciona uma Seção (Divisor)
-FarmTab:Section("Autofarm Principal")
-
--- 4. Adiciona um Toggle (Interruptor)
-FarmTab:Toggle("Auto Click", false, function(state)
-    print("Auto Click está:", state)
-    -- Aqui você coloca seu código de loop, ex:
-    -- _G.AutoClick = state
-    -- while _G.AutoClick do click() wait() end
-end)
-
--- 5. Adiciona um Slider (Barra deslizante)
-FarmTab:Slider("Velocidade (WalkSpeed)", 16, 200, 16, function(value)
-    print("Nova velocidade:", value)
-    if game.Players.LocalPlayer.Character then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-    end
-end)
-
--- 6. Adiciona um Botão Simples
-FarmTab:Button("Resetar Personagem", function()
-    game.Players.LocalPlayer.Character:BreakJoints()
-end)
-
--- 7. Cria outra Aba chamada "Misc"
-local MiscTab = Window:Tab("Misc")
-
-MiscTab:Section("Configurações Extras")
-
--- 8. Adiciona um Dropdown (Lista de seleção)
-MiscTab:Dropdown("Escolha o Time", {"Vermelho", "Azul", "Espectador"}, function(selected)
-    print("Time selecionado:", selected)
-end)
-
--- 9. Adiciona um Keybind (Atalho de teclado)
-MiscTab:KeyBind("Imprimir no Console", Enum.KeyCode.P, function()
-    print("Você apertou a tecla de atalho!")
-end)
-
-MiscTab:Button("Destruir GUI", function()
-    -- Lógica simples para deletar a UI (normalmente você guardaria a ScreenGui numa variável)
-    game.CoreGui:FindFirstChild("ModernUI"):Destroy()
-end)
+return Library
