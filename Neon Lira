@@ -1,8 +1,7 @@
 --[[ 
-    NEON UI LIBRARY (MOBILE/PC SUPPORT)
-    - Topbar arrastável
-    - Ícone flutuante para reabrir a UI
-    - Key System integrado
+    NEON UI LIBRARY (CORRIGIDA - ELEMENTOS VISÍVEIS)
+    Fix: Substituído Folder por Frame para renderizar os elementos.
+    Fix: Adicionado AutomaticCanvasSize para o scroll funcionar.
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -19,7 +18,6 @@ local function MakeDraggable(topbarobject, object)
     local DragStart = nil
     local StartPosition = nil
 
-    -- Ativa a interação para mobile
     topbarobject.Active = true 
 
     local function Update(input)
@@ -170,7 +168,7 @@ function Library:CreateWindow(Config)
     OpenBtnFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     OpenBtnFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
     OpenBtnFrame.Size = UDim2.new(0, 50, 0, 50)
-    OpenBtnFrame.Visible = false -- Começa invisível se a Key estiver ligada ou UI aberta
+    OpenBtnFrame.Visible = false 
     OpenBtnFrame.Active = true
     
     local OBCorner = Instance.new("UICorner")
@@ -186,9 +184,9 @@ function Library:CreateWindow(Config)
     OBIcon.BackgroundTransparency = 1
     OBIcon.Size = UDim2.new(0, 30, 0, 30)
     OBIcon.Position = UDim2.new(0.5, -15, 0.5, -15)
-    OBIcon.Image = "rbxassetid://6031091004" -- Ícone de casa/menu
+    OBIcon.Image = "rbxassetid://6031091004" 
 
-    MakeDraggable(OpenBtnFrame, OpenBtnFrame) -- O ícone também é arrastável
+    MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
     -- // CRIAR JANELA PRINCIPAL //
     local MainFrame = Instance.new("Frame")
@@ -213,7 +211,7 @@ function Library:CreateWindow(Config)
     MainStroke.Color = Color3.fromRGB(50, 50, 50)
     MainStroke.Parent = MainFrame
 
-    -- // TOPBAR (Arrastável) //
+    -- // TOPBAR //
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
@@ -224,7 +222,6 @@ function Library:CreateWindow(Config)
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
 
-    -- Fix para borda quadrada na parte inferior da topbar
     local FixB = Instance.new("Frame")
     FixB.Parent = Topbar
     FixB.BorderSizePixel = 0
@@ -232,7 +229,6 @@ function Library:CreateWindow(Config)
     FixB.Position = UDim2.new(0,0,1,-5)
     FixB.Size = UDim2.new(1,0,0,5)
 
-    -- Título da Library
     local TitleLbl = Instance.new("TextLabel")
     TitleLbl.Parent = Topbar
     TitleLbl.BackgroundTransparency = 1
@@ -244,49 +240,43 @@ function Library:CreateWindow(Config)
     TitleLbl.TextSize = 14
     TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Botão de Fechar/Minimizar (NA TOPBAR)
     local CloseBtn = Instance.new("ImageButton")
     CloseBtn.Parent = Topbar
     CloseBtn.BackgroundTransparency = 1
     CloseBtn.Position = UDim2.new(1, -35, 0, 5)
     CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-    CloseBtn.Image = "rbxassetid://6031094678" -- X icon
+    CloseBtn.Image = "rbxassetid://6031094678" 
     CloseBtn.ImageColor3 = Color3.fromRGB(200, 200, 200)
 
-    -- // SISTEMA DE TOGGLE (Abrir/Fechar) //
+    -- // SISTEMA DE TOGGLE //
     Library.IsOpen = true
     
     function Library:Toggle()
         Library.IsOpen = not Library.IsOpen
         
         if Library.IsOpen then
-            -- Abrindo
             OpenBtnFrame.Visible = false
             MainFrame.Visible = true
             CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.3)
         else
-            -- Fechando
             local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
             close.Completed:Connect(function()
                 if not Library.IsOpen then 
                     MainFrame.Visible = false 
-                    OpenBtnFrame.Visible = true -- Mostra o botão flutuante
+                    OpenBtnFrame.Visible = true 
                 end
             end)
         end
     end
 
-    -- Evento do botão X na janela
     CloseBtn.MouseButton1Click:Connect(function()
         Library:Toggle()
     end)
 
-    -- Evento do botão flutuante
     OpenBtnFrame.MouseButton1Click:Connect(function()
         Library:Toggle()
     end)
 
-    -- Faz a topbar arrastar a janela principal
     MakeDraggable(Topbar, MainFrame)
 
     -- // CONTEÚDO DAS ABAS //
@@ -314,10 +304,14 @@ function Library:CreateWindow(Config)
     PageContainer.BackgroundTransparency = 1
     PageContainer.Position = UDim2.new(0, 160, 0, 50)
     PageContainer.Size = UDim2.new(1, -170, 1, -60)
+    PageContainer.ClipsDescendants = true
 
-    local PagesFolder = Instance.new("Folder")
+    -- FIX: Usar Frame em vez de Folder, pois Folders não renderizam UI
+    local PagesFolder = Instance.new("Frame")
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
+    PagesFolder.BackgroundTransparency = 1
+    PagesFolder.Size = UDim2.new(1,0,1,0)
 
     -- // SISTEMA DE KEY //
     if KeySystemConfig.Enabled then
@@ -414,11 +408,10 @@ function Library:CreateWindow(Config)
             end
         end)
     else
-        -- Animação de entrada sem Key
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
     end
 
-    --// MÉTODOS DE ABA E ELEMENTOS (Mantidos iguais)
+    --// MÉTODOS DE ABA E ELEMENTOS
     local Window = {}
 
     function Window:Tab(name)
@@ -438,11 +431,12 @@ function Library:CreateWindow(Config)
 
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name
-        Page.Parent = PagesFolder
+        Page.Parent = PagesFolder -- Agora PagesFolder é um Frame, então renderiza.
         Page.BackgroundTransparency = 1
         Page.Size = UDim2.new(1, 0, 1, 0)
         Page.ScrollBarThickness = 2
         Page.Visible = false
+        Page.AutomaticCanvasSize = Enum.AutomaticSize.Y -- Importante para scrollar
         
         local PL = Instance.new("UIListLayout")
         PL.Parent = Page
@@ -460,12 +454,15 @@ function Library:CreateWindow(Config)
                     CreateTween(v, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(150,150,150)}, 0.2)
                 end
             end
-            for _,v in pairs(PagesFolder:GetChildren()) do v.Visible = false end
+            for _,v in pairs(PagesFolder:GetChildren()) do 
+                if v:IsA("ScrollingFrame") then v.Visible = false end 
+            end
             
             CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
             Page.Visible = true
         end)
 
+        -- Verifica se é a primeira aba para mostrá-la
         if #PagesFolder:GetChildren() == 1 then
             CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
             Page.Visible = true
@@ -735,6 +732,18 @@ function Library:CreateWindow(Config)
             TBC.Parent = TB
             
             TB.FocusLost:Connect(function() pcall(callback, TB.Text) end)
+        end
+
+        function Tab:Label(text)
+            local L = Instance.new("TextLabel")
+            L.Parent = Page
+            L.BackgroundTransparency = 1
+            L.Size = UDim2.new(1,0,0,25)
+            L.Font = Enum.Font.Gotham
+            L.Text = text
+            L.TextColor3 = Color3.fromRGB(150,150,150)
+            L.TextSize = 14
+            L.TextXAlignment = Enum.TextXAlignment.Center
         end
         
         return Tab
