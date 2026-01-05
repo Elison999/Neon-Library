@@ -1,8 +1,8 @@
 --[[ 
-    NEON UI LIBRARY (FIXED VERSION)
-    - Fix: Elementos não apareciam (CanvasSize manual adicionado)
-    - Fix: Abas agora abrem corretamente
-    - Contém: Save System, Idiomas, Keybind, ColorPicker, etc.
+    NEON UI LIBRARY (VISUAL EFFECTS & SCRIPTS UPDATE)
+    - New: Visual Decorations (Glow, Gradient, Pattern)
+    - New: Built-in Scripts Hub (Config Tab)
+    - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -23,6 +23,7 @@ Library.Settings = {
 Library.Flags = {}    
 Library.Elements = {} 
 
+-- // Traduções //
 Library.Translations = {
     English = {
         ConfigTab = "Configuration",
@@ -43,8 +44,10 @@ Library.Translations = {
         KeyVerified = "Key Verified!",
         KeyError = "Error",
         KeyIncorrect = "Incorrect Key!",
-        Binding = "Press any key...",
-        NoBind = "None"
+        Binding = "Press key...",
+        NoBind = "None",
+        ScriptsTitle = "Scripts Hub",
+        ExecScript = "Executed: "
     },
     Portuguese = {
         ConfigTab = "Configuração",
@@ -65,8 +68,10 @@ Library.Translations = {
         KeyVerified = "Key Verificada!",
         KeyError = "Erro",
         KeyIncorrect = "Key Incorreta!",
-        Binding = "Aperte uma tecla...",
-        NoBind = "Nenhum"
+        Binding = "Aperte a tecla...",
+        NoBind = "Nenhum",
+        ScriptsTitle = "Hub de Scripts",
+        ExecScript = "Executado: "
     }
 }
 
@@ -76,15 +81,16 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
+-- // Temas (Com Cores de Glow) //
 Library.Themes = {
-    Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40)},
-    DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45)},
-    DarkRed  = {Main = Color3.fromRGB(30, 15, 15), Top = Color3.fromRGB(40, 20, 20), Accent = Color3.fromRGB(255, 60, 60), Text = Color3.fromRGB(255, 240, 240), Element = Color3.fromRGB(45, 25, 25)},
-    Ocean    = {Main = Color3.fromRGB(10, 30, 35), Top = Color3.fromRGB(15, 40, 45), Accent = Color3.fromRGB(0, 200, 200), Text = Color3.fromRGB(220, 255, 255), Element = Color3.fromRGB(20, 50, 55)},
-    Amethyst = {Main = Color3.fromRGB(30, 20, 35), Top = Color3.fromRGB(40, 25, 45), Accent = Color3.fromRGB(180, 80, 255), Text = Color3.fromRGB(250, 230, 255), Element = Color3.fromRGB(45, 30, 50)},
-    Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30)},
-    Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30)},
-    Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(100, 100, 100), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30)},
+    Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40), Glow = Color3.fromRGB(0, 100, 200)},
+    DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45), Glow = Color3.fromRGB(40, 80, 200)},
+    DarkRed  = {Main = Color3.fromRGB(30, 15, 15), Top = Color3.fromRGB(40, 20, 20), Accent = Color3.fromRGB(255, 60, 60), Text = Color3.fromRGB(255, 240, 240), Element = Color3.fromRGB(45, 25, 25), Glow = Color3.fromRGB(200, 40, 40)},
+    Ocean    = {Main = Color3.fromRGB(10, 30, 35), Top = Color3.fromRGB(15, 40, 45), Accent = Color3.fromRGB(0, 200, 200), Text = Color3.fromRGB(220, 255, 255), Element = Color3.fromRGB(20, 50, 55), Glow = Color3.fromRGB(0, 150, 150)},
+    Amethyst = {Main = Color3.fromRGB(30, 20, 35), Top = Color3.fromRGB(40, 25, 45), Accent = Color3.fromRGB(180, 80, 255), Text = Color3.fromRGB(250, 230, 255), Element = Color3.fromRGB(45, 30, 50), Glow = Color3.fromRGB(140, 60, 200)},
+    Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30), Glow = Color3.fromRGB(40, 160, 60)},
+    Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30), Glow = Color3.fromRGB(200, 100, 40)},
+    Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30), Glow = Color3.fromRGB(80, 80, 80)},
 }
 
 Library.CurrentTheme = Library.Themes.Default
@@ -186,6 +192,7 @@ function Library:CreateWindow(Config)
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
 
+    -- Notificação
     local NotifContainer = Instance.new("Frame")
     NotifContainer.Name = "NotifContainer"
     NotifContainer.Parent = TitanUI
@@ -245,6 +252,7 @@ function Library:CreateWindow(Config)
         end)
     end
 
+    -- Icone Flutuante
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
@@ -267,6 +275,7 @@ function Library:CreateWindow(Config)
     OBIcon.Image = "rbxassetid://6031091004" 
     MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
+    -- Janela Principal
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
@@ -277,21 +286,47 @@ function Library:CreateWindow(Config)
     MainFrame.ClipsDescendants = true
     MainFrame.Visible = not KeySystemConfig.Enabled
     if KeySystemConfig.Enabled then MainFrame.Size = UDim2.new(0,0,0,0) end
+    
+    -- Visual Decor: Glow
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = MainFrame
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Color3.fromRGB(50, 50, 50)
+    MainStroke.Color = Library.CurrentTheme.Glow or Color3.fromRGB(50, 50, 50)
+    MainStroke.Thickness = 2
+    MainStroke.Transparency = 0.5
     MainStroke.Parent = MainFrame
+
+    -- Visual Decor: Pattern Background
+    local Pattern = Instance.new("ImageLabel")
+    Pattern.Name = "Pattern"
+    Pattern.Parent = MainFrame
+    Pattern.BackgroundTransparency = 1
+    Pattern.Size = UDim2.new(1,0,1,0)
+    Pattern.Image = "rbxassetid://2151741365" -- Padrão de pontos
+    Pattern.ImageTransparency = 0.95
+    Pattern.TileSize = UDim2.new(0,25,0,25)
+    Pattern.ScaleType = Enum.ScaleType.Tile
+    Pattern.ZIndex = 0
 
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
     Topbar.BackgroundColor3 = Library.CurrentTheme.Top
     Topbar.Size = UDim2.new(1, 0, 0, 40)
+    
+    -- Visual Decor: Topbar Gradient
     local TopCorner = Instance.new("UICorner")
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
+    local TopGradient = Instance.new("UIGradient")
+    TopGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,200,200)) 
+    }
+    TopGradient.Rotation = 45
+    TopGradient.Parent = Topbar
+
     local FixB = Instance.new("Frame")
     FixB.Name = "FixB"
     FixB.Parent = Topbar
@@ -358,7 +393,6 @@ function Library:CreateWindow(Config)
     PageContainer.Size = UDim2.new(1, -170, 1, -60)
     PageContainer.ClipsDescendants = true
     
-    -- FIX: PagesFolder is a Frame to allow rendering
     local PagesFolder = Instance.new("Frame")
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
@@ -449,6 +483,14 @@ function Library:CreateWindow(Config)
         CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
         CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
         CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
+        
+        -- Update Gradient & Glow
+        TopGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+            ColorSequenceKeypoint.new(1, T.Accent) 
+        }
+        CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3)
+
         TitleLbl.TextColor3 = T.Text
         OpenBtnFrame.BackgroundColor3 = T.Top
         for _, obj in pairs(TabContainer:GetChildren()) do
@@ -506,7 +548,6 @@ function Library:CreateWindow(Config)
         Page.Size = UDim2.new(1, 0, 1, 0)
         Page.ScrollBarThickness = 2
         Page.Visible = false
-        -- FIX: Use manual sizing instead of Automatic to prevent glitches
         Page.CanvasSize = UDim2.new(0,0,0,0) 
         
         local PL = Instance.new("UIListLayout")
@@ -519,7 +560,6 @@ function Library:CreateWindow(Config)
         PP.PaddingLeft = UDim.new(0,5)
         PP.PaddingRight = UDim.new(0,5)
 
-        -- FIX: Auto-resize canvas when items are added
         PL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Page.CanvasSize = UDim2.new(0, 0, 0, PL.AbsoluteContentSize.Y + 20)
         end)
@@ -806,7 +846,6 @@ function Library:CreateWindow(Config)
             L.TextXAlignment = Enum.TextXAlignment.Center
         end
 
-        -- // NEW ELEMENT 1: PARAGRAPH (SECTION) //
         function Tab:Paragraph(text)
             local Section = Instance.new("TextLabel")
             Section.Name = "SectionLabel"
@@ -827,7 +866,6 @@ function Library:CreateWindow(Config)
             Line.Size = UDim2.new(1,0,0,1)
         end
 
-        -- // NEW ELEMENT 2: IMAGE //
         function Tab:Image(id, size)
             local ImgFrame = Instance.new("Frame")
             ImgFrame.Name = "ElementFrame"
@@ -844,7 +882,6 @@ function Library:CreateWindow(Config)
             Img.Image = "rbxassetid://" .. tostring(id)
         end
 
-        -- // NEW ELEMENT 3: KEYBIND //
         function Tab:Keybind(text, default, callback)
             local Key = default or Enum.KeyCode.RightControl
             local Binding = false
@@ -881,7 +918,7 @@ function Library:CreateWindow(Config)
 
             KBtn.MouseButton1Click:Connect(function()
                 Binding = true
-                KBtn.Text = "..."
+                KBtn.Text = Library:GetText("Binding")
             end)
 
             UserInputService.InputBegan:Connect(function(input)
@@ -896,7 +933,6 @@ function Library:CreateWindow(Config)
                 end
             end)
 
-            -- Load Keybind from Save
             Library.Elements[text] = {
                 Set = function(self, val)
                     if Enum.KeyCode[val] then
@@ -907,7 +943,6 @@ function Library:CreateWindow(Config)
             }
         end
 
-        -- // NEW ELEMENT 4: COLOR PICKER (RGB Slider Style) //
         function Tab:ColorPicker(text, default, callback)
             local Color = default or Color3.fromRGB(255, 255, 255)
             local Opened = false
@@ -1003,7 +1038,6 @@ function Library:CreateWindow(Config)
                 CreateTween(CFr, {Size = UDim2.new(1,0,0, Opened and 130 or 36)}, 0.2)
             end)
             
-            -- Save/Load Integration
             Library.Elements[text] = {
                 Set = function(self, val)
                     if val.R then
@@ -1023,6 +1057,21 @@ function Library:CreateWindow(Config)
     function Window:AddConfig()
         local ConfigTab = Window:Tab(Library:GetText("ConfigTab"))
         
+        -- // Scripts Section //
+        ConfigTab:Paragraph(Library:GetText("ScriptsTitle"))
+        
+        ConfigTab:Button("Infinite Yield", function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+            Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Infinite Yield"})
+        end)
+        
+        ConfigTab:Button("Tiger X", function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/balintTheDevX/Tiger-X-V3/main/Tiger%20X%20V3.5%20Fixed"))()
+            Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Tiger X"})
+        end)
+        
+        ConfigTab:Paragraph(Library:GetText("ConfigTab"))
+
         local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
             Library.Settings.Language = Selected
             Library:Notification({Title = "Language", Content = "Language changed to " .. Selected})
@@ -1054,9 +1103,9 @@ function Library:CreateWindow(Config)
             end
         end)
         
+        -- Loop de Atualização de Texto (Tradução em tempo real)
         task.spawn(function()
             while task.wait(0.5) do
-                if ConfigTabBtn then ConfigTabBtn.Text = Library:GetText("ConfigTab") end
                 if LangDropLbl then LangDropLbl.Text = Library:GetText("LangDrop") end
                 if TransLabel then TransLabel.Text = Library:GetText("TransToggle") end
                 if ThemeDropLbl then ThemeDropLbl.Text = Library:GetText("ThemeDrop") end
