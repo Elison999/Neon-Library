@@ -1,9 +1,8 @@
 --[[ 
-    NEON UI LIBRARY (FINAL VERSION - LANGUAGE SYSTEM)
-    - Mobile/PC Support
-    - Auto Config (Themes, Transparency, Language)
-    - Save/Load Toggles, Sliders & Language
-    - English/Portuguese Support
+    NEON UI LIBRARY (FIXED VERSION)
+    - Fix: Elementos não apareciam (CanvasSize manual adicionado)
+    - Fix: Abas agora abrem corretamente
+    - Contém: Save System, Idiomas, Keybind, ColorPicker, etc.
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -14,17 +13,16 @@ local HttpService = game:GetService("HttpService")
 
 local Library = {}
 
--- // Configurações e Armazenamento //
+-- // Configurações //
 Library.Settings = {
     Theme = "Default",
     Transparency = false,
-    Language = "English" -- Default Language
+    Language = "English"
 }
 
 Library.Flags = {}    
 Library.Elements = {} 
 
--- // SISTEMA DE TRADUÇÃO //
 Library.Translations = {
     English = {
         ConfigTab = "Configuration",
@@ -44,7 +42,9 @@ Library.Translations = {
         KeySuccess = "Success",
         KeyVerified = "Key Verified!",
         KeyError = "Error",
-        KeyIncorrect = "Incorrect Key!"
+        KeyIncorrect = "Incorrect Key!",
+        Binding = "Press any key...",
+        NoBind = "None"
     },
     Portuguese = {
         ConfigTab = "Configuração",
@@ -64,11 +64,12 @@ Library.Translations = {
         KeySuccess = "Sucesso",
         KeyVerified = "Key Verificada!",
         KeyError = "Erro",
-        KeyIncorrect = "Key Incorreta!"
+        KeyIncorrect = "Key Incorreta!",
+        Binding = "Aperte uma tecla...",
+        NoBind = "Nenhum"
     }
 }
 
--- Função auxiliar para pegar texto traduzido
 function Library:GetText(Key)
     local Lang = Library.Settings.Language or "English"
     if not Library.Translations[Lang] then Lang = "English" end
@@ -88,7 +89,7 @@ Library.Themes = {
 
 Library.CurrentTheme = Library.Themes.Default
 
---// Funções Utilitárias //
+--// Utilitários //
 local function MakeDraggable(topbarobject, object)
     local Dragging = nil
     local DragInput = nil
@@ -137,7 +138,7 @@ local function ProtectGui(gui)
     end
 end
 
--- // SISTEMA DE SAVE //
+-- // Save System //
 local function SaveConfig()
     if writefile then
         local data = {
@@ -169,7 +170,7 @@ local function LoadConfig()
     return false
 end
 
---// Lógica Principal //
+--// UI Construction //
 function Library:CreateWindow(Config)
     local Title = Config.Name or "Library"
     local KeySystemConfig = {
@@ -185,7 +186,6 @@ function Library:CreateWindow(Config)
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
 
-    -- Notificações
     local NotifContainer = Instance.new("Frame")
     NotifContainer.Name = "NotifContainer"
     NotifContainer.Parent = TitanUI
@@ -245,7 +245,6 @@ function Library:CreateWindow(Config)
         end)
     end
 
-    -- Botão Flutuante
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
@@ -268,7 +267,6 @@ function Library:CreateWindow(Config)
     OBIcon.Image = "rbxassetid://6031091004" 
     MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
-    -- Janela Principal
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
@@ -359,6 +357,8 @@ function Library:CreateWindow(Config)
     PageContainer.Position = UDim2.new(0, 160, 0, 50)
     PageContainer.Size = UDim2.new(1, -170, 1, -60)
     PageContainer.ClipsDescendants = true
+    
+    -- FIX: PagesFolder is a Frame to allow rendering
     local PagesFolder = Instance.new("Frame")
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
@@ -444,7 +444,6 @@ function Library:CreateWindow(Config)
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
     end
 
-    -- // SISTEMA DE TEMAS //
     function Library:RefreshTheme()
         local T = Library.CurrentTheme
         CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
@@ -466,6 +465,9 @@ function Library:CreateWindow(Config)
                         if txt then txt.TextColor3 = T.Text end
                         local btn = elem:FindFirstChildOfClass("TextButton")
                         if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
+                    elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
+                        elem.TextColor3 = T.Accent
+                        elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
                     end
                 end
             end
@@ -480,8 +482,8 @@ function Library:CreateWindow(Config)
         end
     end
 
-    -- // WINDOW METHODS //
     local Window = {}
+    local FirstTab = true
 
     function Window:Tab(name)
         local Tab = {}
@@ -496,6 +498,7 @@ function Library:CreateWindow(Config)
         TabBtn.TextSize = 14
         local TC = Instance.new("UICorner")
         TC.Parent = TabBtn
+        
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name
         Page.Parent = PagesFolder
@@ -503,7 +506,9 @@ function Library:CreateWindow(Config)
         Page.Size = UDim2.new(1, 0, 1, 0)
         Page.ScrollBarThickness = 2
         Page.Visible = false
-        Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        -- FIX: Use manual sizing instead of Automatic to prevent glitches
+        Page.CanvasSize = UDim2.new(0,0,0,0) 
+        
         local PL = Instance.new("UIListLayout")
         PL.Parent = Page
         PL.SortOrder = Enum.SortOrder.LayoutOrder
@@ -513,6 +518,11 @@ function Library:CreateWindow(Config)
         PP.PaddingTop = UDim.new(0,5)
         PP.PaddingLeft = UDim.new(0,5)
         PP.PaddingRight = UDim.new(0,5)
+
+        -- FIX: Auto-resize canvas when items are added
+        PL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            Page.CanvasSize = UDim2.new(0, 0, 0, PL.AbsoluteContentSize.Y + 20)
+        end)
 
         TabBtn.MouseButton1Click:Connect(function()
             for _,v in pairs(TabContainer:GetChildren()) do
@@ -524,7 +534,9 @@ function Library:CreateWindow(Config)
             CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
         end)
-        if #PagesFolder:GetChildren() == 1 then
+        
+        if FirstTab then
+            FirstTab = false
             CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
         end
@@ -551,7 +563,7 @@ function Library:CreateWindow(Config)
                 CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
                 pcall(callback)
             end)
-            return BT -- Return TextButton to allow manipulation
+            return BT 
         end
 
         function Tab:Toggle(text, default, callback)
@@ -607,7 +619,7 @@ function Library:CreateWindow(Config)
 
             Btn.MouseButton1Click:Connect(function() Update(not Toggled) end)
             Library.Elements[text] = { Set = function(self, v) Update(v) end }
-            return TFr, TL -- Return TL to allow text change
+            return TFr, TL 
         end
 
         function Tab:Slider(text, min, max, default, callback)
@@ -746,7 +758,7 @@ function Library:CreateWindow(Config)
                     CreateTween(Arrow, {Rotation = 0}, 0.2)
                 end
             end)
-            return DL -- Return Label to allow text change
+            return DL 
         end
 
         function Tab:Textbox(text, ph, callback)
@@ -793,35 +805,238 @@ function Library:CreateWindow(Config)
             L.TextSize = 14
             L.TextXAlignment = Enum.TextXAlignment.Center
         end
+
+        -- // NEW ELEMENT 1: PARAGRAPH (SECTION) //
+        function Tab:Paragraph(text)
+            local Section = Instance.new("TextLabel")
+            Section.Name = "SectionLabel"
+            Section.Parent = Page
+            Section.BackgroundTransparency = 1
+            Section.Size = UDim2.new(1,0,0,30)
+            Section.Font = Enum.Font.GothamBold
+            Section.Text = text
+            Section.TextColor3 = Library.CurrentTheme.Accent
+            Section.TextSize = 15
+            Section.TextXAlignment = Enum.TextXAlignment.Left
+            local Line = Instance.new("Frame")
+            Line.Name = "Line"
+            Line.Parent = Section
+            Line.BackgroundColor3 = Library.CurrentTheme.Accent
+            Line.BorderSizePixel = 0
+            Line.Position = UDim2.new(0,0,1,0)
+            Line.Size = UDim2.new(1,0,0,1)
+        end
+
+        -- // NEW ELEMENT 2: IMAGE //
+        function Tab:Image(id, size)
+            local ImgFrame = Instance.new("Frame")
+            ImgFrame.Name = "ElementFrame"
+            ImgFrame.Parent = Page
+            ImgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+            ImgFrame.BackgroundTransparency = 1
+            ImgFrame.Size = UDim2.new(1, 0, 0, size or 100)
+            local Img = Instance.new("ImageLabel")
+            Img.Parent = ImgFrame
+            Img.BackgroundColor3 = Color3.fromRGB(0,0,0)
+            Img.BackgroundTransparency = 1
+            Img.Position = UDim2.new(0.5, -((size or 100)/2), 0, 0)
+            Img.Size = UDim2.new(0, size or 100, 0, size or 100)
+            Img.Image = "rbxassetid://" .. tostring(id)
+        end
+
+        -- // NEW ELEMENT 3: KEYBIND //
+        function Tab:Keybind(text, default, callback)
+            local Key = default or Enum.KeyCode.RightControl
+            local Binding = false
+            Library.Flags[text] = Key.Name
+
+            local KFr = Instance.new("Frame")
+            KFr.Name = "ElementFrame"
+            KFr.Parent = Page
+            KFr.BackgroundColor3 = Library.CurrentTheme.Element
+            KFr.Size = UDim2.new(1,0,0,36)
+            local KC = Instance.new("UICorner")
+            KC.Parent = KFr
+            local KL = Instance.new("TextLabel")
+            KL.Parent = KFr
+            KL.BackgroundTransparency = 1
+            KL.Position = UDim2.new(0,10,0,0)
+            KL.Size = UDim2.new(0.6,0,1,0)
+            KL.Font = Enum.Font.Gotham
+            KL.Text = text
+            KL.TextColor3 = Library.CurrentTheme.Text
+            KL.TextSize = 14
+            KL.TextXAlignment = Enum.TextXAlignment.Left
+            local KBtn = Instance.new("TextButton")
+            KBtn.Parent = KFr
+            KBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+            KBtn.Position = UDim2.new(1,-90,0.5,-10)
+            KBtn.Size = UDim2.new(0,80,0,20)
+            KBtn.Font = Enum.Font.GothamBold
+            KBtn.Text = Key.Name
+            KBtn.TextColor3 = Color3.fromRGB(200,200,200)
+            KBtn.TextSize = 12
+            local KBC = Instance.new("UICorner")
+            KBC.Parent = KBtn
+
+            KBtn.MouseButton1Click:Connect(function()
+                Binding = true
+                KBtn.Text = "..."
+            end)
+
+            UserInputService.InputBegan:Connect(function(input)
+                if Binding and input.UserInputType == Enum.UserInputType.Keyboard then
+                    Key = input.KeyCode
+                    Binding = false
+                    KBtn.Text = Key.Name
+                    Library.Flags[text] = Key.Name
+                    pcall(callback, Key)
+                elseif input.KeyCode == Key and not Binding then
+                    pcall(callback, Key)
+                end
+            end)
+
+            -- Load Keybind from Save
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    if Enum.KeyCode[val] then
+                        Key = Enum.KeyCode[val]
+                        KBtn.Text = Key.Name
+                    end
+                end
+            }
+        end
+
+        -- // NEW ELEMENT 4: COLOR PICKER (RGB Slider Style) //
+        function Tab:ColorPicker(text, default, callback)
+            local Color = default or Color3.fromRGB(255, 255, 255)
+            local Opened = false
+            Library.Flags[text] = {R=Color.R, G=Color.G, B=Color.B}
+
+            local CFr = Instance.new("Frame")
+            CFr.Name = "ElementFrame"
+            CFr.Parent = Page
+            CFr.BackgroundColor3 = Library.CurrentTheme.Element
+            CFr.Size = UDim2.new(1,0,0,36)
+            CFr.ClipsDescendants = true
+            local CC = Instance.new("UICorner")
+            CC.Parent = CFr
+            local CL = Instance.new("TextLabel")
+            CL.Parent = CFr
+            CL.BackgroundTransparency = 1
+            CL.Position = UDim2.new(0,10,0,0)
+            CL.Size = UDim2.new(0.6,0,0,36)
+            CL.Font = Enum.Font.Gotham
+            CL.Text = text
+            CL.TextColor3 = Library.CurrentTheme.Text
+            CL.TextSize = 14
+            CL.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local Preview = Instance.new("TextButton")
+            Preview.Parent = CFr
+            Preview.BackgroundColor3 = Color
+            Preview.Position = UDim2.new(1,-50,0,8)
+            Preview.Size = UDim2.new(0,40,0,20)
+            Preview.Text = ""
+            local PC = Instance.new("UICorner")
+            PC.Parent = Preview
+
+            local RGBContainer = Instance.new("Frame")
+            RGBContainer.Parent = CFr
+            RGBContainer.BackgroundTransparency = 1
+            RGBContainer.Position = UDim2.new(0,0,0,36)
+            RGBContainer.Size = UDim2.new(1,0,0,90)
+
+            local function UpdateColor()
+                Preview.BackgroundColor3 = Color
+                Library.Flags[text] = {R=Color.R, G=Color.G, B=Color.B}
+                pcall(callback, Color)
+            end
+
+            local function CreateRGBSlider(name, y, colorComp)
+                local S = Instance.new("Frame")
+                S.Parent = RGBContainer
+                S.BackgroundColor3 = Color3.fromRGB(30,30,30)
+                S.Position = UDim2.new(0,10,0,y)
+                S.Size = UDim2.new(1,-20,0,20)
+                local Corner = Instance.new("UICorner") Corner.Parent = S
+                
+                local Fill = Instance.new("Frame")
+                Fill.Parent = S
+                Fill.BackgroundColor3 = name == "R" and Color3.fromRGB(255,50,50) or (name == "G" and Color3.fromRGB(50,255,50) or Color3.fromRGB(50,50,255))
+                Fill.Size = UDim2.new(colorComp, 0, 1, 0)
+                local FC = Instance.new("UICorner") FC.Parent = Fill
+                
+                local Btn = Instance.new("TextButton")
+                Btn.Parent = S
+                Btn.BackgroundTransparency = 1
+                Btn.Size = UDim2.new(1,0,1,0)
+                Btn.Text = ""
+
+                Btn.MouseButton1Down:Connect(function()
+                    local move
+                    move = RunService.RenderStepped:Connect(function()
+                        local Mouse = UserInputService:GetMouseLocation()
+                        local RelX = Mouse.X - S.AbsolutePosition.X
+                        local Pct = math.clamp(RelX / S.AbsoluteSize.X, 0, 1)
+                        Fill.Size = UDim2.new(Pct, 0, 1, 0)
+                        
+                        local R, G, B = Color.R, Color.G, Color.B
+                        if name == "R" then R = Pct elseif name == "G" then G = Pct else B = Pct end
+                        Color = Color3.new(R, G, B)
+                        UpdateColor()
+                        
+                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+                            move:Disconnect()
+                        end
+                    end)
+                end)
+                return Fill
+            end
+
+            local FillR = CreateRGBSlider("R", 5, Color.R)
+            local FillG = CreateRGBSlider("G", 35, Color.G)
+            local FillB = CreateRGBSlider("B", 65, Color.B)
+
+            Preview.MouseButton1Click:Connect(function()
+                Opened = not Opened
+                CreateTween(CFr, {Size = UDim2.new(1,0,0, Opened and 130 or 36)}, 0.2)
+            end)
+            
+            -- Save/Load Integration
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    if val.R then
+                        Color = Color3.new(val.R, val.G, val.B)
+                        Preview.BackgroundColor3 = Color
+                        FillR.Size = UDim2.new(val.R,0,1,0)
+                        FillG.Size = UDim2.new(val.G,0,1,0)
+                        FillB.Size = UDim2.new(val.B,0,1,0)
+                    end
+                end
+            }
+        end
+
         return Tab
     end
 
-    -- // ADD CONFIG SYSTEM //
     function Window:AddConfig()
         local ConfigTab = Window:Tab(Library:GetText("ConfigTab"))
         
-        -- Dropdown de Idioma (Language)
         local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
             Library.Settings.Language = Selected
-            -- Update UI texts internally
-            if TabContainer:FindFirstChild(Library:GetText("ConfigTab")) then
-                 -- Force redraw logic or notification (Full dynamic text is complex, we update key elements)
-                 Library:Notification({Title = "Language", Content = "Language changed to " .. Selected})
-            end
+            Library:Notification({Title = "Language", Content = "Language changed to " .. Selected})
         end)
 
-        -- Toggle Transparencia
         local TransToggle, TransLabel = ConfigTab:Toggle(Library:GetText("TransToggle"), false, function(Val)
             Library.Settings.Transparency = Val
             Library:RefreshTheme()
         end)
         
-        -- Dropdown Temas
         local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
             Library:SetTheme(Selected)
         end)
         
-        -- Botões Save/Load
         local SaveBtn = ConfigTab:Button(Library:GetText("SaveBtn"), function()
             SaveConfig()
             Library:Notification({Title = "Config", Content = Library:GetText("SaveMsg")})
@@ -839,7 +1054,6 @@ function Library:CreateWindow(Config)
             end
         end)
         
-        -- Loop para atualizar textos da aba Config quando o idioma muda
         task.spawn(function()
             while task.wait(0.5) do
                 if ConfigTabBtn then ConfigTabBtn.Text = Library:GetText("ConfigTab") end
@@ -851,7 +1065,6 @@ function Library:CreateWindow(Config)
             end
         end)
 
-        -- Tenta carregar config
         task.delay(0.5, function()
              if LoadConfig() then
                 Library:SetTheme(Library.Settings.Theme)
