@@ -1,12 +1,13 @@
 --[[ 
-    NEON UI LIBRARY (CORRIGIDA)
-    Fix: A janela agora carrega oculta antes da Key, garantindo que as abas funcionem.
+    NEON UI LIBRARY (MOBILE/PC SUPPORT)
+    - Topbar arrastável
+    - Ícone flutuante para reabrir a UI
+    - Key System integrado
 ]]
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 
 local Library = {}
@@ -18,9 +19,17 @@ local function MakeDraggable(topbarobject, object)
     local DragStart = nil
     local StartPosition = nil
 
+    -- Ativa a interação para mobile
+    topbarobject.Active = true 
+
     local function Update(input)
         local Delta = input.Position - DragStart
-        local pos = UDim2.new(StartPosition.X.Scale, StartPosition.X.Offset + Delta.X, StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y)
+        local pos = UDim2.new(
+            StartPosition.X.Scale, 
+            StartPosition.X.Offset + Delta.X, 
+            StartPosition.Y.Scale, 
+            StartPosition.Y.Offset + Delta.Y
+        )
         local Tween = TweenService:Create(object, TweenInfo.new(0.15), {Position = pos})
         Tween:Play()
     end
@@ -82,7 +91,7 @@ function Library:CreateWindow(Config)
     }
 
     local TitanUI = Instance.new("ScreenGui")
-    TitanUI.Name = "TitanUI_" .. math.random(1, 10000)
+    TitanUI.Name = "NeonUI_" .. math.random(1, 10000)
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
 
@@ -154,19 +163,46 @@ function Library:CreateWindow(Config)
         end)
     end
 
-    -- // CRIAR JANELA PRINCIPAL (AGORA FORA DA FUNÇÃO DE KEY) //
+    -- // BOTÃO DE ABRIR (TOGGLE ICON) //
+    local OpenBtnFrame = Instance.new("ImageButton")
+    OpenBtnFrame.Name = "OpenButton"
+    OpenBtnFrame.Parent = TitanUI
+    OpenBtnFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    OpenBtnFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+    OpenBtnFrame.Size = UDim2.new(0, 50, 0, 50)
+    OpenBtnFrame.Visible = false -- Começa invisível se a Key estiver ligada ou UI aberta
+    OpenBtnFrame.Active = true
+    
+    local OBCorner = Instance.new("UICorner")
+    OBCorner.CornerRadius = UDim.new(0, 12)
+    OBCorner.Parent = OpenBtnFrame
+    
+    local OBStroke = Instance.new("UIStroke")
+    OBStroke.Color = Color3.fromRGB(60,60,60)
+    OBStroke.Parent = OpenBtnFrame
+
+    local OBIcon = Instance.new("ImageLabel")
+    OBIcon.Parent = OpenBtnFrame
+    OBIcon.BackgroundTransparency = 1
+    OBIcon.Size = UDim2.new(0, 30, 0, 30)
+    OBIcon.Position = UDim2.new(0.5, -15, 0.5, -15)
+    OBIcon.Image = "rbxassetid://6031091004" -- Ícone de casa/menu
+
+    MakeDraggable(OpenBtnFrame, OpenBtnFrame) -- O ícone também é arrastável
+
+    -- // CRIAR JANELA PRINCIPAL //
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainFrame.Size = UDim2.new(0, 550, 0, 350) -- Tamanho padrão
+    MainFrame.Size = UDim2.new(0, 550, 0, 350)
     MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     MainFrame.ClipsDescendants = true
-    MainFrame.Visible = not KeySystemConfig.Enabled -- Se tem Key, começa invisível
+    MainFrame.Visible = not KeySystemConfig.Enabled
 
     if KeySystemConfig.Enabled then
-        MainFrame.Size = UDim2.new(0,0,0,0) -- Começa pequeno para animação depois
+        MainFrame.Size = UDim2.new(0,0,0,0)
     end
 
     local MainCorner = Instance.new("UICorner")
@@ -177,7 +213,7 @@ function Library:CreateWindow(Config)
     MainStroke.Color = Color3.fromRGB(50, 50, 50)
     MainStroke.Parent = MainFrame
 
-    -- Topbar
+    -- // TOPBAR (Arrastável) //
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
@@ -188,6 +224,7 @@ function Library:CreateWindow(Config)
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
 
+    -- Fix para borda quadrada na parte inferior da topbar
     local FixB = Instance.new("Frame")
     FixB.Parent = Topbar
     FixB.BorderSizePixel = 0
@@ -195,6 +232,7 @@ function Library:CreateWindow(Config)
     FixB.Position = UDim2.new(0,0,1,-5)
     FixB.Size = UDim2.new(1,0,0,5)
 
+    -- Título da Library
     local TitleLbl = Instance.new("TextLabel")
     TitleLbl.Parent = Topbar
     TitleLbl.BackgroundTransparency = 1
@@ -206,36 +244,52 @@ function Library:CreateWindow(Config)
     TitleLbl.TextSize = 14
     TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
 
+    -- Botão de Fechar/Minimizar (NA TOPBAR)
     local CloseBtn = Instance.new("ImageButton")
     CloseBtn.Parent = Topbar
     CloseBtn.BackgroundTransparency = 1
     CloseBtn.Position = UDim2.new(1, -35, 0, 5)
     CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-    CloseBtn.Image = "rbxassetid://6031094678"
+    CloseBtn.Image = "rbxassetid://6031094678" -- X icon
     CloseBtn.ImageColor3 = Color3.fromRGB(200, 200, 200)
 
-    -- Toggle UI Logic
+    -- // SISTEMA DE TOGGLE (Abrir/Fechar) //
     Library.IsOpen = true
+    
     function Library:Toggle()
         Library.IsOpen = not Library.IsOpen
+        
         if Library.IsOpen then
+            -- Abrindo
+            OpenBtnFrame.Visible = false
             MainFrame.Visible = true
             CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.3)
         else
+            -- Fechando
             local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
             close.Completed:Connect(function()
-                if not Library.IsOpen then MainFrame.Visible = false end
+                if not Library.IsOpen then 
+                    MainFrame.Visible = false 
+                    OpenBtnFrame.Visible = true -- Mostra o botão flutuante
+                end
             end)
         end
     end
 
+    -- Evento do botão X na janela
     CloseBtn.MouseButton1Click:Connect(function()
         Library:Toggle()
     end)
 
+    -- Evento do botão flutuante
+    OpenBtnFrame.MouseButton1Click:Connect(function()
+        Library:Toggle()
+    end)
+
+    -- Faz a topbar arrastar a janela principal
     MakeDraggable(Topbar, MainFrame)
 
-    -- Containers
+    -- // CONTEÚDO DAS ABAS //
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Parent = MainFrame
     TabContainer.BackgroundTransparency = 1
@@ -265,7 +319,7 @@ function Library:CreateWindow(Config)
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
 
-    -- // KEY SYSTEM LOGIC //
+    -- // SISTEMA DE KEY //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -351,7 +405,7 @@ function Library:CreateWindow(Config)
                 Library:Notification({Title = "Success", Content = "Key Verified!"})
                 CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.3).Completed:Connect(function()
                     KeyFrame:Visible(false)
-                    -- OPEN MAIN WINDOW
+                    -- ABRE A JANELA
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
                 end)
@@ -360,11 +414,11 @@ function Library:CreateWindow(Config)
             end
         end)
     else
-        -- Animate entry if no key
+        -- Animação de entrada sem Key
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
     end
 
-    --// WINDOW METHODS
+    --// MÉTODOS DE ABA E ELEMENTOS (Mantidos iguais)
     local Window = {}
 
     function Window:Tab(name)
@@ -683,69 +737,6 @@ function Library:CreateWindow(Config)
             TB.FocusLost:Connect(function() pcall(callback, TB.Text) end)
         end
         
-        function Tab:Keybind(text, default, callback)
-            local key = default or Enum.KeyCode.RightControl
-            local binding = false
-            
-            local KFr = Instance.new("Frame")
-            KFr.Parent = Page
-            KFr.BackgroundColor3 = Color3.fromRGB(40,40,40)
-            KFr.Size = UDim2.new(1,0,0,36)
-            local KC = Instance.new("UICorner")
-            KC.Parent = KFr
-            
-            local KL = Instance.new("TextLabel")
-            KL.Parent = KFr
-            KL.BackgroundTransparency = 1
-            KL.Position = UDim2.new(0,10,0,0)
-            KL.Size = UDim2.new(0.6,0,1,0)
-            KL.Font = Enum.Font.Gotham
-            KL.Text = text
-            KL.TextColor3 = Color3.fromRGB(255,255,255)
-            KL.TextSize = 14
-            KL.TextXAlignment = Enum.TextXAlignment.Left
-            
-            local KBtn = Instance.new("TextButton")
-            KBtn.Parent = KFr
-            KBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-            KBtn.Position = UDim2.new(1,-90,0.5,-10)
-            KBtn.Size = UDim2.new(0,80,0,20)
-            KBtn.Font = Enum.Font.GothamBold
-            KBtn.Text = key.Name
-            KBtn.TextColor3 = Color3.fromRGB(200,200,200)
-            KBtn.TextSize = 12
-            local KBC = Instance.new("UICorner")
-            KBC.Parent = KBtn
-            
-            KBtn.MouseButton1Click:Connect(function()
-                binding = true
-                KBtn.Text = "..."
-            end)
-            
-            UserInputService.InputBegan:Connect(function(input)
-                if binding and input.UserInputType == Enum.UserInputType.Keyboard then
-                    key = input.KeyCode
-                    binding = false
-                    KBtn.Text = key.Name
-                    pcall(callback, key)
-                elseif input.KeyCode == key and not binding then
-                    pcall(callback)
-                end
-            end)
-        end
-        
-        function Tab:Label(text)
-            local L = Instance.new("TextLabel")
-            L.Parent = Page
-            L.BackgroundTransparency = 1
-            L.Size = UDim2.new(1,0,0,25)
-            L.Font = Enum.Font.Gotham
-            L.Text = text
-            L.TextColor3 = Color3.fromRGB(150,150,150)
-            L.TextSize = 14
-            L.TextXAlignment = Enum.TextXAlignment.Center
-        end
-
         return Tab
     end
 
