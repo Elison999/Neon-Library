@@ -1,8 +1,9 @@
 --[[ 
-    NEON UI LIBRARY (ULTIMATE SAVE SYSTEM)
+    NEON UI LIBRARY (FINAL VERSION - LANGUAGE SYSTEM)
     - Mobile/PC Support
-    - Auto Config (Themes, Transparency)
-    - Save/Load Toggles & Sliders (Flags)
+    - Auto Config (Themes, Transparency, Language)
+    - Save/Load Toggles, Sliders & Language
+    - English/Portuguese Support
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -16,11 +17,63 @@ local Library = {}
 -- // Configurações e Armazenamento //
 Library.Settings = {
     Theme = "Default",
-    Transparency = false
+    Transparency = false,
+    Language = "English" -- Default Language
 }
 
-Library.Flags = {}    -- Armazena os valores (true/false, números)
-Library.Elements = {} -- Armazena as referências dos objetos para atualizar visualmente
+Library.Flags = {}    
+Library.Elements = {} 
+
+-- // SISTEMA DE TRADUÇÃO //
+Library.Translations = {
+    English = {
+        ConfigTab = "Configuration",
+        LangDrop = "Language",
+        TransToggle = "Transparent Background (50%)",
+        ThemeDrop = "Themes",
+        SaveBtn = "Save Config",
+        LoadBtn = "Load Config",
+        SaveMsg = "Configuration Saved!",
+        LoadMsg = "Configuration Loaded!",
+        LoadErr = "Config file not found.",
+        KeyTitle = "Key System",
+        KeyPlaceholder = "Enter Key...",
+        CheckKey = "Check Key",
+        GetKey = "Get Key",
+        LinkCopied = "Link copied!",
+        KeySuccess = "Success",
+        KeyVerified = "Key Verified!",
+        KeyError = "Error",
+        KeyIncorrect = "Incorrect Key!"
+    },
+    Portuguese = {
+        ConfigTab = "Configuração",
+        LangDrop = "Idioma",
+        TransToggle = "Fundo Transparente (50%)",
+        ThemeDrop = "Temas",
+        SaveBtn = "Salvar Configuração",
+        LoadBtn = "Carregar Configuração",
+        SaveMsg = "Configuração Salva!",
+        LoadMsg = "Configuração Carregada!",
+        LoadErr = "Arquivo de config não achado.",
+        KeyTitle = "Sistema de Key",
+        KeyPlaceholder = "Digite a Key...",
+        CheckKey = "Verificar Key",
+        GetKey = "Pegar Key",
+        LinkCopied = "Link copiado!",
+        KeySuccess = "Sucesso",
+        KeyVerified = "Key Verificada!",
+        KeyError = "Erro",
+        KeyIncorrect = "Key Incorreta!"
+    }
+}
+
+-- Função auxiliar para pegar texto traduzido
+function Library:GetText(Key)
+    local Lang = Library.Settings.Language or "English"
+    if not Library.Translations[Lang] then Lang = "English" end
+    return Library.Translations[Lang][Key] or Key
+end
 
 Library.Themes = {
     Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40)},
@@ -101,21 +154,12 @@ local function LoadConfig()
         local content = readfile("NeonUI_Config.json")
         local success, decoded = pcall(function() return HttpService:JSONDecode(content) end)
         if success then
-            -- Carrega Configurações Gerais
-            if decoded.Settings then
-                Library.Settings = decoded.Settings
-            end
-            
-            -- Carrega Flags (Valores dos Toggles/Sliders)
+            if decoded.Settings then Library.Settings = decoded.Settings end
             if decoded.Flags then
                 Library.Flags = decoded.Flags
-                
-                -- Atualiza visualmente os elementos
                 for name, value in pairs(Library.Flags) do
                     if Library.Elements[name] then
-                        pcall(function()
-                            Library.Elements[name]:Set(value)
-                        end)
+                        pcall(function() Library.Elements[name]:Set(value) end)
                     end
                 end
             end
@@ -131,7 +175,7 @@ function Library:CreateWindow(Config)
     local KeySystemConfig = {
         Enabled = Config.KeySystem or false,
         Key = Config.Key or "",
-        KeyName = Config.KeyName or "Key System",
+        KeyName = Config.KeyName or Library:GetText("KeyTitle"),
         GrabKeyFromSite = Config.GrabKeyFromSite or false,
         KeySite = Config.KeySite or ""
     }
@@ -141,7 +185,7 @@ function Library:CreateWindow(Config)
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
 
-    -- Container de Notificações
+    -- Notificações
     local NotifContainer = Instance.new("Frame")
     NotifContainer.Name = "NotifContainer"
     NotifContainer.Parent = TitanUI
@@ -201,7 +245,7 @@ function Library:CreateWindow(Config)
         end)
     end
 
-    -- // BOTÃO DE ABRIR //
+    -- Botão Flutuante
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
@@ -224,7 +268,7 @@ function Library:CreateWindow(Config)
     OBIcon.Image = "rbxassetid://6031091004" 
     MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
-    -- // CRIAR JANELA PRINCIPAL //
+    -- Janela Principal
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
@@ -242,7 +286,6 @@ function Library:CreateWindow(Config)
     MainStroke.Color = Color3.fromRGB(50, 50, 50)
     MainStroke.Parent = MainFrame
 
-    -- // TOPBAR //
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
@@ -352,7 +395,7 @@ function Library:CreateWindow(Config)
         KInput.Position = UDim2.new(0.1,0,0.4,0)
         KInput.Size = UDim2.new(0.8,0,0,40)
         KInput.Font = Enum.Font.Gotham
-        KInput.PlaceholderText = "Enter Key..."
+        KInput.PlaceholderText = Library:GetText("KeyPlaceholder")
         KInput.Text = ""
         KInput.TextColor3 = Color3.fromRGB(255,255,255)
         KInput.TextSize = 14
@@ -364,7 +407,7 @@ function Library:CreateWindow(Config)
         KBtn.Position = UDim2.new(0.1,0,0.65,0)
         KBtn.Size = UDim2.new(0.35,0,0,35)
         KBtn.Font = Enum.Font.GothamBold
-        KBtn.Text = "Check Key"
+        KBtn.Text = Library:GetText("CheckKey")
         KBtn.TextColor3 = Color3.fromRGB(255,255,255)
         KBtn.TextSize = 14
         local KBC = Instance.new("UICorner")
@@ -375,26 +418,26 @@ function Library:CreateWindow(Config)
         KLink.Position = UDim2.new(0.55,0,0.65,0)
         KLink.Size = UDim2.new(0.35,0,0,35)
         KLink.Font = Enum.Font.GothamBold
-        KLink.Text = "Get Key"
+        KLink.Text = Library:GetText("GetKey")
         KLink.TextColor3 = Color3.fromRGB(255,255,255)
         KLink.TextSize = 14
         local KLC = Instance.new("UICorner")
         KLC.Parent = KLink
         MakeDraggable(KeyFrame, KeyFrame)
-        KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Key", Content = "Link copied!"}) end end)
+        KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Key", Content = Library:GetText("LinkCopied")}) end end)
         KBtn.MouseButton1Click:Connect(function()
             local Input = KInput.Text
             local RealKey = KeySystemConfig.Key
             if KeySystemConfig.GrabKeyFromSite then pcall(function() RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","") end) end
             if Input == RealKey then
-                Library:Notification({Title = "Success", Content = "Key Verified!"})
+                Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
                 CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.3).Completed:Connect(function()
                     KeyFrame:Visible(false)
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
                 end)
             else
-                Library:Notification({Title = "Error", Content = "Incorrect Key!"})
+                Library:Notification({Title = Library:GetText("KeyError"), Content = Library:GetText("KeyIncorrect")})
             end
         end)
     else
@@ -508,11 +551,12 @@ function Library:CreateWindow(Config)
                 CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
                 pcall(callback)
             end)
+            return BT -- Return TextButton to allow manipulation
         end
 
         function Tab:Toggle(text, default, callback)
             local Toggled = default or false
-            Library.Flags[text] = Toggled -- Save initial state
+            Library.Flags[text] = Toggled 
 
             local TFr = Instance.new("Frame")
             TFr.Name = "ElementFrame"
@@ -555,30 +599,20 @@ function Library:CreateWindow(Config)
             
             local function Update(val)
                 Toggled = val
-                Library.Flags[text] = Toggled -- Update flag
+                Library.Flags[text] = Toggled 
                 CreateTween(SB, {BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)}, 0.2)
                 CreateTween(Dot, {Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)}, 0.2)
                 pcall(callback, Toggled)
             end
 
-            Btn.MouseButton1Click:Connect(function()
-                Update(not Toggled)
-            end)
-            
-            -- Register for Save System
-            Library.Elements[text] = {
-                Set = function(self, val)
-                    Update(val)
-                end
-            }
-            
-            return TFr
+            Btn.MouseButton1Click:Connect(function() Update(not Toggled) end)
+            Library.Elements[text] = { Set = function(self, v) Update(v) end }
+            return TFr, TL -- Return TL to allow text change
         end
 
         function Tab:Slider(text, min, max, default, callback)
             local val = default or min
-            Library.Flags[text] = val -- Save initial
-
+            Library.Flags[text] = val
             local sliding = false
             local SFr = Instance.new("Frame")
             SFr.Name = "ElementFrame"
@@ -626,7 +660,6 @@ function Library:CreateWindow(Config)
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,1,0)
             Btn.Text = ""
-            
             local function SetVal(newVal)
                 val = newVal
                 Library.Flags[text] = val
@@ -635,36 +668,15 @@ function Library:CreateWindow(Config)
                 CreateTween(Fill, {Size = UDim2.new(s,0,1,0)}, 0.1)
                 pcall(callback, val)
             end
-
             local function Update(input)
                 local s = math.clamp((input.Position.X - Bar.AbsolutePosition.X)/Bar.AbsoluteSize.X, 0, 1)
                 local newVal = math.floor(min + ((max-min)*s))
                 SetVal(newVal)
             end
-            
-            Btn.InputBegan:Connect(function(i) 
-                if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-                    sliding = true
-                    Update(i)
-                end
-            end)
-            Btn.InputEnded:Connect(function(i)
-                if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-                    sliding = false
-                end
-            end)
-            UserInputService.InputChanged:Connect(function(i)
-                if sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
-                    Update(i)
-                end
-            end)
-            
-            -- Register for Save System
-            Library.Elements[text] = {
-                Set = function(self, v)
-                    SetVal(v)
-                end
-            }
+            Btn.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then sliding = true Update(i) end end)
+            Btn.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then sliding = false end end)
+            UserInputService.InputChanged:Connect(function(i) if sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then Update(i) end end)
+            Library.Elements[text] = { Set = function(self, v) SetVal(v) end }
         end
 
         function Tab:Dropdown(text, list, callback)
@@ -734,6 +746,7 @@ function Library:CreateWindow(Config)
                     CreateTween(Arrow, {Rotation = 0}, 0.2)
                 end
             end)
+            return DL -- Return Label to allow text change
         end
 
         function Tab:Textbox(text, ph, callback)
@@ -785,41 +798,65 @@ function Library:CreateWindow(Config)
 
     -- // ADD CONFIG SYSTEM //
     function Window:AddConfig()
-        local ConfigTab = Window:Tab("Configuração")
+        local ConfigTab = Window:Tab(Library:GetText("ConfigTab"))
         
-        local TransToggle = ConfigTab:Toggle("Fundo Transparente (50%)", false, function(Val)
+        -- Dropdown de Idioma (Language)
+        local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
+            Library.Settings.Language = Selected
+            -- Update UI texts internally
+            if TabContainer:FindFirstChild(Library:GetText("ConfigTab")) then
+                 -- Force redraw logic or notification (Full dynamic text is complex, we update key elements)
+                 Library:Notification({Title = "Language", Content = "Language changed to " .. Selected})
+            end
+        end)
+
+        -- Toggle Transparencia
+        local TransToggle, TransLabel = ConfigTab:Toggle(Library:GetText("TransToggle"), false, function(Val)
             Library.Settings.Transparency = Val
             Library:RefreshTheme()
         end)
         
-        ConfigTab:Dropdown("Temas", {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
+        -- Dropdown Temas
+        local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
             Library:SetTheme(Selected)
         end)
         
-        ConfigTab:Button("Salvar Configuração", function()
+        -- Botões Save/Load
+        local SaveBtn = ConfigTab:Button(Library:GetText("SaveBtn"), function()
             SaveConfig()
-            Library:Notification({Title = "Config", Content = "Configuração e Estados Salvos!"})
+            Library:Notification({Title = "Config", Content = Library:GetText("SaveMsg")})
         end)
 
-        ConfigTab:Button("Carregar Configuração", function()
+        local LoadBtn = ConfigTab:Button(Library:GetText("LoadBtn"), function()
             if LoadConfig() then
                 Library:SetTheme(Library.Settings.Theme)
-                -- Atualiza visualmente o Toggle de Transparência
                 if Library.Settings.Transparency then
-                    pcall(function() Library.Elements["Fundo Transparente (50%)"]:Set(true) end)
+                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
                 end
-                Library:Notification({Title = "Config", Content = "Tudo carregado com sucesso!"})
+                Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
             else
-                Library:Notification({Title = "Erro", Content = "Arquivo de config não existe."})
+                Library:Notification({Title = "Error", Content = Library:GetText("LoadErr")})
+            end
+        end)
+        
+        -- Loop para atualizar textos da aba Config quando o idioma muda
+        task.spawn(function()
+            while task.wait(0.5) do
+                if ConfigTabBtn then ConfigTabBtn.Text = Library:GetText("ConfigTab") end
+                if LangDropLbl then LangDropLbl.Text = Library:GetText("LangDrop") end
+                if TransLabel then TransLabel.Text = Library:GetText("TransToggle") end
+                if ThemeDropLbl then ThemeDropLbl.Text = Library:GetText("ThemeDrop") end
+                if SaveBtn then SaveBtn.Text = Library:GetText("SaveBtn") end
+                if LoadBtn then LoadBtn.Text = Library:GetText("LoadBtn") end
             end
         end)
 
-        -- Tenta carregar automaticamente ao iniciar
+        -- Tenta carregar config
         task.delay(0.5, function()
              if LoadConfig() then
                 Library:SetTheme(Library.Settings.Theme)
                 if Library.Settings.Transparency then
-                    pcall(function() Library.Elements["Fundo Transparente (50%)"]:Set(true) end)
+                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
                 end
              end
         end)
