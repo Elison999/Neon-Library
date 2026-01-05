@@ -1,4 +1,4 @@
-local Library = loadstring(game:HttpGet("LINK_DO_SEU_RAW_NO_GITHUB"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Elison999/Neon-Library/refs/heads/main/Neon%20Lira"))()
 
     local Window = Library:CreateWindow({
         Name = "Titan Script Hub",
