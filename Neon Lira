@@ -1,61 +1,68 @@
 --[[ 
-    NEON UI LIBRARY (CORRIGIDA - ELEMENTOS VISÍVEIS)
-    Fix: Substituído Folder por Frame para renderizar os elementos.
-    Fix: Adicionado AutomaticCanvasSize para o scroll funcionar.
+    NEON UI LIBRARY (ULTIMATE SAVE SYSTEM)
+    - Mobile/PC Support
+    - Auto Config (Themes, Transparency)
+    - Save/Load Toggles & Sliders (Flags)
 ]]
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
 
 local Library = {}
 
---// Funções Utilitárias
+-- // Configurações e Armazenamento //
+Library.Settings = {
+    Theme = "Default",
+    Transparency = false
+}
+
+Library.Flags = {}    -- Armazena os valores (true/false, números)
+Library.Elements = {} -- Armazena as referências dos objetos para atualizar visualmente
+
+Library.Themes = {
+    Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40)},
+    DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45)},
+    DarkRed  = {Main = Color3.fromRGB(30, 15, 15), Top = Color3.fromRGB(40, 20, 20), Accent = Color3.fromRGB(255, 60, 60), Text = Color3.fromRGB(255, 240, 240), Element = Color3.fromRGB(45, 25, 25)},
+    Ocean    = {Main = Color3.fromRGB(10, 30, 35), Top = Color3.fromRGB(15, 40, 45), Accent = Color3.fromRGB(0, 200, 200), Text = Color3.fromRGB(220, 255, 255), Element = Color3.fromRGB(20, 50, 55)},
+    Amethyst = {Main = Color3.fromRGB(30, 20, 35), Top = Color3.fromRGB(40, 25, 45), Accent = Color3.fromRGB(180, 80, 255), Text = Color3.fromRGB(250, 230, 255), Element = Color3.fromRGB(45, 30, 50)},
+    Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30)},
+    Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30)},
+    Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(100, 100, 100), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30)},
+}
+
+Library.CurrentTheme = Library.Themes.Default
+
+--// Funções Utilitárias //
 local function MakeDraggable(topbarobject, object)
     local Dragging = nil
     local DragInput = nil
     local DragStart = nil
     local StartPosition = nil
-
     topbarobject.Active = true 
-
     local function Update(input)
         local Delta = input.Position - DragStart
-        local pos = UDim2.new(
-            StartPosition.X.Scale, 
-            StartPosition.X.Offset + Delta.X, 
-            StartPosition.Y.Scale, 
-            StartPosition.Y.Offset + Delta.Y
-        )
+        local pos = UDim2.new(StartPosition.X.Scale, StartPosition.X.Offset + Delta.X, StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y)
         local Tween = TweenService:Create(object, TweenInfo.new(0.15), {Position = pos})
         Tween:Play()
     end
-
     topbarobject.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             Dragging = true
             DragStart = input.Position
             StartPosition = object.Position
-
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    Dragging = false
-                end
+                if input.UserInputState == Enum.UserInputState.End then Dragging = false end
             end)
         end
     end)
-
     topbarobject.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            DragInput = input
-        end
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then DragInput = input end
     end)
-
     UserInputService.InputChanged:Connect(function(input)
-        if input == DragInput and Dragging then
-            Update(input)
-        end
+        if input == DragInput and Dragging then Update(input) end
     end)
 end
 
@@ -77,7 +84,48 @@ local function ProtectGui(gui)
     end
 end
 
---// Lógica Principal
+-- // SISTEMA DE SAVE //
+local function SaveConfig()
+    if writefile then
+        local data = {
+            Settings = Library.Settings,
+            Flags = Library.Flags
+        }
+        local json = HttpService:JSONEncode(data)
+        writefile("NeonUI_Config.json", json)
+    end
+end
+
+local function LoadConfig()
+    if isfile and isfile("NeonUI_Config.json") then
+        local content = readfile("NeonUI_Config.json")
+        local success, decoded = pcall(function() return HttpService:JSONDecode(content) end)
+        if success then
+            -- Carrega Configurações Gerais
+            if decoded.Settings then
+                Library.Settings = decoded.Settings
+            end
+            
+            -- Carrega Flags (Valores dos Toggles/Sliders)
+            if decoded.Flags then
+                Library.Flags = decoded.Flags
+                
+                -- Atualiza visualmente os elementos
+                for name, value in pairs(Library.Flags) do
+                    if Library.Elements[name] then
+                        pcall(function()
+                            Library.Elements[name]:Set(value)
+                        end)
+                    end
+                end
+            end
+            return true
+        end
+    end
+    return false
+end
+
+--// Lógica Principal //
 function Library:CreateWindow(Config)
     local Title = Config.Name or "Library"
     local KeySystemConfig = {
@@ -101,7 +149,6 @@ function Library:CreateWindow(Config)
     NotifContainer.Position = UDim2.new(0.98, 0, 0.98, 0)
     NotifContainer.Size = UDim2.new(0, 300, 0, 500)
     NotifContainer.BackgroundTransparency = 1
-
     local NotifListLayout = Instance.new("UIListLayout")
     NotifListLayout.Parent = NotifContainer
     NotifListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -112,21 +159,17 @@ function Library:CreateWindow(Config)
         local Title = options.Title or "Notification"
         local Content = options.Content or ""
         local Duration = options.Duration or 3
-
         local NotifFrame = Instance.new("Frame")
         NotifFrame.Parent = NotifContainer
         NotifFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         NotifFrame.Size = UDim2.new(1, 0, 0, 0)
         NotifFrame.ClipsDescendants = true
-        
         local NC = Instance.new("UICorner")
         NC.CornerRadius = UDim.new(0, 6)
         NC.Parent = NotifFrame
-        
         local NS = Instance.new("UIStroke")
         NS.Color = Color3.fromRGB(60,60,60)
         NS.Parent = NotifFrame
-
         local NT = Instance.new("TextLabel")
         NT.Parent = NotifFrame
         NT.BackgroundTransparency = 1
@@ -137,7 +180,6 @@ function Library:CreateWindow(Config)
         NT.TextColor3 = Color3.fromRGB(255, 255, 255)
         NT.TextSize = 14
         NT.TextXAlignment = Enum.TextXAlignment.Left
-
         local ND = Instance.new("TextLabel")
         ND.Parent = NotifFrame
         ND.BackgroundTransparency = 1
@@ -149,9 +191,7 @@ function Library:CreateWindow(Config)
         ND.TextSize = 12
         ND.TextWrapped = true
         ND.TextXAlignment = Enum.TextXAlignment.Left
-
         CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 70)}, 0.3)
-
         task.delay(Duration, function()
             local out = CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 0), BackgroundTransparency = 1}, 0.3)
             CreateTween(NT, {TextTransparency = 1}, 0.2)
@@ -161,31 +201,27 @@ function Library:CreateWindow(Config)
         end)
     end
 
-    -- // BOTÃO DE ABRIR (TOGGLE ICON) //
+    -- // BOTÃO DE ABRIR //
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
-    OpenBtnFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    OpenBtnFrame.BackgroundColor3 = Library.CurrentTheme.Top
     OpenBtnFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
     OpenBtnFrame.Size = UDim2.new(0, 50, 0, 50)
     OpenBtnFrame.Visible = false 
     OpenBtnFrame.Active = true
-    
     local OBCorner = Instance.new("UICorner")
     OBCorner.CornerRadius = UDim.new(0, 12)
     OBCorner.Parent = OpenBtnFrame
-    
     local OBStroke = Instance.new("UIStroke")
     OBStroke.Color = Color3.fromRGB(60,60,60)
     OBStroke.Parent = OpenBtnFrame
-
     local OBIcon = Instance.new("ImageLabel")
     OBIcon.Parent = OpenBtnFrame
     OBIcon.BackgroundTransparency = 1
     OBIcon.Size = UDim2.new(0, 30, 0, 30)
     OBIcon.Position = UDim2.new(0.5, -15, 0.5, -15)
     OBIcon.Image = "rbxassetid://6031091004" 
-
     MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
     -- // CRIAR JANELA PRINCIPAL //
@@ -195,18 +231,13 @@ function Library:CreateWindow(Config)
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     MainFrame.Size = UDim2.new(0, 550, 0, 350)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    MainFrame.BackgroundColor3 = Library.CurrentTheme.Main
     MainFrame.ClipsDescendants = true
     MainFrame.Visible = not KeySystemConfig.Enabled
-
-    if KeySystemConfig.Enabled then
-        MainFrame.Size = UDim2.new(0,0,0,0)
-    end
-
+    if KeySystemConfig.Enabled then MainFrame.Size = UDim2.new(0,0,0,0) end
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = MainFrame
-
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Color = Color3.fromRGB(50, 50, 50)
     MainStroke.Parent = MainFrame
@@ -215,20 +246,18 @@ function Library:CreateWindow(Config)
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
-    Topbar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Topbar.BackgroundColor3 = Library.CurrentTheme.Top
     Topbar.Size = UDim2.new(1, 0, 0, 40)
-    
     local TopCorner = Instance.new("UICorner")
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
-
     local FixB = Instance.new("Frame")
+    FixB.Name = "FixB"
     FixB.Parent = Topbar
     FixB.BorderSizePixel = 0
-    FixB.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    FixB.BackgroundColor3 = Library.CurrentTheme.Top
     FixB.Position = UDim2.new(0,0,1,-5)
     FixB.Size = UDim2.new(1,0,0,5)
-
     local TitleLbl = Instance.new("TextLabel")
     TitleLbl.Parent = Topbar
     TitleLbl.BackgroundTransparency = 1
@@ -236,10 +265,9 @@ function Library:CreateWindow(Config)
     TitleLbl.Size = UDim2.new(0.5, 0, 1, 0)
     TitleLbl.Font = Enum.Font.GothamBold
     TitleLbl.Text = Title
-    TitleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLbl.TextColor3 = Library.CurrentTheme.Text
     TitleLbl.TextSize = 14
     TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
-
     local CloseBtn = Instance.new("ImageButton")
     CloseBtn.Parent = Topbar
     CloseBtn.BackgroundTransparency = 1
@@ -248,12 +276,9 @@ function Library:CreateWindow(Config)
     CloseBtn.Image = "rbxassetid://6031094678" 
     CloseBtn.ImageColor3 = Color3.fromRGB(200, 200, 200)
 
-    -- // SISTEMA DE TOGGLE //
     Library.IsOpen = true
-    
     function Library:Toggle()
         Library.IsOpen = not Library.IsOpen
-        
         if Library.IsOpen then
             OpenBtnFrame.Visible = false
             MainFrame.Visible = true
@@ -261,59 +286,43 @@ function Library:CreateWindow(Config)
         else
             local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
             close.Completed:Connect(function()
-                if not Library.IsOpen then 
-                    MainFrame.Visible = false 
-                    OpenBtnFrame.Visible = true 
-                end
+                if not Library.IsOpen then MainFrame.Visible = false OpenBtnFrame.Visible = true end
             end)
         end
     end
-
-    CloseBtn.MouseButton1Click:Connect(function()
-        Library:Toggle()
-    end)
-
-    OpenBtnFrame.MouseButton1Click:Connect(function()
-        Library:Toggle()
-    end)
-
+    CloseBtn.MouseButton1Click:Connect(function() Library:Toggle() end)
+    OpenBtnFrame.MouseButton1Click:Connect(function() Library:Toggle() end)
     MakeDraggable(Topbar, MainFrame)
 
-    -- // CONTEÚDO DAS ABAS //
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Parent = MainFrame
     TabContainer.BackgroundTransparency = 1
     TabContainer.Position = UDim2.new(0, 10, 0, 50)
     TabContainer.Size = UDim2.new(0, 130, 1, -60)
     TabContainer.ScrollBarThickness = 2
-    
     local TabList = Instance.new("UIListLayout")
     TabList.Parent = TabContainer
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.Padding = UDim.new(0, 5)
-
     local Divider = Instance.new("Frame")
     Divider.Parent = MainFrame
     Divider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     Divider.BorderSizePixel = 0
     Divider.Position = UDim2.new(0, 150, 0, 50)
     Divider.Size = UDim2.new(0, 1, 1, -60)
-
     local PageContainer = Instance.new("Frame")
     PageContainer.Parent = MainFrame
     PageContainer.BackgroundTransparency = 1
     PageContainer.Position = UDim2.new(0, 160, 0, 50)
     PageContainer.Size = UDim2.new(1, -170, 1, -60)
     PageContainer.ClipsDescendants = true
-
-    -- FIX: Usar Frame em vez de Folder, pois Folders não renderizam UI
     local PagesFolder = Instance.new("Frame")
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
-    -- // SISTEMA DE KEY //
+    -- // KEY SYSTEM //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -322,14 +331,12 @@ function Library:CreateWindow(Config)
         KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
         KeyFrame.Size = UDim2.new(0, 400, 0, 250)
         KeyFrame.ClipsDescendants = true
-        
         local KC = Instance.new("UICorner")
         KC.CornerRadius = UDim.new(0, 10)
         KC.Parent = KeyFrame
         local KS = Instance.new("UIStroke")
         KS.Color = Color3.fromRGB(60,60,60)
         KS.Parent = KeyFrame
-
         local KTitle = Instance.new("TextLabel")
         KTitle.Parent = KeyFrame
         KTitle.BackgroundTransparency = 1
@@ -339,7 +346,6 @@ function Library:CreateWindow(Config)
         KTitle.Text = KeySystemConfig.KeyName
         KTitle.TextColor3 = Color3.fromRGB(255,255,255)
         KTitle.TextSize = 20
-
         local KInput = Instance.new("TextBox")
         KInput.Parent = KeyFrame
         KInput.BackgroundColor3 = Color3.fromRGB(35,35,35)
@@ -352,7 +358,6 @@ function Library:CreateWindow(Config)
         KInput.TextSize = 14
         local KIC = Instance.new("UICorner")
         KIC.Parent = KInput
-
         local KBtn = Instance.new("TextButton")
         KBtn.Parent = KeyFrame
         KBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
@@ -364,7 +369,6 @@ function Library:CreateWindow(Config)
         KBtn.TextSize = 14
         local KBC = Instance.new("UICorner")
         KBC.Parent = KBtn
-
         local KLink = Instance.new("TextButton")
         KLink.Parent = KeyFrame
         KLink.BackgroundColor3 = Color3.fromRGB(45,45,45)
@@ -376,30 +380,16 @@ function Library:CreateWindow(Config)
         KLink.TextSize = 14
         local KLC = Instance.new("UICorner")
         KLC.Parent = KLink
-
         MakeDraggable(KeyFrame, KeyFrame)
-
-        KLink.MouseButton1Click:Connect(function()
-            if setclipboard then
-                setclipboard(KeySystemConfig.KeySite)
-                Library:Notification({Title = "Key", Content = "Link copied!"})
-            end
-        end)
-
+        KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Key", Content = "Link copied!"}) end end)
         KBtn.MouseButton1Click:Connect(function()
             local Input = KInput.Text
             local RealKey = KeySystemConfig.Key
-            if KeySystemConfig.GrabKeyFromSite then
-                pcall(function()
-                    RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","")
-                end)
-            end
-
+            if KeySystemConfig.GrabKeyFromSite then pcall(function() RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","") end) end
             if Input == RealKey then
                 Library:Notification({Title = "Success", Content = "Key Verified!"})
                 CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.3).Completed:Connect(function()
                     KeyFrame:Visible(false)
-                    -- ABRE A JANELA
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
                 end)
@@ -411,12 +401,47 @@ function Library:CreateWindow(Config)
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
     end
 
-    --// MÉTODOS DE ABA E ELEMENTOS
+    -- // SISTEMA DE TEMAS //
+    function Library:RefreshTheme()
+        local T = Library.CurrentTheme
+        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
+        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
+        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
+        TitleLbl.TextColor3 = T.Text
+        OpenBtnFrame.BackgroundColor3 = T.Top
+        for _, obj in pairs(TabContainer:GetChildren()) do
+            if obj:IsA("TextButton") then
+                if obj.BackgroundTransparency < 0.9 then obj.TextColor3 = T.Text end
+            end
+        end
+        for _, page in pairs(PagesFolder:GetChildren()) do
+            if page:IsA("ScrollingFrame") then
+                for _, elem in pairs(page:GetChildren()) do
+                    if elem:IsA("Frame") and elem.Name == "ElementFrame" then
+                        CreateTween(elem, {BackgroundColor3 = T.Element}, 0.3)
+                        local txt = elem:FindFirstChildOfClass("TextLabel")
+                        if txt then txt.TextColor3 = T.Text end
+                        local btn = elem:FindFirstChildOfClass("TextButton")
+                        if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
+                    end
+                end
+            end
+        end
+    end
+
+    function Library:SetTheme(ThemeName)
+        if Library.Themes[ThemeName] then
+            Library.CurrentTheme = Library.Themes[ThemeName]
+            Library.Settings.Theme = ThemeName
+            Library:RefreshTheme()
+        end
+    end
+
+    -- // WINDOW METHODS //
     local Window = {}
 
     function Window:Tab(name)
         local Tab = {}
-        
         local TabBtn = Instance.new("TextButton")
         TabBtn.Parent = TabContainer
         TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -428,16 +453,14 @@ function Library:CreateWindow(Config)
         TabBtn.TextSize = 14
         local TC = Instance.new("UICorner")
         TC.Parent = TabBtn
-
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name
-        Page.Parent = PagesFolder -- Agora PagesFolder é um Frame, então renderiza.
+        Page.Parent = PagesFolder
         Page.BackgroundTransparency = 1
         Page.Size = UDim2.new(1, 0, 1, 0)
         Page.ScrollBarThickness = 2
         Page.Visible = false
-        Page.AutomaticCanvasSize = Enum.AutomaticSize.Y -- Importante para scrollar
-        
+        Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
         local PL = Instance.new("UIListLayout")
         PL.Parent = Page
         PL.SortOrder = Enum.SortOrder.LayoutOrder
@@ -454,54 +477,50 @@ function Library:CreateWindow(Config)
                     CreateTween(v, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(150,150,150)}, 0.2)
                 end
             end
-            for _,v in pairs(PagesFolder:GetChildren()) do 
-                if v:IsA("ScrollingFrame") then v.Visible = false end 
-            end
-            
-            CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
+            for _,v in pairs(PagesFolder:GetChildren()) do if v:IsA("ScrollingFrame") then v.Visible = false end end
+            CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
         end)
-
-        -- Verifica se é a primeira aba para mostrá-la
         if #PagesFolder:GetChildren() == 1 then
-            CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Color3.fromRGB(255,255,255)}, 0.2)
+            CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
         end
 
         function Tab:Button(text, callback)
             local Btn = Instance.new("Frame")
+            Btn.Name = "ElementFrame"
             Btn.Parent = Page
-            Btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            Btn.BackgroundColor3 = Library.CurrentTheme.Element
             Btn.Size = UDim2.new(1,0,0,36)
             local BC = Instance.new("UICorner")
             BC.Parent = Btn
-            
             local BT = Instance.new("TextButton")
             BT.Parent = Btn
             BT.BackgroundTransparency = 1
             BT.Size = UDim2.new(1,0,1,0)
             BT.Font = Enum.Font.Gotham
             BT.Text = text
-            BT.TextColor3 = Color3.fromRGB(255,255,255)
+            BT.TextColor3 = Library.CurrentTheme.Text
             BT.TextSize = 14
-            
             BT.MouseButton1Click:Connect(function()
-                CreateTween(Btn, {BackgroundColor3 = Color3.fromRGB(60,60,60)}, 0.1)
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Accent}, 0.1)
                 task.wait(0.1)
-                CreateTween(Btn, {BackgroundColor3 = Color3.fromRGB(40,40,40)}, 0.1)
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
                 pcall(callback)
             end)
         end
 
         function Tab:Toggle(text, default, callback)
             local Toggled = default or false
+            Library.Flags[text] = Toggled -- Save initial state
+
             local TFr = Instance.new("Frame")
+            TFr.Name = "ElementFrame"
             TFr.Parent = Page
-            TFr.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            TFr.BackgroundColor3 = Library.CurrentTheme.Element
             TFr.Size = UDim2.new(1,0,0,36)
             local TC = Instance.new("UICorner")
             TC.Parent = TFr
-            
             local TL = Instance.new("TextLabel")
             TL.Parent = TFr
             TL.BackgroundTransparency = 1
@@ -509,19 +528,17 @@ function Library:CreateWindow(Config)
             TL.Size = UDim2.new(0.7,0,1,0)
             TL.Font = Enum.Font.Gotham
             TL.Text = text
-            TL.TextColor3 = Color3.fromRGB(255,255,255)
+            TL.TextColor3 = Library.CurrentTheme.Text
             TL.TextSize = 14
             TL.TextXAlignment = Enum.TextXAlignment.Left
-            
             local SB = Instance.new("Frame")
             SB.Parent = TFr
-            SB.BackgroundColor3 = Toggled and Color3.fromRGB(0,200,100) or Color3.fromRGB(60,60,60)
+            SB.BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)
             SB.Position = UDim2.new(1,-50,0.5,-10)
             SB.Size = UDim2.new(0,40,0,20)
             local SC = Instance.new("UICorner")
             SC.CornerRadius = UDim.new(1,0)
             SC.Parent = SB
-            
             local Dot = Instance.new("Frame")
             Dot.Parent = SB
             Dot.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -530,32 +547,46 @@ function Library:CreateWindow(Config)
             local DC = Instance.new("UICorner")
             DC.CornerRadius = UDim.new(1,0)
             DC.Parent = Dot
-            
             local Btn = Instance.new("TextButton")
             Btn.Parent = TFr
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,1,0)
             Btn.Text = ""
             
-            Btn.MouseButton1Click:Connect(function()
-                Toggled = not Toggled
-                CreateTween(SB, {BackgroundColor3 = Toggled and Color3.fromRGB(0,200,100) or Color3.fromRGB(60,60,60)}, 0.2)
+            local function Update(val)
+                Toggled = val
+                Library.Flags[text] = Toggled -- Update flag
+                CreateTween(SB, {BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)}, 0.2)
                 CreateTween(Dot, {Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)}, 0.2)
                 pcall(callback, Toggled)
+            end
+
+            Btn.MouseButton1Click:Connect(function()
+                Update(not Toggled)
             end)
+            
+            -- Register for Save System
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    Update(val)
+                end
+            }
+            
+            return TFr
         end
 
         function Tab:Slider(text, min, max, default, callback)
             local val = default or min
+            Library.Flags[text] = val -- Save initial
+
             local sliding = false
-            
             local SFr = Instance.new("Frame")
+            SFr.Name = "ElementFrame"
             SFr.Parent = Page
-            SFr.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            SFr.BackgroundColor3 = Library.CurrentTheme.Element
             SFr.Size = UDim2.new(1,0,0,50)
             local SC = Instance.new("UICorner")
             SC.Parent = SFr
-            
             local SL = Instance.new("TextLabel")
             SL.Parent = SFr
             SL.BackgroundTransparency = 1
@@ -563,11 +594,11 @@ function Library:CreateWindow(Config)
             SL.Size = UDim2.new(1,-20,0,20)
             SL.Font = Enum.Font.Gotham
             SL.Text = text
-            SL.TextColor3 = Color3.fromRGB(255,255,255)
+            SL.TextColor3 = Library.CurrentTheme.Text
             SL.TextSize = 14
             SL.TextXAlignment = Enum.TextXAlignment.Left
-            
             local VL = Instance.new("TextLabel")
+            VL.Name = "ValLbl"
             VL.Parent = SFr
             VL.BackgroundTransparency = 1
             VL.Position = UDim2.new(1,-60,0,5)
@@ -577,7 +608,6 @@ function Library:CreateWindow(Config)
             VL.TextColor3 = Color3.fromRGB(200,200,200)
             VL.TextSize = 14
             VL.TextXAlignment = Enum.TextXAlignment.Right
-            
             local Bar = Instance.new("Frame")
             Bar.Parent = SFr
             Bar.BackgroundColor3 = Color3.fromRGB(60,60,60)
@@ -585,26 +615,31 @@ function Library:CreateWindow(Config)
             Bar.Size = UDim2.new(1,-20,0,6)
             local BC = Instance.new("UICorner")
             BC.Parent = Bar
-            
             local Fill = Instance.new("Frame")
             Fill.Parent = Bar
-            Fill.BackgroundColor3 = Color3.fromRGB(0,150,255)
+            Fill.BackgroundColor3 = Library.CurrentTheme.Accent
             Fill.Size = UDim2.new((val-min)/(max-min), 0, 1, 0)
             local FC = Instance.new("UICorner")
             FC.Parent = Fill
-            
             local Btn = Instance.new("TextButton")
             Btn.Parent = Bar
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,1,0)
             Btn.Text = ""
             
-            local function Update(input)
-                local s = math.clamp((input.Position.X - Bar.AbsolutePosition.X)/Bar.AbsoluteSize.X, 0, 1)
-                val = math.floor(min + ((max-min)*s))
+            local function SetVal(newVal)
+                val = newVal
+                Library.Flags[text] = val
                 VL.Text = tostring(val)
+                local s = (val - min) / (max - min)
                 CreateTween(Fill, {Size = UDim2.new(s,0,1,0)}, 0.1)
                 pcall(callback, val)
+            end
+
+            local function Update(input)
+                local s = math.clamp((input.Position.X - Bar.AbsolutePosition.X)/Bar.AbsoluteSize.X, 0, 1)
+                local newVal = math.floor(min + ((max-min)*s))
+                SetVal(newVal)
             end
             
             Btn.InputBegan:Connect(function(i) 
@@ -623,18 +658,25 @@ function Library:CreateWindow(Config)
                     Update(i)
                 end
             end)
+            
+            -- Register for Save System
+            Library.Elements[text] = {
+                Set = function(self, v)
+                    SetVal(v)
+                end
+            }
         end
 
         function Tab:Dropdown(text, list, callback)
             local dropped = false
             local DFr = Instance.new("Frame")
+            DFr.Name = "ElementFrame"
             DFr.Parent = Page
-            DFr.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            DFr.BackgroundColor3 = Library.CurrentTheme.Element
             DFr.Size = UDim2.new(1,0,0,36)
             DFr.ClipsDescendants = true
             local DC = Instance.new("UICorner")
             DC.Parent = DFr
-            
             local DL = Instance.new("TextLabel")
             DL.Parent = DFr
             DL.BackgroundTransparency = 1
@@ -642,17 +684,15 @@ function Library:CreateWindow(Config)
             DL.Size = UDim2.new(1,-40,0,36)
             DL.Font = Enum.Font.Gotham
             DL.Text = text
-            DL.TextColor3 = Color3.fromRGB(255,255,255)
+            DL.TextColor3 = Library.CurrentTheme.Text
             DL.TextSize = 14
             DL.TextXAlignment = Enum.TextXAlignment.Left
-            
             local Arrow = Instance.new("ImageLabel")
             Arrow.Parent = DFr
             Arrow.BackgroundTransparency = 1
             Arrow.Position = UDim2.new(1,-30,0,8)
             Arrow.Size = UDim2.new(0,20,0,20)
             Arrow.Image = "rbxassetid://6031090990"
-            
             local Scroll = Instance.new("ScrollingFrame")
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
@@ -662,13 +702,11 @@ function Library:CreateWindow(Config)
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
             SL.Padding = UDim.new(0,2)
-            
             local Btn = Instance.new("TextButton")
             Btn.Parent = DFr
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,0,36)
             Btn.Text = ""
-            
             for _,item in pairs(list) do
                 local IB = Instance.new("TextButton")
                 IB.Parent = Scroll
@@ -686,7 +724,6 @@ function Library:CreateWindow(Config)
                     pcall(callback, item)
                 end)
             end
-            
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
@@ -701,12 +738,12 @@ function Library:CreateWindow(Config)
 
         function Tab:Textbox(text, ph, callback)
             local TFr = Instance.new("Frame")
+            TFr.Name = "ElementFrame"
             TFr.Parent = Page
-            TFr.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            TFr.BackgroundColor3 = Library.CurrentTheme.Element
             TFr.Size = UDim2.new(1,0,0,50)
             local TC = Instance.new("UICorner")
             TC.Parent = TFr
-            
             local TL = Instance.new("TextLabel")
             TL.Parent = TFr
             TL.BackgroundTransparency = 1
@@ -714,10 +751,9 @@ function Library:CreateWindow(Config)
             TL.Size = UDim2.new(1,-20,0,20)
             TL.Font = Enum.Font.Gotham
             TL.Text = text
-            TL.TextColor3 = Color3.fromRGB(255,255,255)
+            TL.TextColor3 = Library.CurrentTheme.Text
             TL.TextSize = 14
             TL.TextXAlignment = Enum.TextXAlignment.Left
-            
             local TB = Instance.new("TextBox")
             TB.Parent = TFr
             TB.BackgroundColor3 = Color3.fromRGB(30,30,30)
@@ -730,7 +766,6 @@ function Library:CreateWindow(Config)
             TB.TextSize = 12
             local TBC = Instance.new("UICorner")
             TBC.Parent = TB
-            
             TB.FocusLost:Connect(function() pcall(callback, TB.Text) end)
         end
 
@@ -745,8 +780,49 @@ function Library:CreateWindow(Config)
             L.TextSize = 14
             L.TextXAlignment = Enum.TextXAlignment.Center
         end
-        
         return Tab
+    end
+
+    -- // ADD CONFIG SYSTEM //
+    function Window:AddConfig()
+        local ConfigTab = Window:Tab("Configuração")
+        
+        local TransToggle = ConfigTab:Toggle("Fundo Transparente (50%)", false, function(Val)
+            Library.Settings.Transparency = Val
+            Library:RefreshTheme()
+        end)
+        
+        ConfigTab:Dropdown("Temas", {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
+            Library:SetTheme(Selected)
+        end)
+        
+        ConfigTab:Button("Salvar Configuração", function()
+            SaveConfig()
+            Library:Notification({Title = "Config", Content = "Configuração e Estados Salvos!"})
+        end)
+
+        ConfigTab:Button("Carregar Configuração", function()
+            if LoadConfig() then
+                Library:SetTheme(Library.Settings.Theme)
+                -- Atualiza visualmente o Toggle de Transparência
+                if Library.Settings.Transparency then
+                    pcall(function() Library.Elements["Fundo Transparente (50%)"]:Set(true) end)
+                end
+                Library:Notification({Title = "Config", Content = "Tudo carregado com sucesso!"})
+            else
+                Library:Notification({Title = "Erro", Content = "Arquivo de config não existe."})
+            end
+        end)
+
+        -- Tenta carregar automaticamente ao iniciar
+        task.delay(0.5, function()
+             if LoadConfig() then
+                Library:SetTheme(Library.Settings.Theme)
+                if Library.Settings.Transparency then
+                    pcall(function() Library.Elements["Fundo Transparente (50%)"]:Set(true) end)
+                end
+             end
+        end)
     end
 
     return Window
