@@ -992,7 +992,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,100)
+            Scroll.Size = UDim2.new(1,0,0,500)
             Scroll.ScrollBarThickness = 2
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
