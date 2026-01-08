@@ -9,6 +9,8 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Eliso
         KeySite = "https://pastebin.com/raw/..."
     })
 
+    Window:AddConfig()
+
     local Tab1 = Window:Tab("Main")
     local Tab2 = Window:Tab("Player")
 
