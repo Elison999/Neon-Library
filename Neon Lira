@@ -3,6 +3,7 @@
     - New: Visual Decorations (Glow, Gradient, Pattern)
     - New: Built-in Scripts Hub (Config Tab)
     - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language
+    - Update: +20 Themes, Fixed Key System
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -81,8 +82,9 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
--- // Temas (Com Cores de Glow) //
+-- // Temas (Total: 28 Temas) //
 Library.Themes = {
+    -- Temas Originais
     Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40), Glow = Color3.fromRGB(0, 100, 200)},
     DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45), Glow = Color3.fromRGB(40, 80, 200)},
     DarkRed  = {Main = Color3.fromRGB(30, 15, 15), Top = Color3.fromRGB(40, 20, 20), Accent = Color3.fromRGB(255, 60, 60), Text = Color3.fromRGB(255, 240, 240), Element = Color3.fromRGB(45, 25, 25), Glow = Color3.fromRGB(200, 40, 40)},
@@ -91,6 +93,28 @@ Library.Themes = {
     Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30), Glow = Color3.fromRGB(40, 160, 60)},
     Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30), Glow = Color3.fromRGB(200, 100, 40)},
     Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30), Glow = Color3.fromRGB(80, 80, 80)},
+    
+    -- +20 Novos Temas
+    Midnight    = {Main = Color3.fromRGB(10, 10, 20), Top = Color3.fromRGB(15, 15, 30), Accent = Color3.fromRGB(100, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 25, 45), Glow = Color3.fromRGB(80, 80, 220)},
+    Dracula     = {Main = Color3.fromRGB(40, 42, 54), Top = Color3.fromRGB(68, 71, 90), Accent = Color3.fromRGB(189, 147, 249), Text = Color3.fromRGB(248, 248, 242), Element = Color3.fromRGB(98, 114, 164), Glow = Color3.fromRGB(255, 121, 198)},
+    Cyberpunk   = {Main = Color3.fromRGB(10, 10, 15), Top = Color3.fromRGB(20, 20, 25), Accent = Color3.fromRGB(255, 230, 0), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(30, 30, 35), Glow = Color3.fromRGB(0, 255, 255)},
+    Void        = {Main = Color3.fromRGB(5, 5, 5), Top = Color3.fromRGB(15, 15, 15), Accent = Color3.fromRGB(255, 255, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(25, 25, 25), Glow = Color3.fromRGB(150, 150, 150)},
+    Bubblegum   = {Main = Color3.fromRGB(35, 25, 35), Top = Color3.fromRGB(45, 30, 45), Accent = Color3.fromRGB(255, 100, 180), Text = Color3.fromRGB(255, 240, 255), Element = Color3.fromRGB(55, 40, 55), Glow = Color3.fromRGB(100, 200, 255)},
+    Mint        = {Main = Color3.fromRGB(20, 30, 25), Top = Color3.fromRGB(30, 45, 35), Accent = Color3.fromRGB(0, 255, 170), Text = Color3.fromRGB(230, 255, 240), Element = Color3.fromRGB(40, 60, 50), Glow = Color3.fromRGB(0, 200, 140)},
+    Gold        = {Main = Color3.fromRGB(30, 25, 10), Top = Color3.fromRGB(45, 40, 20), Accent = Color3.fromRGB(255, 215, 0), Text = Color3.fromRGB(255, 255, 220), Element = Color3.fromRGB(55, 50, 30), Glow = Color3.fromRGB(220, 180, 0)},
+    Crimson     = {Main = Color3.fromRGB(25, 10, 10), Top = Color3.fromRGB(40, 15, 15), Accent = Color3.fromRGB(220, 20, 60), Text = Color3.fromRGB(255, 230, 230), Element = Color3.fromRGB(50, 25, 25), Glow = Color3.fromRGB(255, 0, 50)},
+    Frost       = {Main = Color3.fromRGB(20, 30, 40), Top = Color3.fromRGB(30, 45, 60), Accent = Color3.fromRGB(100, 200, 255), Text = Color3.fromRGB(240, 250, 255), Element = Color3.fromRGB(40, 60, 80), Glow = Color3.fromRGB(150, 220, 255)},
+    Toxic       = {Main = Color3.fromRGB(15, 25, 10), Top = Color3.fromRGB(25, 35, 15), Accent = Color3.fromRGB(180, 255, 50), Text = Color3.fromRGB(240, 255, 220), Element = Color3.fromRGB(35, 50, 25), Glow = Color3.fromRGB(100, 200, 0)},
+    Royal       = {Main = Color3.fromRGB(10, 10, 35), Top = Color3.fromRGB(20, 20, 55), Accent = Color3.fromRGB(255, 180, 50), Text = Color3.fromRGB(255, 240, 200), Element = Color3.fromRGB(30, 30, 70), Glow = Color3.fromRGB(255, 215, 0)},
+    Rust        = {Main = Color3.fromRGB(30, 20, 15), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(200, 80, 30), Text = Color3.fromRGB(255, 230, 210), Element = Color3.fromRGB(60, 40, 30), Glow = Color3.fromRGB(255, 100, 50)},
+    Lavender    = {Main = Color3.fromRGB(25, 20, 30), Top = Color3.fromRGB(35, 30, 45), Accent = Color3.fromRGB(200, 160, 255), Text = Color3.fromRGB(250, 240, 255), Element = Color3.fromRGB(50, 45, 60), Glow = Color3.fromRGB(160, 120, 220)},
+    Steel       = {Main = Color3.fromRGB(25, 30, 35), Top = Color3.fromRGB(40, 45, 50), Accent = Color3.fromRGB(100, 150, 200), Text = Color3.fromRGB(220, 230, 240), Element = Color3.fromRGB(50, 55, 60), Glow = Color3.fromRGB(120, 160, 180)},
+    Forest      = {Main = Color3.fromRGB(15, 25, 15), Top = Color3.fromRGB(25, 40, 25), Accent = Color3.fromRGB(34, 139, 34), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(35, 50, 35), Glow = Color3.fromRGB(50, 205, 50)},
+    Cherry      = {Main = Color3.fromRGB(25, 15, 20), Top = Color3.fromRGB(40, 25, 30), Accent = Color3.fromRGB(255, 50, 100), Text = Color3.fromRGB(255, 230, 240), Element = Color3.fromRGB(55, 35, 45), Glow = Color3.fromRGB(200, 80, 120)},
+    Abyss       = {Main = Color3.fromRGB(5, 15, 20), Top = Color3.fromRGB(10, 25, 30), Accent = Color3.fromRGB(0, 128, 128), Text = Color3.fromRGB(220, 240, 240), Element = Color3.fromRGB(20, 40, 50), Glow = Color3.fromRGB(0, 200, 200)},
+    Coffee      = {Main = Color3.fromRGB(30, 25, 20), Top = Color3.fromRGB(45, 35, 30), Accent = Color3.fromRGB(210, 180, 140), Text = Color3.fromRGB(255, 245, 230), Element = Color3.fromRGB(60, 50, 40), Glow = Color3.fromRGB(160, 82, 45)},
+    Synthwave   = {Main = Color3.fromRGB(20, 10, 30), Top = Color3.fromRGB(30, 15, 45), Accent = Color3.fromRGB(255, 0, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(50, 25, 70), Glow = Color3.fromRGB(0, 255, 255)},
+    Solar       = {Main = Color3.fromRGB(240, 240, 240), Top = Color3.fromRGB(255, 255, 255), Accent = Color3.fromRGB(255, 165, 0), Text = Color3.fromRGB(50, 50, 50), Element = Color3.fromRGB(220, 220, 220), Glow = Color3.fromRGB(255, 140, 0)}, -- Light Theme
 }
 
 Library.CurrentTheme = Library.Themes.Default
@@ -399,7 +423,7 @@ function Library:CreateWindow(Config)
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
-    -- // KEY SYSTEM //
+    -- // KEY SYSTEM CORRIGIDO //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -465,8 +489,10 @@ function Library:CreateWindow(Config)
             if KeySystemConfig.GrabKeyFromSite then pcall(function() RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","") end) end
             if Input == RealKey then
                 Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
+                
+                -- CORREÇÃO DO BUG AQUI:
                 CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.3).Completed:Connect(function()
-                    KeyFrame:Visible(false)
+                    KeyFrame.Visible = false -- Era KeyFrame:Visible(false), que causava erro
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
                 end)
@@ -761,7 +787,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,500)
+            Scroll.Size = UDim2.new(1,0,0,100)
             Scroll.ScrollBarThickness = 2
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
@@ -791,7 +817,7 @@ function Library:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
@@ -1082,7 +1108,14 @@ function Library:CreateWindow(Config)
             Library:RefreshTheme()
         end)
         
-        local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
+        -- Get Themes Automatically
+        local ThemeNames = {}
+        for name, _ in pairs(Library.Themes) do
+            table.insert(ThemeNames, name)
+        end
+        table.sort(ThemeNames)
+
+        local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), ThemeNames, function(Selected)
             Library:SetTheme(Selected)
         end)
         
