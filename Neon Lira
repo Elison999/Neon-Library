@@ -1,9 +1,8 @@
 --[[ 
     NEON UI LIBRARY (VISUAL EFFECTS & SCRIPTS UPDATE)
-    - New: Visual Decorations (Glow, Gradient, Pattern)
-    - New: Built-in Scripts Hub (Config Tab)
-    - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language
-    - Update: +20 Themes, Fixed Key System
+    - Updated: Load Config only after Key Verification
+    - Updated: Save/Load support for Dropdowns and Textboxes
+    - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language, Themes
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -82,9 +81,8 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
--- // Temas (Total: 28 Temas) //
+-- // Temas //
 Library.Themes = {
-    -- Temas Originais
     Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40), Glow = Color3.fromRGB(0, 100, 200)},
     DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45), Glow = Color3.fromRGB(40, 80, 200)},
     DarkRed  = {Main = Color3.fromRGB(30, 15, 15), Top = Color3.fromRGB(40, 20, 20), Accent = Color3.fromRGB(255, 60, 60), Text = Color3.fromRGB(255, 240, 240), Element = Color3.fromRGB(45, 25, 25), Glow = Color3.fromRGB(200, 40, 40)},
@@ -93,8 +91,6 @@ Library.Themes = {
     Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30), Glow = Color3.fromRGB(40, 160, 60)},
     Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30), Glow = Color3.fromRGB(200, 100, 40)},
     Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30), Glow = Color3.fromRGB(80, 80, 80)},
-    
-    -- +20 Novos Temas
     Midnight    = {Main = Color3.fromRGB(10, 10, 20), Top = Color3.fromRGB(15, 15, 30), Accent = Color3.fromRGB(100, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 25, 45), Glow = Color3.fromRGB(80, 80, 220)},
     Dracula     = {Main = Color3.fromRGB(40, 42, 54), Top = Color3.fromRGB(68, 71, 90), Accent = Color3.fromRGB(189, 147, 249), Text = Color3.fromRGB(248, 248, 242), Element = Color3.fromRGB(98, 114, 164), Glow = Color3.fromRGB(255, 121, 198)},
     Cyberpunk   = {Main = Color3.fromRGB(10, 10, 15), Top = Color3.fromRGB(20, 20, 25), Accent = Color3.fromRGB(255, 230, 0), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(30, 30, 35), Glow = Color3.fromRGB(0, 255, 255)},
@@ -114,7 +110,7 @@ Library.Themes = {
     Abyss       = {Main = Color3.fromRGB(5, 15, 20), Top = Color3.fromRGB(10, 25, 30), Accent = Color3.fromRGB(0, 128, 128), Text = Color3.fromRGB(220, 240, 240), Element = Color3.fromRGB(20, 40, 50), Glow = Color3.fromRGB(0, 200, 200)},
     Coffee      = {Main = Color3.fromRGB(30, 25, 20), Top = Color3.fromRGB(45, 35, 30), Accent = Color3.fromRGB(210, 180, 140), Text = Color3.fromRGB(255, 245, 230), Element = Color3.fromRGB(60, 50, 40), Glow = Color3.fromRGB(160, 82, 45)},
     Synthwave   = {Main = Color3.fromRGB(20, 10, 30), Top = Color3.fromRGB(30, 15, 45), Accent = Color3.fromRGB(255, 0, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(50, 25, 70), Glow = Color3.fromRGB(0, 255, 255)},
-    Solar       = {Main = Color3.fromRGB(240, 240, 240), Top = Color3.fromRGB(255, 255, 255), Accent = Color3.fromRGB(255, 165, 0), Text = Color3.fromRGB(50, 50, 50), Element = Color3.fromRGB(220, 220, 220), Glow = Color3.fromRGB(255, 140, 0)}, -- Light Theme
+    Solar       = {Main = Color3.fromRGB(240, 240, 240), Top = Color3.fromRGB(255, 255, 255), Accent = Color3.fromRGB(255, 165, 0), Text = Color3.fromRGB(50, 50, 50), Element = Color3.fromRGB(220, 220, 220), Glow = Color3.fromRGB(255, 140, 0)},
 }
 
 Library.CurrentTheme = Library.Themes.Default
@@ -185,11 +181,18 @@ local function LoadConfig()
         local content = readfile("NeonUI_Config.json")
         local success, decoded = pcall(function() return HttpService:JSONDecode(content) end)
         if success then
-            if decoded.Settings then Library.Settings = decoded.Settings end
+            if decoded.Settings then 
+                Library.Settings = decoded.Settings 
+                -- Aplicar tema carregado
+                if Library.Settings.Theme and Library.Themes[Library.Settings.Theme] then
+                    Library.CurrentTheme = Library.Themes[Library.Settings.Theme]
+                    Library:RefreshTheme()
+                end
+            end
             if decoded.Flags then
                 Library.Flags = decoded.Flags
                 for name, value in pairs(Library.Flags) do
-                    if Library.Elements[name] then
+                    if Library.Elements[name] and Library.Elements[name].Set then
                         pcall(function() Library.Elements[name]:Set(value) end)
                     end
                 end
@@ -327,7 +330,7 @@ function Library:CreateWindow(Config)
     Pattern.Parent = MainFrame
     Pattern.BackgroundTransparency = 1
     Pattern.Size = UDim2.new(1,0,1,0)
-    Pattern.Image = "rbxassetid://2151741365" -- Padrão de pontos
+    Pattern.Image = "rbxassetid://2151741365"
     Pattern.ImageTransparency = 0.95
     Pattern.TileSize = UDim2.new(0,25,0,25)
     Pattern.ScaleType = Enum.ScaleType.Tile
@@ -423,7 +426,53 @@ function Library:CreateWindow(Config)
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
-    -- // KEY SYSTEM CORRIGIDO //
+    function Library:RefreshTheme()
+        local T = Library.CurrentTheme
+        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
+        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
+        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
+        
+        -- Update Gradient & Glow
+        TopGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+            ColorSequenceKeypoint.new(1, T.Accent) 
+        }
+        CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3)
+
+        TitleLbl.TextColor3 = T.Text
+        OpenBtnFrame.BackgroundColor3 = T.Top
+        for _, obj in pairs(TabContainer:GetChildren()) do
+            if obj:IsA("TextButton") then
+                if obj.BackgroundTransparency < 0.9 then obj.TextColor3 = T.Text end
+            end
+        end
+        for _, page in pairs(PagesFolder:GetChildren()) do
+            if page:IsA("ScrollingFrame") then
+                for _, elem in pairs(page:GetChildren()) do
+                    if elem:IsA("Frame") and elem.Name == "ElementFrame" then
+                        CreateTween(elem, {BackgroundColor3 = T.Element}, 0.3)
+                        local txt = elem:FindFirstChildOfClass("TextLabel")
+                        if txt then txt.TextColor3 = T.Text end
+                        local btn = elem:FindFirstChildOfClass("TextButton")
+                        if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
+                    elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
+                        elem.TextColor3 = T.Accent
+                        elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
+                    end
+                end
+            end
+        end
+    end
+
+    function Library:SetTheme(ThemeName)
+        if Library.Themes[ThemeName] then
+            Library.CurrentTheme = Library.Themes[ThemeName]
+            Library.Settings.Theme = ThemeName
+            Library:RefreshTheme()
+        end
+    end
+
+    -- // Lógica do Sistema de Key & Carregamento Seguro //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -483,16 +532,22 @@ function Library:CreateWindow(Config)
         KLC.Parent = KLink
         MakeDraggable(KeyFrame, KeyFrame)
         KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Key", Content = Library:GetText("LinkCopied")}) end end)
+        
         KBtn.MouseButton1Click:Connect(function()
             local Input = KInput.Text
             local RealKey = KeySystemConfig.Key
             if KeySystemConfig.GrabKeyFromSite then pcall(function() RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","") end) end
+            
             if Input == RealKey then
                 Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
                 
-                -- CORREÇÃO DO BUG AQUI:
+                -- TENTAR CARREGAR O CONFIG AQUI (Só se a key estiver correta)
+                if LoadConfig() then
+                     Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
+                end
+
                 CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.3).Completed:Connect(function()
-                    KeyFrame.Visible = false -- Era KeyFrame:Visible(false), que causava erro
+                    KeyFrame.Visible = false 
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
                 end)
@@ -501,53 +556,11 @@ function Library:CreateWindow(Config)
             end
         end)
     else
+        -- Se não tiver Key System, tenta carregar imediatamente e abre a UI
+        if LoadConfig() then
+            Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
+        end
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
-    end
-
-    function Library:RefreshTheme()
-        local T = Library.CurrentTheme
-        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
-        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
-        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
-        
-        -- Update Gradient & Glow
-        TopGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
-            ColorSequenceKeypoint.new(1, T.Accent) 
-        }
-        CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3)
-
-        TitleLbl.TextColor3 = T.Text
-        OpenBtnFrame.BackgroundColor3 = T.Top
-        for _, obj in pairs(TabContainer:GetChildren()) do
-            if obj:IsA("TextButton") then
-                if obj.BackgroundTransparency < 0.9 then obj.TextColor3 = T.Text end
-            end
-        end
-        for _, page in pairs(PagesFolder:GetChildren()) do
-            if page:IsA("ScrollingFrame") then
-                for _, elem in pairs(page:GetChildren()) do
-                    if elem:IsA("Frame") and elem.Name == "ElementFrame" then
-                        CreateTween(elem, {BackgroundColor3 = T.Element}, 0.3)
-                        local txt = elem:FindFirstChildOfClass("TextLabel")
-                        if txt then txt.TextColor3 = T.Text end
-                        local btn = elem:FindFirstChildOfClass("TextButton")
-                        if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
-                    elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
-                        elem.TextColor3 = T.Accent
-                        elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
-                    end
-                end
-            end
-        end
-    end
-
-    function Library:SetTheme(ThemeName)
-        if Library.Themes[ThemeName] then
-            Library.CurrentTheme = Library.Themes[ThemeName]
-            Library.Settings.Theme = ThemeName
-            Library:RefreshTheme()
-        end
     end
 
     local Window = {}
@@ -759,6 +772,7 @@ function Library:CreateWindow(Config)
 
         function Tab:Dropdown(text, list, callback)
             local dropped = false
+            Library.Flags[text] = "" -- Init
             local DFr = Instance.new("Frame")
             DFr.Name = "ElementFrame"
             DFr.Parent = Page
@@ -787,7 +801,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,100)
+            Scroll.Size = UDim2.new(1,0,0,500)
             Scroll.ScrollBarThickness = 2
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
@@ -797,6 +811,16 @@ function Library:CreateWindow(Config)
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,0,36)
             Btn.Text = ""
+            
+            local function SelectItem(item)
+                DL.Text = text .. " ("..item..")"
+                Library.Flags[text] = item
+                dropped = false
+                CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
+                CreateTween(Arrow, {Rotation = 0}, 0.2)
+                pcall(callback, item)
+            end
+
             for _,item in pairs(list) do
                 local IB = Instance.new("TextButton")
                 IB.Parent = Scroll
@@ -806,28 +830,34 @@ function Library:CreateWindow(Config)
                 IB.Text = item
                 IB.TextColor3 = Color3.fromRGB(200,200,200)
                 IB.TextSize = 13
-                IB.MouseButton1Click:Connect(function()
-                    DL.Text = text .. " ("..item..")"
-                    dropped = false
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
-                    CreateTween(Arrow, {Rotation = 0}, 0.2)
-                    pcall(callback, item)
-                end)
+                IB.MouseButton1Click:Connect(function() SelectItem(item) end)
             end
+
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
                     CreateTween(Arrow, {Rotation = 0}, 0.2)
                 end
             end)
+            
+            -- SAVE/LOAD SUPPORT FOR DROPDOWN
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    DL.Text = text .. " ("..val..")"
+                    Library.Flags[text] = val
+                    -- No load, we just visually update, logic might not want to run on load for some scripts
+                end
+            }
+            
             return DL 
         end
 
         function Tab:Textbox(text, ph, callback)
+            Library.Flags[text] = ""
             local TFr = Instance.new("Frame")
             TFr.Name = "ElementFrame"
             TFr.Parent = Page
@@ -857,7 +887,19 @@ function Library:CreateWindow(Config)
             TB.TextSize = 12
             local TBC = Instance.new("UICorner")
             TBC.Parent = TB
-            TB.FocusLost:Connect(function() pcall(callback, TB.Text) end)
+            
+            TB.FocusLost:Connect(function()
+                Library.Flags[text] = TB.Text
+                pcall(callback, TB.Text) 
+            end)
+            
+            -- SAVE/LOAD SUPPORT FOR TEXTBOX
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    TB.Text = val
+                    Library.Flags[text] = val
+                end
+            }
         end
 
         function Tab:Label(text)
@@ -1126,10 +1168,6 @@ function Library:CreateWindow(Config)
 
         local LoadBtn = ConfigTab:Button(Library:GetText("LoadBtn"), function()
             if LoadConfig() then
-                Library:SetTheme(Library.Settings.Theme)
-                if Library.Settings.Transparency then
-                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
-                end
                 Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
             else
                 Library:Notification({Title = "Error", Content = Library:GetText("LoadErr")})
@@ -1145,15 +1183,6 @@ function Library:CreateWindow(Config)
                 if SaveBtn then SaveBtn.Text = Library:GetText("SaveBtn") end
                 if LoadBtn then LoadBtn.Text = Library:GetText("LoadBtn") end
             end
-        end)
-
-        task.delay(0.5, function()
-             if LoadConfig() then
-                Library:SetTheme(Library.Settings.Theme)
-                if Library.Settings.Transparency then
-                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
-                end
-             end
         end)
     end
 
