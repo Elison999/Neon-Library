@@ -1,6 +1,8 @@
 --[[ 
-    NEON UI LIBRARY (ULTIMATE FX UPDATE - FIXED VERSION)
-    - Fixes: Sidebar Background, Theme Matching, Dropdown Scroll, ZIndex
+    NEON UI LIBRARY (VISUAL EFFECTS & SCRIPTS UPDATE)
+    - New: Visual Decorations (Glow, Gradient, Pattern)
+    - New: Built-in Scripts Hub (Config Tab)
+    - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -8,7 +10,6 @@ local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 local HttpService = game:GetService("HttpService")
-local Lighting = game:GetService("Lighting")
 
 local Library = {}
 
@@ -16,25 +17,19 @@ local Library = {}
 Library.Settings = {
     Theme = "Default",
     Transparency = false,
-    Language = "English",
-    Particles = true,
-    Atmosphere = true
+    Language = "English"
 }
 
 Library.Flags = {}    
 Library.Elements = {} 
-Library.ThemeObjects = {} 
-Library.OpenFrames = {}
 
 -- // Traduções //
 Library.Translations = {
     English = {
         ConfigTab = "Configuration",
         LangDrop = "Language",
-        TransToggle = "Transparent Background",
-        ThemeDrop = "Select Theme",
-        PartToggle = "UI Particles FX",
-        AtmosToggle = "Theme Atmosphere",
+        TransToggle = "Transparent Background (50%)",
+        ThemeDrop = "Themes",
         SaveBtn = "Save Config",
         LoadBtn = "Load Config",
         SaveMsg = "Configuration Saved!",
@@ -57,10 +52,8 @@ Library.Translations = {
     Portuguese = {
         ConfigTab = "Configuração",
         LangDrop = "Idioma",
-        TransToggle = "Fundo Transparente",
-        ThemeDrop = "Selecionar Tema",
-        PartToggle = "Partículas na UI",
-        AtmosToggle = "Atmosfera do Tema",
+        TransToggle = "Fundo Transparente (50%)",
+        ThemeDrop = "Temas",
         SaveBtn = "Salvar Configuração",
         LoadBtn = "Carregar Configuração",
         SaveMsg = "Configuração Salva!",
@@ -88,9 +81,7 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
--- ==========================================
--- SISTEMA MASSIVO DE TEMAS
--- ==========================================
+-- // Temas (Com Cores de Glow) //
 Library.Themes = {
     Default  = {Main = Color3.fromRGB(25, 25, 25), Top = Color3.fromRGB(35, 35, 35), Accent = Color3.fromRGB(0, 150, 255), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40), Glow = Color3.fromRGB(0, 100, 200)},
     DarkBlue = {Main = Color3.fromRGB(15, 20, 30), Top = Color3.fromRGB(20, 25, 40), Accent = Color3.fromRGB(50, 100, 255), Text = Color3.fromRGB(240, 240, 255), Element = Color3.fromRGB(25, 30, 45), Glow = Color3.fromRGB(40, 80, 200)},
@@ -100,32 +91,11 @@ Library.Themes = {
     Emerald  = {Main = Color3.fromRGB(20, 35, 20), Top = Color3.fromRGB(25, 45, 25), Accent = Color3.fromRGB(50, 200, 80), Text = Color3.fromRGB(230, 255, 230), Element = Color3.fromRGB(30, 50, 30), Glow = Color3.fromRGB(40, 160, 60)},
     Sunset   = {Main = Color3.fromRGB(35, 25, 20), Top = Color3.fromRGB(45, 30, 25), Accent = Color3.fromRGB(255, 140, 50), Text = Color3.fromRGB(255, 240, 220), Element = Color3.fromRGB(50, 35, 30), Glow = Color3.fromRGB(200, 100, 40)},
     Carbon   = {Main = Color3.fromRGB(10, 10, 10), Top = Color3.fromRGB(20, 20, 20), Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(30, 30, 30), Glow = Color3.fromRGB(80, 80, 80)},
-    Cyberpunk = {Main = Color3.fromRGB(20, 10, 30), Top = Color3.fromRGB(30, 15, 40), Accent = Color3.fromRGB(255, 0, 120), Text = Color3.fromRGB(0, 255, 255), Element = Color3.fromRGB(40, 20, 50), Glow = Color3.fromRGB(255, 0, 200)},
-    Radioactive = {Main = Color3.fromRGB(10, 20, 10), Top = Color3.fromRGB(15, 30, 15), Accent = Color3.fromRGB(100, 255, 0), Text = Color3.fromRGB(200, 255, 200), Element = Color3.fromRGB(20, 40, 20), Glow = Color3.fromRGB(50, 255, 50)},
-    HotPink  = {Main = Color3.fromRGB(30, 10, 20), Top = Color3.fromRGB(40, 15, 30), Accent = Color3.fromRGB(255, 50, 150), Text = Color3.fromRGB(255, 230, 240), Element = Color3.fromRGB(50, 20, 40), Glow = Color3.fromRGB(255, 20, 100)},
-    Gold     = {Main = Color3.fromRGB(25, 20, 10), Top = Color3.fromRGB(35, 30, 15), Accent = Color3.fromRGB(255, 215, 0), Text = Color3.fromRGB(255, 250, 200), Element = Color3.fromRGB(45, 40, 20), Glow = Color3.fromRGB(200, 180, 0)},
-    PastelBlue = {Main = Color3.fromRGB(240, 245, 255), Top = Color3.fromRGB(220, 230, 250), Accent = Color3.fromRGB(100, 150, 255), Text = Color3.fromRGB(50, 50, 80), Element = Color3.fromRGB(230, 235, 255), Glow = Color3.fromRGB(150, 180, 255)},
-    Void     = {Main = Color3.fromRGB(0, 0, 0), Top = Color3.fromRGB(10, 10, 10), Accent = Color3.fromRGB(255, 255, 255), Text = Color3.fromRGB(200, 200, 200), Element = Color3.fromRGB(15, 15, 15), Glow = Color3.fromRGB(100, 100, 100)},
-    Discord  = {Main = Color3.fromRGB(54, 57, 63), Top = Color3.fromRGB(32, 34, 37), Accent = Color3.fromRGB(114, 137, 218), Text = Color3.fromRGB(220, 221, 222), Element = Color3.fromRGB(47, 49, 54), Glow = Color3.fromRGB(88, 101, 242)},
-    Spotify  = {Main = Color3.fromRGB(18, 18, 18), Top = Color3.fromRGB(24, 24, 24), Accent = Color3.fromRGB(30, 215, 96), Text = Color3.fromRGB(255, 255, 255), Element = Color3.fromRGB(40, 40, 40), Glow = Color3.fromRGB(30, 180, 80)},
-    Dracula  = {Main = Color3.fromRGB(40, 42, 54), Top = Color3.fromRGB(68, 71, 90), Accent = Color3.fromRGB(255, 121, 198), Text = Color3.fromRGB(248, 248, 242), Element = Color3.fromRGB(98, 114, 164), Glow = Color3.fromRGB(189, 147, 249)},
-    Bumblebee= {Main = Color3.fromRGB(20, 20, 20), Top = Color3.fromRGB(30, 30, 30), Accent = Color3.fromRGB(255, 230, 0), Text = Color3.fromRGB(255, 255, 200), Element = Color3.fromRGB(50, 50, 40), Glow = Color3.fromRGB(255, 200, 0)}
 }
 
 Library.CurrentTheme = Library.Themes.Default
 
--- ==========================================
--- FX ENGINE
--- ==========================================
-local FX = {}
-local ParticleFolder = nil
-
-function FX:Init(GUI)
-    ParticleFolder = Instance.new("Folder")
-    ParticleFolder.Name = "ParticleFX"
-    ParticleFolder.Parent = GUI
-end
-
+--// Utilitários //
 local function MakeDraggable(topbarobject, object)
     local Dragging = nil
     local DragInput = nil
@@ -156,86 +126,11 @@ local function MakeDraggable(topbarobject, object)
     end)
 end
 
-local function CreateTween(obj, props, time, style, dir)
-    local info = TweenInfo.new(time or 0.3, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out)
+local function CreateTween(obj, props, time)
+    local info = TweenInfo.new(time or 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
     local tween = TweenService:Create(obj, info, props)
     tween:Play()
     return tween
-end
-
-function FX:SpawnParticles(Parent, Color, Amount)
-    if not Library.Settings.Particles then return end
-    local Center = Parent.AbsolutePosition + (Parent.AbsoluteSize / 2)
-    for i = 1, Amount or 20 do
-        local P = Instance.new("ImageLabel")
-        P.Parent = ParticleFolder or Parent.Parent
-        P.Image = "rbxassetid://3570695787"
-        P.BackgroundTransparency = 1
-        P.ImageColor3 = Color
-        P.Size = UDim2.new(0, math.random(10, 25), 0, math.random(10, 25))
-        P.Position = UDim2.new(0, Center.X, 0, Center.Y)
-        P.ZIndex = 100
-        local Angle = math.rad(math.random(0, 360))
-        local Speed = math.random(50, 250)
-        local Velocity = Vector2.new(math.cos(Angle) * Speed, math.sin(Angle) * Speed)
-        local Life = 0.5 + (math.random() * 0.5)
-        local StartTime = tick()
-        local Connection
-        Connection = RunService.RenderStepped:Connect(function(dt)
-            if (tick() - StartTime) >= Life then
-                Connection:Disconnect()
-                P:Destroy()
-            else
-                local Elapsed = (tick() - StartTime) / Life
-                Velocity = Velocity * 0.95
-                P.Position = P.Position + UDim2.new(0, Velocity.X * dt, 0, Velocity.Y * dt)
-                P.ImageTransparency = Elapsed
-                P.Size = UDim2.new(0, (25 * (1-Elapsed)), 0, (25 * (1-Elapsed)))
-            end
-        end)
-    end
-end
-
-function FX:Shockwave(Parent, Color)
-    if not Library.Settings.Particles then return end
-    local Wave = Instance.new("Frame")
-    Wave.Name = "Shockwave"
-    Wave.Parent = Parent
-    Wave.BackgroundColor3 = Color
-    Wave.BackgroundTransparency = 0.6
-    Wave.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Wave.AnchorPoint = Vector2.new(0.5, 0.5)
-    Wave.Size = UDim2.new(0, 0, 0, 0)
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(1, 0)
-    Corner.Parent = Wave
-    local T1 = CreateTween(Wave, {Size = UDim2.new(1.5, 0, 1.5, 0), BackgroundTransparency = 1}, 0.6)
-    T1.Completed:Connect(function() Wave:Destroy() end)
-end
-
-local LightingBases = {Blur = Instance.new("BlurEffect"), Bloom = Instance.new("BloomEffect"), CC = Instance.new("ColorCorrectionEffect")}
-function FX:ApplyLighting(Theme)
-    if not Library.Settings.Atmosphere then 
-        LightingBases.Blur.Parent = nil
-        LightingBases.Bloom.Parent = nil
-        LightingBases.CC.Parent = nil
-        return 
-    end
-    LightingBases.Blur.Parent = Lighting
-    LightingBases.Blur.Size = 2
-    LightingBases.Bloom.Parent = Lighting
-    LightingBases.Bloom.Intensity = 0.4
-    LightingBases.Bloom.Size = 24
-    LightingBases.CC.Parent = Lighting
-    
-    local H, S, V = Theme.Main:ToHSV()
-    if V < 0.2 then
-        CreateTween(LightingBases.CC, {TintColor = Color3.new(0.9, 0.9, 1), Brightness = -0.1, Contrast = 0.1}, 1)
-        CreateTween(LightingBases.Bloom, {Intensity = 0.6, Threshold = 0.8}, 1)
-    else
-        CreateTween(LightingBases.CC, {TintColor = Color3.new(1, 1, 0.9), Brightness = 0.1, Contrast = 0}, 1)
-        CreateTween(LightingBases.Bloom, {Intensity = 0.2}, 1)
-    end
 end
 
 local function ProtectGui(gui)
@@ -252,20 +147,27 @@ end
 -- // Save System //
 local function SaveConfig()
     if writefile then
-        local data = {Settings = Library.Settings, Flags = Library.Flags}
-        writefile("NeonUI_Config_V2.json", HttpService:JSONEncode(data))
+        local data = {
+            Settings = Library.Settings,
+            Flags = Library.Flags
+        }
+        local json = HttpService:JSONEncode(data)
+        writefile("NeonUI_Config.json", json)
     end
 end
 
 local function LoadConfig()
-    if isfile and isfile("NeonUI_Config_V2.json") then
-        local success, decoded = pcall(function() return HttpService:JSONDecode(readfile("NeonUI_Config_V2.json")) end)
+    if isfile and isfile("NeonUI_Config.json") then
+        local content = readfile("NeonUI_Config.json")
+        local success, decoded = pcall(function() return HttpService:JSONDecode(content) end)
         if success then
             if decoded.Settings then Library.Settings = decoded.Settings end
             if decoded.Flags then
                 Library.Flags = decoded.Flags
                 for name, value in pairs(Library.Flags) do
-                    if Library.Elements[name] then pcall(function() Library.Elements[name]:Set(value) end) end
+                    if Library.Elements[name] then
+                        pcall(function() Library.Elements[name]:Set(value) end)
+                    end
                 end
             end
             return true
@@ -287,12 +189,8 @@ function Library:CreateWindow(Config)
 
     local TitanUI = Instance.new("ScreenGui")
     TitanUI.Name = "NeonUI_" .. math.random(1, 10000)
-    TitanUI.IgnoreGuiInset = true -- [FIX] Ignora barra superior
-    TitanUI.DisplayOrder = 10000  -- [FIX] Força ficar na frente
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
-    
-    FX:Init(TitanUI)
 
     -- Notificação
     local NotifContainer = Instance.new("Frame")
@@ -312,20 +210,17 @@ function Library:CreateWindow(Config)
         local Title = options.Title or "Notification"
         local Content = options.Content or ""
         local Duration = options.Duration or 3
-        
         local NotifFrame = Instance.new("Frame")
         NotifFrame.Parent = NotifContainer
         NotifFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
         NotifFrame.Size = UDim2.new(1, 0, 0, 0)
         NotifFrame.ClipsDescendants = true
-        
         local NC = Instance.new("UICorner")
         NC.CornerRadius = UDim.new(0, 6)
         NC.Parent = NotifFrame
         local NS = Instance.new("UIStroke")
         NS.Color = Color3.fromRGB(60,60,60)
         NS.Parent = NotifFrame
-        
         local NT = Instance.new("TextLabel")
         NT.Parent = NotifFrame
         NT.BackgroundTransparency = 1
@@ -336,7 +231,6 @@ function Library:CreateWindow(Config)
         NT.TextColor3 = Color3.fromRGB(255, 255, 255)
         NT.TextSize = 14
         NT.TextXAlignment = Enum.TextXAlignment.Left
-        
         local ND = Instance.new("TextLabel")
         ND.Parent = NotifFrame
         ND.BackgroundTransparency = 1
@@ -348,10 +242,7 @@ function Library:CreateWindow(Config)
         ND.TextSize = 12
         ND.TextWrapped = true
         ND.TextXAlignment = Enum.TextXAlignment.Left
-        
         CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 70)}, 0.3)
-        FX:Shockwave(NotifFrame, Library.CurrentTheme.Accent)
-        
         task.delay(Duration, function()
             local out = CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 0), BackgroundTransparency = 1}, 0.3)
             CreateTween(NT, {TextTransparency = 1}, 0.2)
@@ -361,6 +252,7 @@ function Library:CreateWindow(Config)
         end)
     end
 
+    -- Icone Flutuante
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
@@ -383,6 +275,7 @@ function Library:CreateWindow(Config)
     OBIcon.Image = "rbxassetid://6031091004" 
     MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
 
+    -- Janela Principal
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
@@ -394,6 +287,7 @@ function Library:CreateWindow(Config)
     MainFrame.Visible = not KeySystemConfig.Enabled
     if KeySystemConfig.Enabled then MainFrame.Size = UDim2.new(0,0,0,0) end
     
+    -- Visual Decor: Glow
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = MainFrame
@@ -403,12 +297,25 @@ function Library:CreateWindow(Config)
     MainStroke.Transparency = 0.5
     MainStroke.Parent = MainFrame
 
+    -- Visual Decor: Pattern Background
+    local Pattern = Instance.new("ImageLabel")
+    Pattern.Name = "Pattern"
+    Pattern.Parent = MainFrame
+    Pattern.BackgroundTransparency = 1
+    Pattern.Size = UDim2.new(1,0,1,0)
+    Pattern.Image = "rbxassetid://2151741365" -- Padrão de pontos
+    Pattern.ImageTransparency = 0.95
+    Pattern.TileSize = UDim2.new(0,25,0,25)
+    Pattern.ScaleType = Enum.ScaleType.Tile
+    Pattern.ZIndex = 0
+
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
     Topbar.BackgroundColor3 = Library.CurrentTheme.Top
     Topbar.Size = UDim2.new(1, 0, 0, 40)
     
+    -- Visual Decor: Topbar Gradient
     local TopCorner = Instance.new("UICorner")
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
@@ -427,7 +334,6 @@ function Library:CreateWindow(Config)
     FixB.BackgroundColor3 = Library.CurrentTheme.Top
     FixB.Position = UDim2.new(0,0,1,-5)
     FixB.Size = UDim2.new(1,0,0,5)
-    
     local TitleLbl = Instance.new("TextLabel")
     TitleLbl.Parent = Topbar
     TitleLbl.BackgroundTransparency = 1
@@ -438,7 +344,6 @@ function Library:CreateWindow(Config)
     TitleLbl.TextColor3 = Library.CurrentTheme.Text
     TitleLbl.TextSize = 14
     TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
-    
     local CloseBtn = Instance.new("ImageButton")
     CloseBtn.Parent = Topbar
     CloseBtn.BackgroundTransparency = 1
@@ -447,39 +352,40 @@ function Library:CreateWindow(Config)
     CloseBtn.Image = "rbxassetid://6031094678" 
     CloseBtn.ImageColor3 = Color3.fromRGB(200, 200, 200)
 
-    -- // [FIX] SIDEBAR ESTRUTURA //
-    local SidebarFrame = Instance.new("Frame")
-    SidebarFrame.Name = "SidebarFrame"
-    SidebarFrame.Parent = MainFrame
-    SidebarFrame.BackgroundColor3 = Library.CurrentTheme.Top
-    SidebarFrame.BorderSizePixel = 0
-    SidebarFrame.Position = UDim2.new(0, 0, 0, 40)
-    SidebarFrame.Size = UDim2.new(0, 150, 1, -40)
-    SidebarFrame.ZIndex = 2 
-
-    local SidebarLine = Instance.new("Frame")
-    SidebarLine.Name = "SidebarLine"
-    SidebarLine.Parent = SidebarFrame
-    SidebarLine.BackgroundColor3 = Library.CurrentTheme.Accent
-    SidebarLine.BorderSizePixel = 0
-    SidebarLine.Position = UDim2.new(1, -1, 0, 0)
-    SidebarLine.Size = UDim2.new(0, 1, 1, 0)
-    SidebarLine.ZIndex = 3
+    Library.IsOpen = true
+    function Library:Toggle()
+        Library.IsOpen = not Library.IsOpen
+        if Library.IsOpen then
+            OpenBtnFrame.Visible = false
+            MainFrame.Visible = true
+            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.3)
+        else
+            local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+            close.Completed:Connect(function()
+                if not Library.IsOpen then MainFrame.Visible = false OpenBtnFrame.Visible = true end
+            end)
+        end
+    end
+    CloseBtn.MouseButton1Click:Connect(function() Library:Toggle() end)
+    OpenBtnFrame.MouseButton1Click:Connect(function() Library:Toggle() end)
+    MakeDraggable(Topbar, MainFrame)
 
     local TabContainer = Instance.new("ScrollingFrame")
-    TabContainer.Name = "TabContainer"
     TabContainer.Parent = MainFrame
     TabContainer.BackgroundTransparency = 1
     TabContainer.Position = UDim2.new(0, 10, 0, 50)
     TabContainer.Size = UDim2.new(0, 130, 1, -60)
     TabContainer.ScrollBarThickness = 2
-    TabContainer.ZIndex = 4 
-
     local TabList = Instance.new("UIListLayout")
     TabList.Parent = TabContainer
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.Padding = UDim.new(0, 5)
-    
+    local Divider = Instance.new("Frame")
+    Divider.Parent = MainFrame
+    Divider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Divider.BorderSizePixel = 0
+    Divider.Position = UDim2.new(0, 150, 0, 50)
+    Divider.Size = UDim2.new(0, 1, 1, -60)
     local PageContainer = Instance.new("Frame")
     PageContainer.Parent = MainFrame
     PageContainer.BackgroundTransparency = 1
@@ -493,117 +399,6 @@ function Library:CreateWindow(Config)
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
-    Library.IsOpen = true
-    function Library:Toggle()
-        Library.IsOpen = not Library.IsOpen
-        if Library.IsOpen then
-            OpenBtnFrame.Visible = false
-            MainFrame.Visible = true
-            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.3)
-            FX:SpawnParticles(MainFrame, Library.CurrentTheme.Accent, 10)
-        else
-            local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
-            close.Completed:Connect(function()
-                if not Library.IsOpen then MainFrame.Visible = false OpenBtnFrame.Visible = true end
-            end)
-        end
-    end
-    CloseBtn.MouseButton1Click:Connect(function() Library:Toggle() end)
-    OpenBtnFrame.MouseButton1Click:Connect(function() Library:Toggle() end)
-    MakeDraggable(Topbar, MainFrame)
-
-    -- // [FIX] REFRESH THEME SUPREMO //
-    function Library:RefreshTheme()
-        local T = Library.CurrentTheme
-        local Transparency = Library.Settings.Transparency and 0.5 or 0
-        
-        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Transparency}, 0.3)
-        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
-        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
-        
-        -- Atualiza Sidebar
-        if SidebarFrame then 
-            CreateTween(SidebarFrame, {BackgroundColor3 = T.Top}, 0.3) 
-            if SidebarLine then CreateTween(SidebarLine, {BackgroundColor3 = T.Accent}, 0.3) end
-        end
-
-        FX:SpawnParticles(MainFrame, T.Accent, 15)
-        FX:ApplyLighting(T)
-
-        if TopGradient then
-            TopGradient.Color = ColorSequence.new{
-                ColorSequenceKeypoint.new(0, Color3.new(1,1,1)),
-                ColorSequenceKeypoint.new(1, T.Accent) 
-            }
-        end
-        if MainStroke then CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3) end
-
-        if TitleLbl then TitleLbl.TextColor3 = T.Text end
-        if CloseBtn then CloseBtn.ImageColor3 = T.Text end
-        if OpenBtnFrame then OpenBtnFrame.BackgroundColor3 = T.Top end
-        
-        for _, obj in pairs(TabContainer:GetChildren()) do
-            if obj:IsA("TextButton") then
-                if obj.BackgroundTransparency > 0.5 then 
-                    CreateTween(obj, {TextColor3 = Color3.new(T.Text.R*0.6, T.Text.G*0.6, T.Text.B*0.6)}, 0.3)
-                else
-                    CreateTween(obj, {TextColor3 = T.Text}, 0.3)
-                end
-            end
-        end
-        
-        for _, page in pairs(PagesFolder:GetChildren()) do
-            if page:IsA("ScrollingFrame") then
-                for i, elem in pairs(page:GetChildren()) do
-                    if elem:IsA("Frame") and elem.Name == "ElementFrame" then
-                        CreateTween(elem, {BackgroundColor3 = T.Element}, 0.3)
-                        
-                        local txt = elem:FindFirstChildOfClass("TextLabel")
-                        if txt then 
-                            txt.TextColor3 = T.Text 
-                            local arrow = elem:FindFirstChild("ImageLabel")
-                            if arrow then arrow.ImageColor3 = T.Text end
-                        end
-                        
-                        local btnInside = elem:FindFirstChildOfClass("TextButton")
-                        if btnInside and btnInside.Text ~= "" then btnInside.TextColor3 = T.Text end
-
-                        local bar = elem:FindFirstChild("Frame")
-                        if bar and bar:FindFirstChild("Frame") then 
-                            bar.BackgroundColor3 = Color3.new(T.Element.R*0.5, T.Element.G*0.5, T.Element.B*0.5) 
-                            local fill = bar:FindFirstChild("Frame")
-                            if fill then fill.BackgroundColor3 = T.Accent end
-                        end
-
-                        if elem:FindFirstChild("TextLabel") then
-                            local switchFrame = elem:FindFirstChild("Frame")
-                            if switchFrame and switchFrame:FindFirstChild("Frame") then
-                                local dot = switchFrame:FindFirstChild("Frame")
-                                if dot.Position.X.Scale > 0.5 then
-                                    switchFrame.BackgroundColor3 = T.Accent
-                                else
-                                    switchFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
-                                end
-                            end
-                        end
-                    elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
-                        elem.TextColor3 = T.Accent
-                        local line = elem:FindFirstChild("Line")
-                        if line then line.BackgroundColor3 = T.Accent end
-                    end
-                end
-            end
-        end
-    end
-
-    function Library:SetTheme(ThemeName)
-        if Library.Themes[ThemeName] then
-            Library.CurrentTheme = Library.Themes[ThemeName]
-            Library.Settings.Theme = ThemeName
-            Library:RefreshTheme()
-        end
-    end
-
     -- // KEY SYSTEM //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
@@ -613,7 +408,6 @@ function Library:CreateWindow(Config)
         KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
         KeyFrame.Size = UDim2.new(0, 400, 0, 250)
         KeyFrame.ClipsDescendants = true
-        KeyFrame.ZIndex = 10
         local KC = Instance.new("UICorner")
         KC.CornerRadius = UDim.new(0, 10)
         KC.Parent = KeyFrame
@@ -675,15 +469,59 @@ function Library:CreateWindow(Config)
                     KeyFrame:Visible(false)
                     MainFrame.Visible = true
                     CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
-                    FX:SpawnParticles(MainFrame, Library.CurrentTheme.Accent, 30)
                 end)
             else
                 Library:Notification({Title = Library:GetText("KeyError"), Content = Library:GetText("KeyIncorrect")})
-                FX:Shockwave(KeyFrame, Color3.fromRGB(255, 0, 0))
             end
         end)
     else
         CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+    end
+
+    function Library:RefreshTheme()
+        local T = Library.CurrentTheme
+        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
+        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
+        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
+        
+        -- Update Gradient & Glow
+        TopGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+            ColorSequenceKeypoint.new(1, T.Accent) 
+        }
+        CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3)
+
+        TitleLbl.TextColor3 = T.Text
+        OpenBtnFrame.BackgroundColor3 = T.Top
+        for _, obj in pairs(TabContainer:GetChildren()) do
+            if obj:IsA("TextButton") then
+                if obj.BackgroundTransparency < 0.9 then obj.TextColor3 = T.Text end
+            end
+        end
+        for _, page in pairs(PagesFolder:GetChildren()) do
+            if page:IsA("ScrollingFrame") then
+                for _, elem in pairs(page:GetChildren()) do
+                    if elem:IsA("Frame") and elem.Name == "ElementFrame" then
+                        CreateTween(elem, {BackgroundColor3 = T.Element}, 0.3)
+                        local txt = elem:FindFirstChildOfClass("TextLabel")
+                        if txt then txt.TextColor3 = T.Text end
+                        local btn = elem:FindFirstChildOfClass("TextButton")
+                        if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
+                    elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
+                        elem.TextColor3 = T.Accent
+                        elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
+                    end
+                end
+            end
+        end
+    end
+
+    function Library:SetTheme(ThemeName)
+        if Library.Themes[ThemeName] then
+            Library.CurrentTheme = Library.Themes[ThemeName]
+            Library.Settings.Theme = ThemeName
+            Library:RefreshTheme()
+        end
     end
 
     local Window = {}
@@ -735,15 +573,6 @@ function Library:CreateWindow(Config)
             for _,v in pairs(PagesFolder:GetChildren()) do if v:IsA("ScrollingFrame") then v.Visible = false end end
             CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
-            
-            for i, v in pairs(Page:GetChildren()) do
-                if v:IsA("Frame") or v:IsA("TextLabel") then
-                    if v.Name == "ElementFrame" then
-                        v.BackgroundTransparency = 1
-                        CreateTween(v, {BackgroundTransparency = 0}, 0.4)
-                    end
-                end
-            end
         end)
         
         if FirstTab then
@@ -769,7 +598,6 @@ function Library:CreateWindow(Config)
             BT.TextColor3 = Library.CurrentTheme.Text
             BT.TextSize = 14
             BT.MouseButton1Click:Connect(function()
-                FX:Shockwave(Btn, Library.CurrentTheme.Accent)
                 CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Accent}, 0.1)
                 task.wait(0.1)
                 CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
@@ -826,9 +654,9 @@ function Library:CreateWindow(Config)
                 Library.Flags[text] = Toggled 
                 CreateTween(SB, {BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)}, 0.2)
                 CreateTween(Dot, {Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)}, 0.2)
-                if Toggled then FX:Shockwave(SB, Library.CurrentTheme.Accent) end
                 pcall(callback, Toggled)
             end
+
             Btn.MouseButton1Click:Connect(function() Update(not Toggled) end)
             Library.Elements[text] = { Set = function(self, v) Update(v) end }
             return TFr, TL 
@@ -929,15 +757,12 @@ function Library:CreateWindow(Config)
             Arrow.Position = UDim2.new(1,-30,0,8)
             Arrow.Size = UDim2.new(0,20,0,20)
             Arrow.Image = "rbxassetid://6031090990"
-            
-            -- [FIX] Scroll Maior
             local Scroll = Instance.new("ScrollingFrame")
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,500) 
+            Scroll.Size = UDim2.new(1,0,0,500)
             Scroll.ScrollBarThickness = 2
-            
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
             SL.Padding = UDim.new(0,2)
@@ -960,14 +785,13 @@ function Library:CreateWindow(Config)
                     dropped = false
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
                     CreateTween(Arrow, {Rotation = 0}, 0.2)
-                    FX:Shockwave(DFr, Library.CurrentTheme.Accent)
                     pcall(callback, item)
                 end)
             end
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2) -- [FIX] Expand Size
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
@@ -1103,7 +927,6 @@ function Library:CreateWindow(Config)
                     Binding = false
                     KBtn.Text = Key.Name
                     Library.Flags[text] = Key.Name
-                    FX:Shockwave(KFr, Library.CurrentTheme.Accent)
                     pcall(callback, Key)
                 elseif input.KeyCode == Key and not Binding then
                     pcall(callback, Key)
@@ -1172,11 +995,13 @@ function Library:CreateWindow(Config)
                 S.Position = UDim2.new(0,10,0,y)
                 S.Size = UDim2.new(1,-20,0,20)
                 local Corner = Instance.new("UICorner") Corner.Parent = S
+                
                 local Fill = Instance.new("Frame")
                 Fill.Parent = S
                 Fill.BackgroundColor3 = name == "R" and Color3.fromRGB(255,50,50) or (name == "G" and Color3.fromRGB(50,255,50) or Color3.fromRGB(50,50,255))
                 Fill.Size = UDim2.new(colorComp, 0, 1, 0)
                 local FC = Instance.new("UICorner") FC.Parent = Fill
+                
                 local Btn = Instance.new("TextButton")
                 Btn.Parent = S
                 Btn.BackgroundTransparency = 1
@@ -1190,22 +1015,29 @@ function Library:CreateWindow(Config)
                         local RelX = Mouse.X - S.AbsolutePosition.X
                         local Pct = math.clamp(RelX / S.AbsoluteSize.X, 0, 1)
                         Fill.Size = UDim2.new(Pct, 0, 1, 0)
+                        
                         local R, G, B = Color.R, Color.G, Color.B
                         if name == "R" then R = Pct elseif name == "G" then G = Pct else B = Pct end
                         Color = Color3.new(R, G, B)
                         UpdateColor()
-                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then move:Disconnect() end
+                        
+                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+                            move:Disconnect()
+                        end
                     end)
                 end)
                 return Fill
             end
+
             local FillR = CreateRGBSlider("R", 5, Color.R)
             local FillG = CreateRGBSlider("G", 35, Color.G)
             local FillB = CreateRGBSlider("B", 65, Color.B)
+
             Preview.MouseButton1Click:Connect(function()
                 Opened = not Opened
                 CreateTween(CFr, {Size = UDim2.new(1,0,0, Opened and 130 or 36)}, 0.2)
             end)
+            
             Library.Elements[text] = {
                 Set = function(self, val)
                     if val.R then
@@ -1218,17 +1050,24 @@ function Library:CreateWindow(Config)
                 end
             }
         end
+
         return Tab
     end
 
     function Window:AddConfig()
         local ConfigTab = Window:Tab(Library:GetText("ConfigTab"))
         
+        -- // Scripts Section //
         ConfigTab:Paragraph(Library:GetText("ScriptsTitle"))
         
         ConfigTab:Button("Infinite Yield", function()
             loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
             Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Infinite Yield"})
+        end)
+        
+        ConfigTab:Button("Tiger X", function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/balintTheDevX/Tiger-X-V3/main/Tiger%20X%20V3.5%20Fixed"))()
+            Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Tiger X"})
         end)
         
         ConfigTab:Paragraph(Library:GetText("ConfigTab"))
@@ -1243,20 +1082,7 @@ function Library:CreateWindow(Config)
             Library:RefreshTheme()
         end)
         
-        local PartToggle, PartLabel = ConfigTab:Toggle(Library:GetText("PartToggle"), true, function(Val)
-            Library.Settings.Particles = Val
-        end)
-        
-        local AtmosToggle, AtmosLabel = ConfigTab:Toggle(Library:GetText("AtmosToggle"), true, function(Val)
-            Library.Settings.Atmosphere = Val
-            FX:ApplyLighting(Library.CurrentTheme)
-        end)
-        
-        local ThemeList = {}
-        for name, _ in pairs(Library.Themes) do table.insert(ThemeList, name) end
-        table.sort(ThemeList)
-
-        local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), ThemeList, function(Selected)
+        local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), {"Default", "DarkBlue", "DarkRed", "Ocean", "Amethyst", "Emerald", "Sunset", "Carbon"}, function(Selected)
             Library:SetTheme(Selected)
         end)
         
@@ -1268,29 +1094,33 @@ function Library:CreateWindow(Config)
         local LoadBtn = ConfigTab:Button(Library:GetText("LoadBtn"), function()
             if LoadConfig() then
                 Library:SetTheme(Library.Settings.Theme)
-                if Library.Settings.Transparency then pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end) end
-                if not Library.Settings.Particles then pcall(function() Library.Elements[Library:GetText("PartToggle")]:Set(false) end) end
-                if not Library.Settings.Atmosphere then pcall(function() Library.Elements[Library:GetText("AtmosToggle")]:Set(false) end) end
+                if Library.Settings.Transparency then
+                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
+                end
                 Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
             else
                 Library:Notification({Title = "Error", Content = Library:GetText("LoadErr")})
             end
         end)
         
+        -- Loop de Atualização de Texto (Tradução em tempo real)
         task.spawn(function()
             while task.wait(0.5) do
                 if LangDropLbl then LangDropLbl.Text = Library:GetText("LangDrop") end
                 if TransLabel then TransLabel.Text = Library:GetText("TransToggle") end
                 if ThemeDropLbl then ThemeDropLbl.Text = Library:GetText("ThemeDrop") end
-                if PartLabel then PartLabel.Text = Library:GetText("PartToggle") end
-                if AtmosLabel then AtmosLabel.Text = Library:GetText("AtmosToggle") end
                 if SaveBtn then SaveBtn.Text = Library:GetText("SaveBtn") end
                 if LoadBtn then LoadBtn.Text = Library:GetText("LoadBtn") end
             end
         end)
 
         task.delay(0.5, function()
-             if LoadConfig() then Library:SetTheme(Library.Settings.Theme) end
+             if LoadConfig() then
+                Library:SetTheme(Library.Settings.Theme)
+                if Library.Settings.Transparency then
+                    pcall(function() Library.Elements[Library:GetText("TransToggle")]:Set(true) end)
+                end
+             end
         end)
     end
 
