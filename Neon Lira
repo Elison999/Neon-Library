@@ -935,7 +935,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,1000) 
+            Scroll.Size = UDim2.new(1,0,0,500) 
             Scroll.ScrollBarThickness = 2
             
             local SL = Instance.new("UIListLayout")
@@ -967,7 +967,7 @@ function Library:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,1040)}, 0.2) -- [FIX] Expand Size
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2) -- [FIX] Expand Size
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
