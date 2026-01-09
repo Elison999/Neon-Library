@@ -1,8 +1,7 @@
 --[[ 
-    NEON UI LIBRARY (VISUAL EFFECTS & SCRIPTS UPDATE)
-    - Updated: Load Config only after Key Verification
-    - Updated: Save/Load support for Dropdowns and Textboxes
-    - Systems: Save/Load, Keybinds, ColorPicker, Multi-Language, Themes
+    NEON UI LIBRARY (FIXED KEY SYSTEM)
+    - Correção: Limpeza agressiva de espaços e quebras de linha na Key
+    - Debug: Prints no console (F9) para verificar o que está sendo comparado
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -183,7 +182,6 @@ local function LoadConfig()
         if success then
             if decoded.Settings then 
                 Library.Settings = decoded.Settings 
-                -- Aplicar tema carregado
                 if Library.Settings.Theme and Library.Themes[Library.Settings.Theme] then
                     Library.CurrentTheme = Library.Themes[Library.Settings.Theme]
                     Library:RefreshTheme()
@@ -472,7 +470,7 @@ function Library:CreateWindow(Config)
         end
     end
 
-    -- // Lógica do Sistema de Key & Carregamento Seguro //
+    -- // Lógica do Sistema de Key & Carregamento Seguro (CORRIGIDO) //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -534,11 +532,24 @@ function Library:CreateWindow(Config)
         KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Key", Content = Library:GetText("LinkCopied")}) end end)
         
         KBtn.MouseButton1Click:Connect(function()
-            local Input = KInput.Text
-            local RealKey = KeySystemConfig.Key
-            if KeySystemConfig.GrabKeyFromSite then pcall(function() RealKey = game:HttpGet(KeySystemConfig.KeySite):gsub("\n",""):gsub(" ","") end) end
+            -- LIMPEZA AGRESSIVA DE STRINGS (Remove espaços, enters, etc)
+            local InputRaw = KInput.Text
+            local RealKeyRaw = KeySystemConfig.Key
             
-            if Input == RealKey then
+            if KeySystemConfig.GrabKeyFromSite then 
+                local s, res = pcall(function() return game:HttpGet(KeySystemConfig.KeySite) end)
+                if s then RealKeyRaw = res end
+            end
+            
+            -- Remove qualquer coisa que seja espaço em branco (space, tab, newline)
+            local InputClean = string.gsub(tostring(InputRaw), "%s+", "")
+            local RealKeyClean = string.gsub(tostring(RealKeyRaw), "%s+", "")
+            
+            -- DEBUG NO CONSOLE (F9)
+            print("[NEON UI DEBUG] Key Digitada (Limpa): '" .. InputClean .. "'")
+            print("[NEON UI DEBUG] Key Esperada (Limpa): '" .. RealKeyClean .. "'")
+            
+            if InputClean == RealKeyClean then
                 Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
                 
                 -- TENTAR CARREGAR O CONFIG AQUI (Só se a key estiver correta)
@@ -801,7 +812,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,500)
+            Scroll.Size = UDim2.new(1,0,0,100)
             Scroll.ScrollBarThickness = 2
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
@@ -836,7 +847,7 @@ function Library:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
