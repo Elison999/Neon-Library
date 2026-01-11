@@ -1,8 +1,8 @@
 --[[ 
-    NEON UI LIBRARY (DIRECT PASSWORD SYSTEM)
-    - Key System: Agora funciona com senha fixa (String), não com site.
-    - Mantido: Limpeza de espaços em branco para evitar erros.
-    - Mantido: Salvamento automático após validar a Key.
+    NEON UI LIBRARY (MULTI-DROPDOWN UPDATE)
+    - New Element: MultiDropdown (Select multiple options)
+    - System: Fixed Password Key System (No Link)
+    - Systems: Save/Load (Supports MultiDropdown), Keybinds, ColorPicker, Themes
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -47,7 +47,8 @@ Library.Translations = {
         Binding = "Press key...",
         NoBind = "None",
         ScriptsTitle = "Scripts Hub",
-        ExecScript = "Executed: "
+        ExecScript = "Executed: ",
+        MultiSelect = "Selected: "
     },
     Portuguese = {
         ConfigTab = "Configuração",
@@ -71,7 +72,8 @@ Library.Translations = {
         Binding = "Aperte a tecla...",
         NoBind = "Nenhum",
         ScriptsTitle = "Hub de Scripts",
-        ExecScript = "Executado: "
+        ExecScript = "Executado: ",
+        MultiSelect = "Selecionado: "
     }
 }
 
@@ -209,7 +211,7 @@ function Library:CreateWindow(Config)
         Enabled = Config.KeySystem or false,
         Key = Config.Key or "", -- A SENHA FIXA VAI AQUI
         KeyName = Config.KeyName or Library:GetText("KeyTitle"),
-        KeySite = Config.KeySite or "https://discord.gg/" -- Link apenas para o botão de copiar
+        KeySite = Config.KeySite or "https://discord.gg/" 
     }
 
     local TitanUI = Instance.new("ScreenGui")
@@ -453,6 +455,17 @@ function Library:CreateWindow(Config)
                         if txt then txt.TextColor3 = T.Text end
                         local btn = elem:FindFirstChildOfClass("TextButton")
                         if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
+                        
+                        -- Update MultiDropdown items
+                        if elem:FindFirstChild("Scroll") then
+                            for _, subElem in pairs(elem.Scroll:GetChildren()) do
+                                if subElem:IsA("TextButton") then
+                                     -- Logic to update colors in MultiDropdown is handled in its Update logic, but we can reset bg here
+                                     subElem.BackgroundColor3 = Color3.fromRGB(35,35,35)
+                                end
+                            end
+                        end
+
                     elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
                         elem.TextColor3 = T.Accent
                         elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
@@ -805,7 +818,7 @@ function Library:CreateWindow(Config)
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,100)
+            Scroll.Size = UDim2.new(1,0,0,500)
             Scroll.ScrollBarThickness = 2
             local SL = Instance.new("UIListLayout")
             SL.Parent = Scroll
@@ -840,7 +853,7 @@ function Library:CreateWindow(Config)
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
@@ -853,10 +866,143 @@ function Library:CreateWindow(Config)
                 Set = function(self, val)
                     DL.Text = text .. " ("..val..")"
                     Library.Flags[text] = val
-                    -- No load, we just visually update, logic might not want to run on load for some scripts
                 end
             }
             
+            return DL 
+        end
+
+        -- // NEW ELEMENT: MULTI-DROPDOWN //
+        function Tab:MultiDropdown(text, list, default, callback)
+            local dropped = false
+            local Selected = default or {}
+            Library.Flags[text] = Selected 
+            
+            local DFr = Instance.new("Frame")
+            DFr.Name = "ElementFrame"
+            DFr.Parent = Page
+            DFr.BackgroundColor3 = Library.CurrentTheme.Element
+            DFr.Size = UDim2.new(1,0,0,36)
+            DFr.ClipsDescendants = true
+            local DC = Instance.new("UICorner")
+            DC.Parent = DFr
+            local DL = Instance.new("TextLabel")
+            DL.Parent = DFr
+            DL.BackgroundTransparency = 1
+            DL.Position = UDim2.new(0,10,0,0)
+            DL.Size = UDim2.new(1,-40,0,36)
+            DL.Font = Enum.Font.Gotham
+            DL.Text = text
+            DL.TextColor3 = Library.CurrentTheme.Text
+            DL.TextSize = 14
+            DL.TextXAlignment = Enum.TextXAlignment.Left
+            local Arrow = Instance.new("ImageLabel")
+            Arrow.Parent = DFr
+            Arrow.BackgroundTransparency = 1
+            Arrow.Position = UDim2.new(1,-30,0,8)
+            Arrow.Size = UDim2.new(0,20,0,20)
+            Arrow.Image = "rbxassetid://6031090990"
+            
+            local Scroll = Instance.new("ScrollingFrame")
+            Scroll.Name = "Scroll"
+            Scroll.Parent = DFr
+            Scroll.BackgroundTransparency = 1
+            Scroll.Position = UDim2.new(0,0,0,36)
+            Scroll.Size = UDim2.new(1,0,0,500)
+            Scroll.ScrollBarThickness = 2
+            local SL = Instance.new("UIListLayout")
+            SL.Parent = Scroll
+            SL.Padding = UDim.new(0,2)
+            
+            local Btn = Instance.new("TextButton")
+            Btn.Parent = DFr
+            Btn.BackgroundTransparency = 1
+            Btn.Size = UDim2.new(1,0,0,36)
+            Btn.Text = ""
+
+            local function UpdateText()
+                local count = 0
+                for _ in pairs(Selected) do count = count + 1 end
+                if count == 0 then
+                    DL.Text = text .. " (".. Library:GetText("NoBind") ..")"
+                else
+                     DL.Text = text .. " (".. Library:GetText("MultiSelect") .. count .. ")"
+                end
+            end
+
+            local function IsSelected(item)
+                for _, v in pairs(Selected) do
+                    if v == item then return true end
+                end
+                return false
+            end
+            
+            local function RefreshList()
+                -- Reset all buttons in scroll
+                for _, obj in pairs(Scroll:GetChildren()) do
+                    if obj:IsA("TextButton") then
+                        if IsSelected(obj.Text) then
+                             obj.TextColor3 = Library.CurrentTheme.Accent
+                        else
+                             obj.TextColor3 = Color3.fromRGB(200,200,200)
+                        end
+                    end
+                end
+            end
+
+            local function ToggleItem(item)
+                local found = false
+                for i, v in pairs(Selected) do
+                    if v == item then
+                        table.remove(Selected, i)
+                        found = true
+                        break
+                    end
+                end
+                if not found then table.insert(Selected, item) end
+                
+                Library.Flags[text] = Selected
+                UpdateText()
+                RefreshList()
+                pcall(callback, Selected)
+            end
+
+            for _,item in pairs(list) do
+                local IB = Instance.new("TextButton")
+                IB.Parent = Scroll
+                IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
+                IB.Size = UDim2.new(1,0,0,25)
+                IB.Font = Enum.Font.Gotham
+                IB.Text = item
+                IB.TextColor3 = Color3.fromRGB(200,200,200)
+                IB.TextSize = 13
+                IB.MouseButton1Click:Connect(function() ToggleItem(item) end)
+            end
+
+            Btn.MouseButton1Click:Connect(function()
+                dropped = not dropped
+                if dropped then
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
+                    CreateTween(Arrow, {Rotation = 180}, 0.2)
+                else
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
+                    CreateTween(Arrow, {Rotation = 0}, 0.2)
+                end
+            end)
+            
+            -- SAVE/LOAD SUPPORT FOR MULTI-DROPDOWN
+            Library.Elements[text] = {
+                Set = function(self, val)
+                    if type(val) == "table" then
+                        Selected = val
+                        Library.Flags[text] = Selected
+                        UpdateText()
+                        RefreshList()
+                    end
+                end
+            }
+
+            UpdateText() -- Init text
             return DL 
         end
 
@@ -1143,6 +1289,11 @@ function Library:CreateWindow(Config)
         end)
         
         ConfigTab:Paragraph(Library:GetText("ConfigTab"))
+
+        -- EXEMPLO DE USO DO MULTI-DROPDOWN
+        ConfigTab:MultiDropdown("Multi Select Test", {"Opção A", "Opção B", "Opção C", "Opção D"}, {}, function(SelectedItems)
+            print("Items Selecionados:", table.concat(SelectedItems, ", "))
+        end)
 
         local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
             Library.Settings.Language = Selected
