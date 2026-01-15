@@ -1,10 +1,9 @@
 --[[ 
-    NEON UI LIBRARY (MODERN UPDATE + SEARCH + SAVE KEY)
-    - New: Search Bar (Auto Tab Switch & Scroll)
-    - New: SaveKey System (Auto-fill)
-    - New: Dynamic Dropdown Refresh (Update lists on the fly)
-    - Updated: Smoother Animations (Exponential Easing)
-    - Updated: Visual Polish
+    NEON UI LIBRARY (AUTO-LOGIN UPDATE)
+    - Update: Auto-Login (Checks saved key instantly)
+    - Feature: Search Bar (Auto Tab Switch & Scroll)
+    - Feature: MultiDropdown & Dynamic Refresh
+    - System: Save/Load Config & Key
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -23,8 +22,8 @@ Library.Settings = {
 }
 
 Library.Flags = {}    
-Library.Elements = {} -- Armazena referências para Save/Load
-Library.SearchIndex = {} -- Armazena elementos para a Barra de Pesquisa
+Library.Elements = {} 
+Library.SearchIndex = {} 
 
 -- // Traduções //
 Library.Translations = {
@@ -52,7 +51,8 @@ Library.Translations = {
         ScriptsTitle = "Scripts Hub",
         ExecScript = "Executed: ",
         MultiSelect = "Selected: ",
-        SearchPlace = "Search..."
+        SearchPlace = "Search...",
+        AutoLogin = "Auto-Login Successful!"
     },
     Portuguese = {
         ConfigTab = "Configuração",
@@ -78,7 +78,8 @@ Library.Translations = {
         ScriptsTitle = "Hub de Scripts",
         ExecScript = "Executado: ",
         MultiSelect = "Selecionado: ",
-        SearchPlace = "Procurar..."
+        SearchPlace = "Procurar...",
+        AutoLogin = "Login Automático com Sucesso!"
     }
 }
 
@@ -154,7 +155,6 @@ local function MakeDraggable(topbarobject, object)
 end
 
 local function CreateTween(obj, props, time)
-    -- Animação mais suave e moderna (Exponential)
     local info = TweenInfo.new(time or 0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
     local tween = TweenService:Create(obj, info, props)
     tween:Play()
@@ -232,7 +232,7 @@ function Library:CreateWindow(Config)
         Key = Config.Key or "", 
         KeyName = Config.KeyName or Library:GetText("KeyTitle"),
         KeySite = Config.KeySite or "https://discord.gg/",
-        SaveKey = Config.SaveKey or false -- NOVA OPÇÃO
+        SaveKey = Config.SaveKey or false
     }
 
     local TitanUI = Instance.new("ScreenGui")
@@ -439,7 +439,7 @@ function Library:CreateWindow(Config)
     SBI.BackgroundTransparency = 1
     SBI.Position = UDim2.new(1, -25, 0, 5)
     SBI.Size = UDim2.new(0, 20, 0, 20)
-    SBI.Image = "rbxassetid://6031154871" -- Ícone de lupa
+    SBI.Image = "rbxassetid://6031154871" 
     SBI.ImageColor3 = Color3.fromRGB(150, 150, 150)
 
     local TabContainer = Instance.new("ScrollingFrame")
@@ -495,16 +495,13 @@ function Library:CreateWindow(Config)
         if txt == "" then return end
         for _, item in pairs(Library.SearchIndex) do
             if string.find(item.Name:lower(), txt) then
-                -- Abre a aba
                 SwitchToTab(item.Tab)
-                -- Scrolla até o elemento
                 local Page = PagesFolder:FindFirstChild(item.Tab)
                 if Page and item.Instance then
-                    -- Calculo simples de posição aproximada
                     local yPos = item.Instance.AbsolutePosition.Y - Page.AbsolutePosition.Y + Page.CanvasPosition.Y
                     CreateTween(Page, {CanvasPosition = Vector2.new(0, yPos)}, 0.4)
                 end
-                break -- Para no primeiro achado
+                break 
             end
         end
     end)
@@ -516,7 +513,6 @@ function Library:CreateWindow(Config)
         CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
         CreateTween(SearchBar, {BackgroundColor3 = T.Top}, 0.3)
         
-        -- Update Gradient & Glow
         TopGradient.Color = ColorSequence.new{
             ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
             ColorSequenceKeypoint.new(1, T.Accent) 
@@ -565,7 +561,7 @@ function Library:CreateWindow(Config)
         end
     end
 
-    -- // SISTEMA DE SENHA FIXA + SAVE KEY //
+    -- // SISTEMA DE SENHA + AUTO LOGIN //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
@@ -626,10 +622,25 @@ function Library:CreateWindow(Config)
         MakeDraggable(KeyFrame, KeyFrame)
         KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Link", Content = Library:GetText("LinkCopied")}) end end)
         
-        -- AUTO LOAD KEY
+        -- // LÓGICA DE AUTO-LOGIN //
         if KeySystemConfig.SaveKey then
             local Saved = LoadKey()
-            if Saved then KInput.Text = Saved end
+            if Saved then 
+                KInput.Text = Saved 
+                local InputClean = string.gsub(tostring(Saved), "%s+", "")
+                local RealKeyClean = string.gsub(tostring(KeySystemConfig.Key), "%s+", "")
+                
+                if InputClean == RealKeyClean then
+                    -- Key correta, pular tela
+                    KeyFrame.Visible = false
+                    MainFrame.Visible = true
+                    if LoadConfig() then
+                         Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
+                    end
+                    Library:Notification({Title = "Key System", Content = Library:GetText("AutoLogin")})
+                    CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+                end
+            end
         end
 
         KBtn.MouseButton1Click:Connect(function()
@@ -640,7 +651,6 @@ function Library:CreateWindow(Config)
             local RealKeyClean = string.gsub(tostring(RealKeyRaw), "%s+", "")
             
             if InputClean == RealKeyClean then
-                -- SALVAR KEY SE CORRETA
                 if KeySystemConfig.SaveKey then
                     SaveKey(InputClean)
                 end
