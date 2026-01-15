@@ -1,8 +1,9 @@
 --[[ 
-    NEON UI LIBRARY (MULTI-DROPDOWN UPDATE)
-    - New Element: MultiDropdown (Select multiple options)
-    - System: Fixed Password Key System (No Link)
-    - Systems: Save/Load (Supports MultiDropdown), Keybinds, ColorPicker, Themes
+    NEON UI LIBRARY (MODERN SEARCH & DYNAMIC LISTS UPDATE)
+    - New: Search Bar (Finds elements, switches tabs, scrolls to target)
+    - New: Dynamic Dropdowns (Pass folders/instances to list children)
+    - Update: Key System with "Save Key" (Auto-login)
+    - Visual: Smoother Animations (Quint Easing)
 ]]
 
 local UserInputService = game:GetService("UserInputService")
@@ -22,6 +23,7 @@ Library.Settings = {
 
 Library.Flags = {}    
 Library.Elements = {} 
+Library.SearchableElements = {} -- Registro para a barra de pesquisa
 
 -- // Traduções //
 Library.Translations = {
@@ -44,11 +46,14 @@ Library.Translations = {
         KeyVerified = "Logged in!",
         KeyError = "Error",
         KeyIncorrect = "Incorrect Password!",
+        SaveKey = "Save Key",
         Binding = "Press key...",
         NoBind = "None",
         ScriptsTitle = "Scripts Hub",
         ExecScript = "Executed: ",
-        MultiSelect = "Selected: "
+        MultiSelect = "Selected: ",
+        SearchPlaceholder = "Search...",
+        NoItems = "No Items Found"
     },
     Portuguese = {
         ConfigTab = "Configuração",
@@ -69,11 +74,14 @@ Library.Translations = {
         KeyVerified = "Logado!",
         KeyError = "Erro",
         KeyIncorrect = "Senha Incorreta!",
+        SaveKey = "Salvar Key",
         Binding = "Aperte a tecla...",
         NoBind = "Nenhum",
         ScriptsTitle = "Hub de Scripts",
         ExecScript = "Executado: ",
-        MultiSelect = "Selecionado: "
+        MultiSelect = "Selecionado: ",
+        SearchPlaceholder = "Procurar...",
+        NoItems = "Nenhum Item"
     }
 }
 
@@ -127,7 +135,7 @@ local function MakeDraggable(topbarobject, object)
     local function Update(input)
         local Delta = input.Position - DragStart
         local pos = UDim2.new(StartPosition.X.Scale, StartPosition.X.Offset + Delta.X, StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y)
-        local Tween = TweenService:Create(object, TweenInfo.new(0.15), {Position = pos})
+        local Tween = TweenService:Create(object, TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = pos})
         Tween:Play()
     end
     topbarobject.InputBegan:Connect(function(input)
@@ -149,7 +157,8 @@ local function MakeDraggable(topbarobject, object)
 end
 
 local function CreateTween(obj, props, time)
-    local info = TweenInfo.new(time or 0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    -- MODERNIZAÇÃO: Usando Quint para suavidade
+    local info = TweenInfo.new(time or 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
     local tween = TweenService:Create(obj, info, props)
     tween:Play()
     return tween
@@ -209,7 +218,7 @@ function Library:CreateWindow(Config)
     local Title = Config.Name or "Library"
     local KeySystemConfig = {
         Enabled = Config.KeySystem or false,
-        Key = Config.Key or "", -- A SENHA FIXA VAI AQUI
+        Key = Config.Key or "", 
         KeyName = Config.KeyName or Library:GetText("KeyTitle"),
         KeySite = Config.KeySite or "https://discord.gg/" 
     }
@@ -314,7 +323,6 @@ function Library:CreateWindow(Config)
     MainFrame.Visible = not KeySystemConfig.Enabled
     if KeySystemConfig.Enabled then MainFrame.Size = UDim2.new(0,0,0,0) end
     
-    -- Visual Decor: Glow
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 8)
     MainCorner.Parent = MainFrame
@@ -324,7 +332,6 @@ function Library:CreateWindow(Config)
     MainStroke.Transparency = 0.5
     MainStroke.Parent = MainFrame
 
-    -- Visual Decor: Pattern Background
     local Pattern = Instance.new("ImageLabel")
     Pattern.Name = "Pattern"
     Pattern.Parent = MainFrame
@@ -342,7 +349,6 @@ function Library:CreateWindow(Config)
     Topbar.BackgroundColor3 = Library.CurrentTheme.Top
     Topbar.Size = UDim2.new(1, 0, 0, 40)
     
-    -- Visual Decor: Topbar Gradient
     local TopCorner = Instance.new("UICorner")
     TopCorner.CornerRadius = UDim.new(0, 8)
     TopCorner.Parent = Topbar
@@ -397,22 +403,50 @@ function Library:CreateWindow(Config)
     OpenBtnFrame.MouseButton1Click:Connect(function() Library:Toggle() end)
     MakeDraggable(Topbar, MainFrame)
 
+    -- // SEARCH BAR //
+    local SearchContainer = Instance.new("Frame")
+    SearchContainer.Parent = MainFrame
+    SearchContainer.BackgroundColor3 = Library.CurrentTheme.Element
+    SearchContainer.Position = UDim2.new(0, 10, 0, 50)
+    SearchContainer.Size = UDim2.new(0, 130, 0, 30)
+    local SearchCorner = Instance.new("UICorner") SearchCorner.Parent = SearchContainer
+    local SearchIcon = Instance.new("ImageLabel")
+    SearchIcon.Parent = SearchContainer
+    SearchIcon.BackgroundTransparency = 1
+    SearchIcon.Position = UDim2.new(0,5,0,5)
+    SearchIcon.Size = UDim2.new(0,20,0,20)
+    SearchIcon.Image = "rbxassetid://6031154871"
+    SearchIcon.ImageColor3 = Color3.fromRGB(200,200,200)
+    local SearchBox = Instance.new("TextBox")
+    SearchBox.Parent = SearchContainer
+    SearchBox.BackgroundTransparency = 1
+    SearchBox.Position = UDim2.new(0,30,0,0)
+    SearchBox.Size = UDim2.new(1,-35,1,0)
+    SearchBox.Font = Enum.Font.Gotham
+    SearchBox.PlaceholderText = Library:GetText("SearchPlaceholder")
+    SearchBox.Text = ""
+    SearchBox.TextColor3 = Color3.fromRGB(255,255,255)
+    SearchBox.TextSize = 13
+    SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Parent = MainFrame
     TabContainer.BackgroundTransparency = 1
-    TabContainer.Position = UDim2.new(0, 10, 0, 50)
-    TabContainer.Size = UDim2.new(0, 130, 1, -60)
+    TabContainer.Position = UDim2.new(0, 10, 0, 85) -- Moved down for search
+    TabContainer.Size = UDim2.new(0, 130, 1, -95)
     TabContainer.ScrollBarThickness = 2
     local TabList = Instance.new("UIListLayout")
     TabList.Parent = TabContainer
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
     TabList.Padding = UDim.new(0, 5)
+    
     local Divider = Instance.new("Frame")
     Divider.Parent = MainFrame
     Divider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     Divider.BorderSizePixel = 0
     Divider.Position = UDim2.new(0, 150, 0, 50)
     Divider.Size = UDim2.new(0, 1, 1, -60)
+    
     local PageContainer = Instance.new("Frame")
     PageContainer.Parent = MainFrame
     PageContainer.BackgroundTransparency = 1
@@ -426,11 +460,50 @@ function Library:CreateWindow(Config)
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
+    -- // SEARCH LOGIC //
+    local function PerformSearch(text)
+        text = text:lower()
+        if text == "" then return end
+        for _, itemData in pairs(Library.SearchableElements) do
+            if itemData.Name:lower():find(text) then
+                -- Open Tab
+                for _,v in pairs(TabContainer:GetChildren()) do
+                    if v:IsA("TextButton") then
+                        CreateTween(v, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(150,150,150)}, 0.2)
+                    end
+                end
+                for _,v in pairs(PagesFolder:GetChildren()) do if v:IsA("ScrollingFrame") then v.Visible = false end end
+                
+                -- Activate specific tab
+                if itemData.TabBtn then
+                    CreateTween(itemData.TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
+                end
+                if itemData.Page then
+                    itemData.Page.Visible = true
+                    -- Scroll to element
+                    local elementPos = itemData.Frame.AbsolutePosition.Y
+                    local scrollPos = itemData.Page.AbsolutePosition.Y
+                    local relativePos = elementPos - scrollPos + itemData.Page.CanvasPosition.Y
+                    
+                    CreateTween(itemData.Page, {CanvasPosition = Vector2.new(0, relativePos)}, 0.5)
+                end
+                break -- Stop at first match
+            end
+        end
+    end
+    
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        PerformSearch(SearchBox.Text)
+    end)
+
     function Library:RefreshTheme()
         local T = Library.CurrentTheme
         CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
         CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
         CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
+        CreateTween(SearchContainer, {BackgroundColor3 = T.Element}, 0.3)
+        SearchIcon.ImageColor3 = T.Text
+        SearchBox.PlaceholderColor3 = Color3.fromRGB(150,150,150)
         
         -- Update Gradient & Glow
         TopGradient.Color = ColorSequence.new{
@@ -456,14 +529,8 @@ function Library:CreateWindow(Config)
                         local btn = elem:FindFirstChildOfClass("TextButton")
                         if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
                         
-                        -- Update MultiDropdown items
                         if elem:FindFirstChild("Scroll") then
-                            for _, subElem in pairs(elem.Scroll:GetChildren()) do
-                                if subElem:IsA("TextButton") then
-                                     -- Logic to update colors in MultiDropdown is handled in its Update logic, but we can reset bg here
-                                     subElem.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                                end
-                            end
+                             -- MultiDropdown inner items handled by its logic usually
                         end
 
                     elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
@@ -483,21 +550,17 @@ function Library:CreateWindow(Config)
         end
     end
 
-    -- // SISTEMA DE SENHA FIXA (SEM SITE) //
+    -- // SISTEMA DE SENHA FIXA + SAVE KEY //
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
         KeyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
         KeyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
         KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-        KeyFrame.Size = UDim2.new(0, 400, 0, 250)
+        KeyFrame.Size = UDim2.new(0, 400, 0, 280) -- Aumentado pra caber o toggle
         KeyFrame.ClipsDescendants = true
-        local KC = Instance.new("UICorner")
-        KC.CornerRadius = UDim.new(0, 10)
-        KC.Parent = KeyFrame
-        local KS = Instance.new("UIStroke")
-        KS.Color = Color3.fromRGB(60,60,60)
-        KS.Parent = KeyFrame
+        local KC = Instance.new("UICorner") KC.CornerRadius = UDim.new(0, 10) KC.Parent = KeyFrame
+        local KS = Instance.new("UIStroke") KS.Color = Color3.fromRGB(60,60,60) KS.Parent = KeyFrame
         local KTitle = Instance.new("TextLabel")
         KTitle.Parent = KeyFrame
         KTitle.BackgroundTransparency = 1
@@ -510,55 +573,87 @@ function Library:CreateWindow(Config)
         local KInput = Instance.new("TextBox")
         KInput.Parent = KeyFrame
         KInput.BackgroundColor3 = Color3.fromRGB(35,35,35)
-        KInput.Position = UDim2.new(0.1,0,0.4,0)
+        KInput.Position = UDim2.new(0.1,0,0.3,0)
         KInput.Size = UDim2.new(0.8,0,0,40)
         KInput.Font = Enum.Font.Gotham
         KInput.PlaceholderText = Library:GetText("KeyPlaceholder")
         KInput.Text = ""
         KInput.TextColor3 = Color3.fromRGB(255,255,255)
         KInput.TextSize = 14
-        local KIC = Instance.new("UICorner")
-        KIC.Parent = KInput
+        local KIC = Instance.new("UICorner") KIC.Parent = KInput
+
+        -- SAVE KEY TOGGLE
+        local SaveKeyBtn = Instance.new("TextButton")
+        SaveKeyBtn.Parent = KeyFrame
+        SaveKeyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        SaveKeyBtn.BackgroundTransparency = 1
+        SaveKeyBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
+        SaveKeyBtn.Size = UDim2.new(0.8, 0, 0, 25)
+        SaveKeyBtn.Text = ""
+        local SaveKeyBox = Instance.new("Frame")
+        SaveKeyBox.Parent = SaveKeyBtn
+        SaveKeyBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+        SaveKeyBox.Size = UDim2.new(0, 20, 0, 20)
+        local SKBC = Instance.new("UICorner") SKBC.CornerRadius = UDim.new(0,4) SKBC.Parent = SaveKeyBox
+        local SaveKeyCheck = Instance.new("Frame")
+        SaveKeyCheck.Parent = SaveKeyBox
+        SaveKeyCheck.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        SaveKeyCheck.Size = UDim2.new(0, 14, 0, 14)
+        SaveKeyCheck.Position = UDim2.new(0,3,0,3)
+        SaveKeyCheck.Visible = false
+        local SKCC = Instance.new("UICorner") SKCC.CornerRadius = UDim.new(0,2) SKCC.Parent = SaveKeyCheck
+        local SaveKeyLbl = Instance.new("TextLabel")
+        SaveKeyLbl.Parent = SaveKeyBtn
+        SaveKeyLbl.BackgroundTransparency = 1
+        SaveKeyLbl.Position = UDim2.new(0, 30, 0, 0)
+        SaveKeyLbl.Size = UDim2.new(1, -30, 1, 0)
+        SaveKeyLbl.Font = Enum.Font.Gotham
+        SaveKeyLbl.Text = Library:GetText("SaveKey")
+        SaveKeyLbl.TextColor3 = Color3.fromRGB(200,200,200)
+        SaveKeyLbl.TextXAlignment = Enum.TextXAlignment.Left
+        
+        local isSavingKey = false
+        SaveKeyBtn.MouseButton1Click:Connect(function()
+            isSavingKey = not isSavingKey
+            SaveKeyCheck.Visible = isSavingKey
+        end)
+
         local KBtn = Instance.new("TextButton")
         KBtn.Parent = KeyFrame
         KBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
-        KBtn.Position = UDim2.new(0.1,0,0.65,0)
+        KBtn.Position = UDim2.new(0.1,0,0.7,0)
         KBtn.Size = UDim2.new(0.35,0,0,35)
         KBtn.Font = Enum.Font.GothamBold
         KBtn.Text = Library:GetText("CheckKey")
         KBtn.TextColor3 = Color3.fromRGB(255,255,255)
         KBtn.TextSize = 14
-        local KBC = Instance.new("UICorner")
-        KBC.Parent = KBtn
+        local KBC = Instance.new("UICorner") KBC.Parent = KBtn
         local KLink = Instance.new("TextButton")
         KLink.Parent = KeyFrame
         KLink.BackgroundColor3 = Color3.fromRGB(45,45,45)
-        KLink.Position = UDim2.new(0.55,0,0.65,0)
+        KLink.Position = UDim2.new(0.55,0,0.7,0)
         KLink.Size = UDim2.new(0.35,0,0,35)
         KLink.Font = Enum.Font.GothamBold
         KLink.Text = Library:GetText("GetKey")
         KLink.TextColor3 = Color3.fromRGB(255,255,255)
         KLink.TextSize = 14
-        local KLC = Instance.new("UICorner")
-        KLC.Parent = KLink
+        local KLC = Instance.new("UICorner") KLC.Parent = KLink
         MakeDraggable(KeyFrame, KeyFrame)
         KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Link", Content = Library:GetText("LinkCopied")}) end end)
         
-        KBtn.MouseButton1Click:Connect(function()
+        local function CheckAndLogin()
             local InputRaw = KInput.Text
-            local RealKeyRaw = KeySystemConfig.Key -- USA A SENHA DO SCRIPT DIRETAMENTE
-            
-            -- Remove espaços em branco
+            local RealKeyRaw = KeySystemConfig.Key
             local InputClean = string.gsub(tostring(InputRaw), "%s+", "")
             local RealKeyClean = string.gsub(tostring(RealKeyRaw), "%s+", "")
-            
-            print("[NEON UI DEBUG] Senha Digitada: '" .. InputClean .. "'")
-            print("[NEON UI DEBUG] Senha Correta: '" .. RealKeyClean .. "'")
             
             if InputClean == RealKeyClean then
                 Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
                 
-                -- Carrega configurações salvas se a senha estiver correta
+                if isSavingKey and writefile then
+                    writefile("NeonUI_SavedKey.json", HttpService:JSONEncode({Key = InputClean}))
+                end
+
                 if LoadConfig() then
                      Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
                 end
@@ -571,9 +666,21 @@ function Library:CreateWindow(Config)
             else
                 Library:Notification({Title = Library:GetText("KeyError"), Content = Library:GetText("KeyIncorrect")})
             end
-        end)
+        end
+
+        KBtn.MouseButton1Click:Connect(CheckAndLogin)
+        
+        -- Auto Load Key
+        if isfile and isfile("NeonUI_SavedKey.json") then
+            local succ, res = pcall(function() return HttpService:JSONDecode(readfile("NeonUI_SavedKey.json")) end)
+            if succ and res.Key then
+                KInput.Text = res.Key
+                isSavingKey = true
+                SaveKeyCheck.Visible = true
+                task.delay(0.5, CheckAndLogin)
+            end
+        end
     else
-        -- Se não tiver senha, abre direto
         if LoadConfig() then
             Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
         end
@@ -643,8 +750,7 @@ function Library:CreateWindow(Config)
             Btn.Parent = Page
             Btn.BackgroundColor3 = Library.CurrentTheme.Element
             Btn.Size = UDim2.new(1,0,0,36)
-            local BC = Instance.new("UICorner")
-            BC.Parent = Btn
+            local BC = Instance.new("UICorner") BC.Parent = Btn
             local BT = Instance.new("TextButton")
             BT.Parent = Btn
             BT.BackgroundTransparency = 1
@@ -659,6 +765,8 @@ function Library:CreateWindow(Config)
                 CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
                 pcall(callback)
             end)
+            
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = Btn, TabBtn = TabBtn})
             return BT 
         end
 
@@ -671,8 +779,7 @@ function Library:CreateWindow(Config)
             TFr.Parent = Page
             TFr.BackgroundColor3 = Library.CurrentTheme.Element
             TFr.Size = UDim2.new(1,0,0,36)
-            local TC = Instance.new("UICorner")
-            TC.Parent = TFr
+            local TC = Instance.new("UICorner") TC.Parent = TFr
             local TL = Instance.new("TextLabel")
             TL.Parent = TFr
             TL.BackgroundTransparency = 1
@@ -688,17 +795,13 @@ function Library:CreateWindow(Config)
             SB.BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)
             SB.Position = UDim2.new(1,-50,0.5,-10)
             SB.Size = UDim2.new(0,40,0,20)
-            local SC = Instance.new("UICorner")
-            SC.CornerRadius = UDim.new(1,0)
-            SC.Parent = SB
+            local SC = Instance.new("UICorner") SC.CornerRadius = UDim.new(1,0) SC.Parent = SB
             local Dot = Instance.new("Frame")
             Dot.Parent = SB
             Dot.BackgroundColor3 = Color3.fromRGB(255,255,255)
             Dot.Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)
             Dot.Size = UDim2.new(0,16,0,16)
-            local DC = Instance.new("UICorner")
-            DC.CornerRadius = UDim.new(1,0)
-            DC.Parent = Dot
+            local DC = Instance.new("UICorner") DC.CornerRadius = UDim.new(1,0) DC.Parent = Dot
             local Btn = Instance.new("TextButton")
             Btn.Parent = TFr
             Btn.BackgroundTransparency = 1
@@ -715,6 +818,7 @@ function Library:CreateWindow(Config)
 
             Btn.MouseButton1Click:Connect(function() Update(not Toggled) end)
             Library.Elements[text] = { Set = function(self, v) Update(v) end }
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = TFr, TabBtn = TabBtn})
             return TFr, TL 
         end
 
@@ -727,8 +831,7 @@ function Library:CreateWindow(Config)
             SFr.Parent = Page
             SFr.BackgroundColor3 = Library.CurrentTheme.Element
             SFr.Size = UDim2.new(1,0,0,50)
-            local SC = Instance.new("UICorner")
-            SC.Parent = SFr
+            local SC = Instance.new("UICorner") SC.Parent = SFr
             local SL = Instance.new("TextLabel")
             SL.Parent = SFr
             SL.BackgroundTransparency = 1
@@ -755,14 +858,12 @@ function Library:CreateWindow(Config)
             Bar.BackgroundColor3 = Color3.fromRGB(60,60,60)
             Bar.Position = UDim2.new(0,10,0,35)
             Bar.Size = UDim2.new(1,-20,0,6)
-            local BC = Instance.new("UICorner")
-            BC.Parent = Bar
+            local BC = Instance.new("UICorner") BC.Parent = Bar
             local Fill = Instance.new("Frame")
             Fill.Parent = Bar
             Fill.BackgroundColor3 = Library.CurrentTheme.Accent
             Fill.Size = UDim2.new((val-min)/(max-min), 0, 1, 0)
-            local FC = Instance.new("UICorner")
-            FC.Parent = Fill
+            local FC = Instance.new("UICorner") FC.Parent = Fill
             local Btn = Instance.new("TextButton")
             Btn.Parent = Bar
             Btn.BackgroundTransparency = 1
@@ -785,24 +886,26 @@ function Library:CreateWindow(Config)
             Btn.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then sliding = false end end)
             UserInputService.InputChanged:Connect(function(i) if sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then Update(i) end end)
             Library.Elements[text] = { Set = function(self, v) SetVal(v) end }
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = SFr, TabBtn = TabBtn})
         end
 
+        -- // DYNAMIC DROPDOWN //
         function Tab:Dropdown(text, list, callback)
             local dropped = false
-            Library.Flags[text] = "" -- Init
+            Library.Flags[text] = "" 
+            
             local DFr = Instance.new("Frame")
             DFr.Name = "ElementFrame"
             DFr.Parent = Page
             DFr.BackgroundColor3 = Library.CurrentTheme.Element
             DFr.Size = UDim2.new(1,0,0,36)
             DFr.ClipsDescendants = true
-            local DC = Instance.new("UICorner")
-            DC.Parent = DFr
+            local DC = Instance.new("UICorner") DC.Parent = DFr
             local DL = Instance.new("TextLabel")
             DL.Parent = DFr
             DL.BackgroundTransparency = 1
             DL.Position = UDim2.new(0,10,0,0)
-            DL.Size = UDim2.new(1,-40,0,36)
+            DL.Size = UDim2.new(1,-60,0,36)
             DL.Font = Enum.Font.Gotham
             DL.Text = text
             DL.TextColor3 = Library.CurrentTheme.Text
@@ -814,46 +917,74 @@ function Library:CreateWindow(Config)
             Arrow.Position = UDim2.new(1,-30,0,8)
             Arrow.Size = UDim2.new(0,20,0,20)
             Arrow.Image = "rbxassetid://6031090990"
+            
+            local RefreshBtn = Instance.new("ImageButton")
+            RefreshBtn.Parent = DFr
+            RefreshBtn.BackgroundTransparency = 1
+            RefreshBtn.Position = UDim2.new(1,-55,0,8)
+            RefreshBtn.Size = UDim2.new(0,20,0,20)
+            RefreshBtn.Image = "rbxassetid://6031097239"
+            RefreshBtn.Visible = (typeof(list) == "Instance")
+
             local Scroll = Instance.new("ScrollingFrame")
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,500)
+            Scroll.Size = UDim2.new(1,0,0,100)
             Scroll.ScrollBarThickness = 2
-            local SL = Instance.new("UIListLayout")
-            SL.Parent = Scroll
-            SL.Padding = UDim.new(0,2)
+            local SL = Instance.new("UIListLayout") SL.Parent = Scroll SL.Padding = UDim.new(0,2)
             local Btn = Instance.new("TextButton")
             Btn.Parent = DFr
             Btn.BackgroundTransparency = 1
             Btn.Size = UDim2.new(1,0,0,36)
             Btn.Text = ""
             
-            local function SelectItem(item)
-                DL.Text = text .. " ("..item..")"
-                Library.Flags[text] = item
-                dropped = false
-                CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
-                CreateTween(Arrow, {Rotation = 0}, 0.2)
-                pcall(callback, item)
+            local function ClearScroll()
+                for _,v in pairs(Scroll:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
             end
 
-            for _,item in pairs(list) do
-                local IB = Instance.new("TextButton")
-                IB.Parent = Scroll
-                IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                IB.Size = UDim2.new(1,0,0,25)
-                IB.Font = Enum.Font.Gotham
-                IB.Text = item
-                IB.TextColor3 = Color3.fromRGB(200,200,200)
-                IB.TextSize = 13
-                IB.MouseButton1Click:Connect(function() SelectItem(item) end)
+            local function Populate(items)
+                ClearScroll()
+                for _,item in pairs(items) do
+                    local IB = Instance.new("TextButton")
+                    IB.Parent = Scroll
+                    IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
+                    IB.Size = UDim2.new(1,0,0,25)
+                    IB.Font = Enum.Font.Gotham
+                    IB.Text = tostring(item)
+                    IB.TextColor3 = Color3.fromRGB(200,200,200)
+                    IB.TextSize = 13
+                    IB.MouseButton1Click:Connect(function()
+                        DL.Text = text .. " ("..item..")"
+                        Library.Flags[text] = item
+                        dropped = false
+                        CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
+                        CreateTween(Arrow, {Rotation = 0}, 0.2)
+                        pcall(callback, item)
+                    end)
+                end
+            end
+            
+            local function RefreshList()
+                if typeof(list) == "Instance" then
+                    local children = {}
+                    for _,v in pairs(list:GetChildren()) do table.insert(children, v.Name) end
+                    Populate(children)
+                elseif type(list) == "table" then
+                    Populate(list)
+                end
+            end
+            
+            RefreshList() -- Initial load
+
+            if RefreshBtn.Visible then
+                RefreshBtn.MouseButton1Click:Connect(RefreshList)
             end
 
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
@@ -861,18 +992,22 @@ function Library:CreateWindow(Config)
                 end
             end)
             
-            -- SAVE/LOAD SUPPORT FOR DROPDOWN
-            Library.Elements[text] = {
+            local RetObj = {
                 Set = function(self, val)
                     DL.Text = text .. " ("..val..")"
                     Library.Flags[text] = val
+                end,
+                Refresh = function(self, newList)
+                    if newList then list = newList end
+                    RefreshList()
                 end
             }
-            
-            return DL 
+            Library.Elements[text] = RetObj
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = DFr, TabBtn = TabBtn})
+            return DL, RetObj
         end
 
-        -- // NEW ELEMENT: MULTI-DROPDOWN //
+        -- // DYNAMIC MULTI-DROPDOWN //
         function Tab:MultiDropdown(text, list, default, callback)
             local dropped = false
             local Selected = default or {}
@@ -884,13 +1019,12 @@ function Library:CreateWindow(Config)
             DFr.BackgroundColor3 = Library.CurrentTheme.Element
             DFr.Size = UDim2.new(1,0,0,36)
             DFr.ClipsDescendants = true
-            local DC = Instance.new("UICorner")
-            DC.Parent = DFr
+            local DC = Instance.new("UICorner") DC.Parent = DFr
             local DL = Instance.new("TextLabel")
             DL.Parent = DFr
             DL.BackgroundTransparency = 1
             DL.Position = UDim2.new(0,10,0,0)
-            DL.Size = UDim2.new(1,-40,0,36)
+            DL.Size = UDim2.new(1,-60,0,36)
             DL.Font = Enum.Font.Gotham
             DL.Text = text
             DL.TextColor3 = Library.CurrentTheme.Text
@@ -903,16 +1037,22 @@ function Library:CreateWindow(Config)
             Arrow.Size = UDim2.new(0,20,0,20)
             Arrow.Image = "rbxassetid://6031090990"
             
+            local RefreshBtn = Instance.new("ImageButton")
+            RefreshBtn.Parent = DFr
+            RefreshBtn.BackgroundTransparency = 1
+            RefreshBtn.Position = UDim2.new(1,-55,0,8)
+            RefreshBtn.Size = UDim2.new(0,20,0,20)
+            RefreshBtn.Image = "rbxassetid://6031097239"
+            RefreshBtn.Visible = (typeof(list) == "Instance")
+
             local Scroll = Instance.new("ScrollingFrame")
             Scroll.Name = "Scroll"
             Scroll.Parent = DFr
             Scroll.BackgroundTransparency = 1
             Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,500)
+            Scroll.Size = UDim2.new(1,0,0,100)
             Scroll.ScrollBarThickness = 2
-            local SL = Instance.new("UIListLayout")
-            SL.Parent = Scroll
-            SL.Padding = UDim.new(0,2)
+            local SL = Instance.new("UIListLayout") SL.Parent = Scroll SL.Padding = UDim.new(0,2)
             
             local Btn = Instance.new("TextButton")
             Btn.Parent = DFr
@@ -931,14 +1071,11 @@ function Library:CreateWindow(Config)
             end
 
             local function IsSelected(item)
-                for _, v in pairs(Selected) do
-                    if v == item then return true end
-                end
+                for _, v in pairs(Selected) do if v == item then return true end end
                 return false
             end
             
-            local function RefreshList()
-                -- Reset all buttons in scroll
+            local function RefreshListUI()
                 for _, obj in pairs(Scroll:GetChildren()) do
                     if obj:IsA("TextButton") then
                         if IsSelected(obj.Text) then
@@ -963,26 +1100,48 @@ function Library:CreateWindow(Config)
                 
                 Library.Flags[text] = Selected
                 UpdateText()
-                RefreshList()
+                RefreshListUI()
                 pcall(callback, Selected)
             end
 
-            for _,item in pairs(list) do
-                local IB = Instance.new("TextButton")
-                IB.Parent = Scroll
-                IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                IB.Size = UDim2.new(1,0,0,25)
-                IB.Font = Enum.Font.Gotham
-                IB.Text = item
-                IB.TextColor3 = Color3.fromRGB(200,200,200)
-                IB.TextSize = 13
-                IB.MouseButton1Click:Connect(function() ToggleItem(item) end)
+            local function ClearScroll()
+                for _,v in pairs(Scroll:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
             end
+
+            local function Populate(items)
+                ClearScroll()
+                for _,item in pairs(items) do
+                    local IB = Instance.new("TextButton")
+                    IB.Parent = Scroll
+                    IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
+                    IB.Size = UDim2.new(1,0,0,25)
+                    IB.Font = Enum.Font.Gotham
+                    IB.Text = tostring(item)
+                    IB.TextColor3 = Color3.fromRGB(200,200,200)
+                    IB.TextSize = 13
+                    IB.MouseButton1Click:Connect(function() ToggleItem(item) end)
+                end
+                RefreshListUI()
+            end
+
+            local function RefreshList()
+                if typeof(list) == "Instance" then
+                    local children = {}
+                    for _,v in pairs(list:GetChildren()) do table.insert(children, v.Name) end
+                    Populate(children)
+                elseif type(list) == "table" then
+                    Populate(list)
+                end
+            end
+
+            RefreshList()
+
+            if RefreshBtn.Visible then RefreshBtn.MouseButton1Click:Connect(RefreshList) end
 
             Btn.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,540)}, 0.2)
+                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
                     CreateTween(Arrow, {Rotation = 180}, 0.2)
                 else
                     CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
@@ -990,20 +1149,24 @@ function Library:CreateWindow(Config)
                 end
             end)
             
-            -- SAVE/LOAD SUPPORT FOR MULTI-DROPDOWN
-            Library.Elements[text] = {
+            local RetObj = {
                 Set = function(self, val)
                     if type(val) == "table" then
                         Selected = val
                         Library.Flags[text] = Selected
                         UpdateText()
-                        RefreshList()
+                        RefreshListUI()
                     end
+                end,
+                Refresh = function(self, newList)
+                    if newList then list = newList end
+                    RefreshList()
                 end
             }
-
-            UpdateText() -- Init text
-            return DL 
+            Library.Elements[text] = RetObj
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = DFr, TabBtn = TabBtn})
+            UpdateText() 
+            return DL, RetObj
         end
 
         function Tab:Textbox(text, ph, callback)
@@ -1013,8 +1176,7 @@ function Library:CreateWindow(Config)
             TFr.Parent = Page
             TFr.BackgroundColor3 = Library.CurrentTheme.Element
             TFr.Size = UDim2.new(1,0,0,50)
-            local TC = Instance.new("UICorner")
-            TC.Parent = TFr
+            local TC = Instance.new("UICorner") TC.Parent = TFr
             local TL = Instance.new("TextLabel")
             TL.Parent = TFr
             TL.BackgroundTransparency = 1
@@ -1035,21 +1197,20 @@ function Library:CreateWindow(Config)
             TB.Text = ""
             TB.TextColor3 = Color3.fromRGB(200,200,200)
             TB.TextSize = 12
-            local TBC = Instance.new("UICorner")
-            TBC.Parent = TB
+            local TBC = Instance.new("UICorner") TBC.Parent = TB
             
             TB.FocusLost:Connect(function()
                 Library.Flags[text] = TB.Text
                 pcall(callback, TB.Text) 
             end)
             
-            -- SAVE/LOAD SUPPORT FOR TEXTBOX
             Library.Elements[text] = {
                 Set = function(self, val)
                     TB.Text = val
                     Library.Flags[text] = val
                 end
             }
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = TFr, TabBtn = TabBtn})
         end
 
         function Tab:Label(text)
@@ -1110,8 +1271,7 @@ function Library:CreateWindow(Config)
             KFr.Parent = Page
             KFr.BackgroundColor3 = Library.CurrentTheme.Element
             KFr.Size = UDim2.new(1,0,0,36)
-            local KC = Instance.new("UICorner")
-            KC.Parent = KFr
+            local KC = Instance.new("UICorner") KC.Parent = KFr
             local KL = Instance.new("TextLabel")
             KL.Parent = KFr
             KL.BackgroundTransparency = 1
@@ -1131,8 +1291,7 @@ function Library:CreateWindow(Config)
             KBtn.Text = Key.Name
             KBtn.TextColor3 = Color3.fromRGB(200,200,200)
             KBtn.TextSize = 12
-            local KBC = Instance.new("UICorner")
-            KBC.Parent = KBtn
+            local KBC = Instance.new("UICorner") KBC.Parent = KBtn
 
             KBtn.MouseButton1Click:Connect(function()
                 Binding = true
@@ -1159,6 +1318,7 @@ function Library:CreateWindow(Config)
                     end
                 end
             }
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = KFr, TabBtn = TabBtn})
         end
 
         function Tab:ColorPicker(text, default, callback)
@@ -1172,8 +1332,7 @@ function Library:CreateWindow(Config)
             CFr.BackgroundColor3 = Library.CurrentTheme.Element
             CFr.Size = UDim2.new(1,0,0,36)
             CFr.ClipsDescendants = true
-            local CC = Instance.new("UICorner")
-            CC.Parent = CFr
+            local CC = Instance.new("UICorner") CC.Parent = CFr
             local CL = Instance.new("TextLabel")
             CL.Parent = CFr
             CL.BackgroundTransparency = 1
@@ -1191,8 +1350,7 @@ function Library:CreateWindow(Config)
             Preview.Position = UDim2.new(1,-50,0,8)
             Preview.Size = UDim2.new(0,40,0,20)
             Preview.Text = ""
-            local PC = Instance.new("UICorner")
-            PC.Parent = Preview
+            local PC = Instance.new("UICorner") PC.Parent = Preview
 
             local RGBContainer = Instance.new("Frame")
             RGBContainer.Parent = CFr
@@ -1213,13 +1371,11 @@ function Library:CreateWindow(Config)
                 S.Position = UDim2.new(0,10,0,y)
                 S.Size = UDim2.new(1,-20,0,20)
                 local Corner = Instance.new("UICorner") Corner.Parent = S
-                
                 local Fill = Instance.new("Frame")
                 Fill.Parent = S
                 Fill.BackgroundColor3 = name == "R" and Color3.fromRGB(255,50,50) or (name == "G" and Color3.fromRGB(50,255,50) or Color3.fromRGB(50,50,255))
                 Fill.Size = UDim2.new(colorComp, 0, 1, 0)
                 local FC = Instance.new("UICorner") FC.Parent = Fill
-                
                 local Btn = Instance.new("TextButton")
                 Btn.Parent = S
                 Btn.BackgroundTransparency = 1
@@ -1233,15 +1389,11 @@ function Library:CreateWindow(Config)
                         local RelX = Mouse.X - S.AbsolutePosition.X
                         local Pct = math.clamp(RelX / S.AbsoluteSize.X, 0, 1)
                         Fill.Size = UDim2.new(Pct, 0, 1, 0)
-                        
                         local R, G, B = Color.R, Color.G, Color.B
                         if name == "R" then R = Pct elseif name == "G" then G = Pct else B = Pct end
                         Color = Color3.new(R, G, B)
                         UpdateColor()
-                        
-                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-                            move:Disconnect()
-                        end
+                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then move:Disconnect() end
                     end)
                 end)
                 return Fill
@@ -1267,6 +1419,7 @@ function Library:CreateWindow(Config)
                     end
                 end
             }
+            table.insert(Library.SearchableElements, {Name = text, Page = Page, Frame = CFr, TabBtn = TabBtn})
         end
 
         return Tab
@@ -1289,11 +1442,6 @@ function Library:CreateWindow(Config)
         end)
         
         ConfigTab:Paragraph(Library:GetText("ConfigTab"))
-
-        -- EXEMPLO DE USO DO MULTI-DROPDOWN
-        ConfigTab:MultiDropdown("Multi Select Test", {"Opção A", "Opção B", "Opção C", "Opção D"}, {}, function(SelectedItems)
-            print("Items Selecionados:", table.concat(SelectedItems, ", "))
-        end)
 
         local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
             Library.Settings.Language = Selected
