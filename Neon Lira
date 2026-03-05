@@ -89,177 +89,202 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
+-- // Temas // (120 temas no total)
+Library.Themes = {
+
     -- ══════════════════════════════════════
     --          ORIGINAIS (28)
     -- ══════════════════════════════════════
-    Default     = {Main = Color3.fromRGB(20,20,20),   Top = Color3.fromRGB(30,30,30),   Accent = Color3.fromRGB(0,160,255),   Text = Color3.fromRGB(255,255,255),   Element = Color3.fromRGB(35,35,35),   Glow = Color3.fromRGB(0,110,220)},
-    DarkBlue    = {Main = Color3.fromRGB(15,20,30),   Top = Color3.fromRGB(20,25,40),   Accent = Color3.fromRGB(50,100,255),  Text = Color3.fromRGB(240,240,255),   Element = Color3.fromRGB(25,30,45),   Glow = Color3.fromRGB(40,80,200)},
-    DarkRed     = {Main = Color3.fromRGB(30,15,15),   Top = Color3.fromRGB(40,20,20),   Accent = Color3.fromRGB(255,60,60),   Text = Color3.fromRGB(255,240,240),   Element = Color3.fromRGB(45,25,25),   Glow = Color3.fromRGB(200,40,40)},
-    Ocean       = {Main = Color3.fromRGB(10,30,35),   Top = Color3.fromRGB(15,40,45),   Accent = Color3.fromRGB(0,200,200),   Text = Color3.fromRGB(220,255,255),   Element = Color3.fromRGB(20,50,55),   Glow = Color3.fromRGB(0,150,150)},
-    Amethyst    = {Main = Color3.fromRGB(30,20,35),   Top = Color3.fromRGB(40,25,45),   Accent = Color3.fromRGB(180,80,255),  Text = Color3.fromRGB(250,230,255),   Element = Color3.fromRGB(45,30,50),   Glow = Color3.fromRGB(140,60,200)},
-    Emerald     = {Main = Color3.fromRGB(20,35,20),   Top = Color3.fromRGB(25,45,25),   Accent = Color3.fromRGB(50,200,80),   Text = Color3.fromRGB(230,255,230),   Element = Color3.fromRGB(30,50,30),   Glow = Color3.fromRGB(40,160,60)},
-    Sunset      = {Main = Color3.fromRGB(35,25,20),   Top = Color3.fromRGB(45,30,25),   Accent = Color3.fromRGB(255,140,50),  Text = Color3.fromRGB(255,240,220),   Element = Color3.fromRGB(50,35,30),   Glow = Color3.fromRGB(200,100,40)},
-    Carbon      = {Main = Color3.fromRGB(10,10,10),   Top = Color3.fromRGB(20,20,20),   Accent = Color3.fromRGB(120,120,120), Text = Color3.fromRGB(200,200,200),   Element = Color3.fromRGB(30,30,30),   Glow = Color3.fromRGB(80,80,80)},
-    Midnight    = {Main = Color3.fromRGB(10,10,20),   Top = Color3.fromRGB(15,15,30),   Accent = Color3.fromRGB(100,100,255), Text = Color3.fromRGB(240,240,255),   Element = Color3.fromRGB(25,25,45),   Glow = Color3.fromRGB(80,80,220)},
-    Dracula     = {Main = Color3.fromRGB(40,42,54),   Top = Color3.fromRGB(68,71,90),   Accent = Color3.fromRGB(189,147,249), Text = Color3.fromRGB(248,248,242),   Element = Color3.fromRGB(98,114,164), Glow = Color3.fromRGB(255,121,198)},
-    Cyberpunk   = {Main = Color3.fromRGB(10,10,15),   Top = Color3.fromRGB(20,20,25),   Accent = Color3.fromRGB(255,230,0),   Text = Color3.fromRGB(255,255,255),   Element = Color3.fromRGB(30,30,35),   Glow = Color3.fromRGB(0,255,255)},
-    Void        = {Main = Color3.fromRGB(5,5,5),      Top = Color3.fromRGB(15,15,15),   Accent = Color3.fromRGB(255,255,255), Text = Color3.fromRGB(255,255,255),   Element = Color3.fromRGB(25,25,25),   Glow = Color3.fromRGB(150,150,150)},
-    Bubblegum   = {Main = Color3.fromRGB(35,25,35),   Top = Color3.fromRGB(45,30,45),   Accent = Color3.fromRGB(255,100,180), Text = Color3.fromRGB(255,240,255),   Element = Color3.fromRGB(55,40,55),   Glow = Color3.fromRGB(100,200,255)},
-    Mint        = {Main = Color3.fromRGB(20,30,25),   Top = Color3.fromRGB(30,45,35),   Accent = Color3.fromRGB(0,255,170),   Text = Color3.fromRGB(230,255,240),   Element = Color3.fromRGB(40,60,50),   Glow = Color3.fromRGB(0,200,140)},
-    Gold        = {Main = Color3.fromRGB(30,25,10),   Top = Color3.fromRGB(45,40,20),   Accent = Color3.fromRGB(255,215,0),   Text = Color3.fromRGB(255,255,220),   Element = Color3.fromRGB(55,50,30),   Glow = Color3.fromRGB(220,180,0)},
-    Crimson     = {Main = Color3.fromRGB(25,10,10),   Top = Color3.fromRGB(40,15,15),   Accent = Color3.fromRGB(220,20,60),   Text = Color3.fromRGB(255,230,230),   Element = Color3.fromRGB(50,25,25),   Glow = Color3.fromRGB(255,0,50)},
-    Frost       = {Main = Color3.fromRGB(20,30,40),   Top = Color3.fromRGB(30,45,60),   Accent = Color3.fromRGB(100,200,255), Text = Color3.fromRGB(240,250,255),   Element = Color3.fromRGB(40,60,80),   Glow = Color3.fromRGB(150,220,255)},
-    Toxic       = {Main = Color3.fromRGB(15,25,10),   Top = Color3.fromRGB(25,35,15),   Accent = Color3.fromRGB(180,255,50),  Text = Color3.fromRGB(240,255,220),   Element = Color3.fromRGB(35,50,25),   Glow = Color3.fromRGB(100,200,0)},
-    Royal       = {Main = Color3.fromRGB(10,10,35),   Top = Color3.fromRGB(20,20,55),   Accent = Color3.fromRGB(255,180,50),  Text = Color3.fromRGB(255,240,200),   Element = Color3.fromRGB(30,30,70),   Glow = Color3.fromRGB(255,215,0)},
-    Rust        = {Main = Color3.fromRGB(30,20,15),   Top = Color3.fromRGB(45,30,25),   Accent = Color3.fromRGB(200,80,30),   Text = Color3.fromRGB(255,230,210),   Element = Color3.fromRGB(60,40,30),   Glow = Color3.fromRGB(255,100,50)},
-    Lavender    = {Main = Color3.fromRGB(25,20,30),   Top = Color3.fromRGB(35,30,45),   Accent = Color3.fromRGB(200,160,255), Text = Color3.fromRGB(250,240,255),   Element = Color3.fromRGB(50,45,60),   Glow = Color3.fromRGB(160,120,220)},
-    Steel       = {Main = Color3.fromRGB(25,30,35),   Top = Color3.fromRGB(40,45,50),   Accent = Color3.fromRGB(100,150,200), Text = Color3.fromRGB(220,230,240),   Element = Color3.fromRGB(50,55,60),   Glow = Color3.fromRGB(120,160,180)},
-    Forest      = {Main = Color3.fromRGB(15,25,15),   Top = Color3.fromRGB(25,40,25),   Accent = Color3.fromRGB(34,139,34),   Text = Color3.fromRGB(230,255,230),   Element = Color3.fromRGB(35,50,35),   Glow = Color3.fromRGB(50,205,50)},
-    Cherry      = {Main = Color3.fromRGB(25,15,20),   Top = Color3.fromRGB(40,25,30),   Accent = Color3.fromRGB(255,50,100),  Text = Color3.fromRGB(255,230,240),   Element = Color3.fromRGB(55,35,45),   Glow = Color3.fromRGB(200,80,120)},
-    Abyss       = {Main = Color3.fromRGB(5,15,20),    Top = Color3.fromRGB(10,25,30),   Accent = Color3.fromRGB(0,128,128),   Text = Color3.fromRGB(220,240,240),   Element = Color3.fromRGB(20,40,50),   Glow = Color3.fromRGB(0,200,200)},
-    Coffee      = {Main = Color3.fromRGB(30,25,20),   Top = Color3.fromRGB(45,35,30),   Accent = Color3.fromRGB(210,180,140), Text = Color3.fromRGB(255,245,230),   Element = Color3.fromRGB(60,50,40),   Glow = Color3.fromRGB(160,82,45)},
-    Synthwave   = {Main = Color3.fromRGB(20,10,30),   Top = Color3.fromRGB(30,15,45),   Accent = Color3.fromRGB(255,0,255),   Text = Color3.fromRGB(255,255,255),   Element = Color3.fromRGB(50,25,70),   Glow = Color3.fromRGB(0,255,255)},
-    Solar       = {Main = Color3.fromRGB(240,240,240),Top = Color3.fromRGB(255,255,255), Accent = Color3.fromRGB(255,165,0),  Text = Color3.fromRGB(50,50,50),      Element = Color3.fromRGB(220,220,220),Glow = Color3.fromRGB(255,140,0)},
+    Default     = {Main = Color3.fromRGB(20, 20, 20),   Top = Color3.fromRGB(30, 30, 30),   Accent = Color3.fromRGB(0, 160, 255),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(35, 35, 35),   Glow = Color3.fromRGB(0, 110, 220)},
+    DarkBlue    = {Main = Color3.fromRGB(15, 20, 30),   Top = Color3.fromRGB(20, 25, 40),   Accent = Color3.fromRGB(50, 100, 255),  Text = Color3.fromRGB(240, 240, 255),   Element = Color3.fromRGB(25, 30, 45),   Glow = Color3.fromRGB(40, 80, 200)},
+    DarkRed     = {Main = Color3.fromRGB(30, 15, 15),   Top = Color3.fromRGB(40, 20, 20),   Accent = Color3.fromRGB(255, 60, 60),   Text = Color3.fromRGB(255, 240, 240),   Element = Color3.fromRGB(45, 25, 25),   Glow = Color3.fromRGB(200, 40, 40)},
+    Ocean       = {Main = Color3.fromRGB(10, 30, 35),   Top = Color3.fromRGB(15, 40, 45),   Accent = Color3.fromRGB(0, 200, 200),   Text = Color3.fromRGB(220, 255, 255),   Element = Color3.fromRGB(20, 50, 55),   Glow = Color3.fromRGB(0, 150, 150)},
+    Amethyst    = {Main = Color3.fromRGB(30, 20, 35),   Top = Color3.fromRGB(40, 25, 45),   Accent = Color3.fromRGB(180, 80, 255),  Text = Color3.fromRGB(250, 230, 255),   Element = Color3.fromRGB(45, 30, 50),   Glow = Color3.fromRGB(140, 60, 200)},
+    Emerald     = {Main = Color3.fromRGB(20, 35, 20),   Top = Color3.fromRGB(25, 45, 25),   Accent = Color3.fromRGB(50, 200, 80),   Text = Color3.fromRGB(230, 255, 230),   Element = Color3.fromRGB(30, 50, 30),   Glow = Color3.fromRGB(40, 160, 60)},
+    Sunset      = {Main = Color3.fromRGB(35, 25, 20),   Top = Color3.fromRGB(45, 30, 25),   Accent = Color3.fromRGB(255, 140, 50),  Text = Color3.fromRGB(255, 240, 220),   Element = Color3.fromRGB(50, 35, 30),   Glow = Color3.fromRGB(200, 100, 40)},
+    Carbon      = {Main = Color3.fromRGB(10, 10, 10),   Top = Color3.fromRGB(20, 20, 20),   Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200),   Element = Color3.fromRGB(30, 30, 30),   Glow = Color3.fromRGB(80, 80, 80)},
+    Midnight    = {Main = Color3.fromRGB(10, 10, 20),   Top = Color3.fromRGB(15, 15, 30),   Accent = Color3.fromRGB(100, 100, 255), Text = Color3.fromRGB(240, 240, 255),   Element = Color3.fromRGB(25, 25, 45),   Glow = Color3.fromRGB(80, 80, 220)},
+    Dracula     = {Main = Color3.fromRGB(40, 42, 54),   Top = Color3.fromRGB(68, 71, 90),   Accent = Color3.fromRGB(189, 147, 249), Text = Color3.fromRGB(248, 248, 242),   Element = Color3.fromRGB(98, 114, 164), Glow = Color3.fromRGB(255, 121, 198)},
+    Cyberpunk   = {Main = Color3.fromRGB(10, 10, 15),   Top = Color3.fromRGB(20, 20, 25),   Accent = Color3.fromRGB(255, 230, 0),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(30, 30, 35),   Glow = Color3.fromRGB(0, 255, 255)},
+    Void        = {Main = Color3.fromRGB(5, 5, 5),      Top = Color3.fromRGB(15, 15, 15),   Accent = Color3.fromRGB(255, 255, 255), Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(25, 25, 25),   Glow = Color3.fromRGB(150, 150, 150)},
+    Bubblegum   = {Main = Color3.fromRGB(35, 25, 35),   Top = Color3.fromRGB(45, 30, 45),   Accent = Color3.fromRGB(255, 100, 180), Text = Color3.fromRGB(255, 240, 255),   Element = Color3.fromRGB(55, 40, 55),   Glow = Color3.fromRGB(100, 200, 255)},
+    Mint        = {Main = Color3.fromRGB(20, 30, 25),   Top = Color3.fromRGB(30, 45, 35),   Accent = Color3.fromRGB(0, 255, 170),   Text = Color3.fromRGB(230, 255, 240),   Element = Color3.fromRGB(40, 60, 50),   Glow = Color3.fromRGB(0, 200, 140)},
+    Gold        = {Main = Color3.fromRGB(30, 25, 10),   Top = Color3.fromRGB(45, 40, 20),   Accent = Color3.fromRGB(255, 215, 0),   Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(55, 50, 30),   Glow = Color3.fromRGB(220, 180, 0)},
+    Crimson     = {Main = Color3.fromRGB(25, 10, 10),   Top = Color3.fromRGB(40, 15, 15),   Accent = Color3.fromRGB(220, 20, 60),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(50, 25, 25),   Glow = Color3.fromRGB(255, 0, 50)},
+    Frost       = {Main = Color3.fromRGB(20, 30, 40),   Top = Color3.fromRGB(30, 45, 60),   Accent = Color3.fromRGB(100, 200, 255), Text = Color3.fromRGB(240, 250, 255),   Element = Color3.fromRGB(40, 60, 80),   Glow = Color3.fromRGB(150, 220, 255)},
+    Toxic       = {Main = Color3.fromRGB(15, 25, 10),   Top = Color3.fromRGB(25, 35, 15),   Accent = Color3.fromRGB(180, 255, 50),  Text = Color3.fromRGB(240, 255, 220),   Element = Color3.fromRGB(35, 50, 25),   Glow = Color3.fromRGB(100, 200, 0)},
+    Royal       = {Main = Color3.fromRGB(10, 10, 35),   Top = Color3.fromRGB(20, 20, 55),   Accent = Color3.fromRGB(255, 180, 50),  Text = Color3.fromRGB(255, 240, 200),   Element = Color3.fromRGB(30, 30, 70),   Glow = Color3.fromRGB(255, 215, 0)},
+    Rust        = {Main = Color3.fromRGB(30, 20, 15),   Top = Color3.fromRGB(45, 30, 25),   Accent = Color3.fromRGB(200, 80, 30),   Text = Color3.fromRGB(255, 230, 210),   Element = Color3.fromRGB(60, 40, 30),   Glow = Color3.fromRGB(255, 100, 50)},
+    Lavender    = {Main = Color3.fromRGB(25, 20, 30),   Top = Color3.fromRGB(35, 30, 45),   Accent = Color3.fromRGB(200, 160, 255), Text = Color3.fromRGB(250, 240, 255),   Element = Color3.fromRGB(50, 45, 60),   Glow = Color3.fromRGB(160, 120, 220)},
+    Steel       = {Main = Color3.fromRGB(25, 30, 35),   Top = Color3.fromRGB(40, 45, 50),   Accent = Color3.fromRGB(100, 150, 200), Text = Color3.fromRGB(220, 230, 240),   Element = Color3.fromRGB(50, 55, 60),   Glow = Color3.fromRGB(120, 160, 180)},
+    Forest      = {Main = Color3.fromRGB(15, 25, 15),   Top = Color3.fromRGB(25, 40, 25),   Accent = Color3.fromRGB(34, 139, 34),   Text = Color3.fromRGB(230, 255, 230),   Element = Color3.fromRGB(35, 50, 35),   Glow = Color3.fromRGB(50, 205, 50)},
+    Cherry      = {Main = Color3.fromRGB(25, 15, 20),   Top = Color3.fromRGB(40, 25, 30),   Accent = Color3.fromRGB(255, 50, 100),  Text = Color3.fromRGB(255, 230, 240),   Element = Color3.fromRGB(55, 35, 45),   Glow = Color3.fromRGB(200, 80, 120)},
+    Abyss       = {Main = Color3.fromRGB(5, 15, 20),    Top = Color3.fromRGB(10, 25, 30),   Accent = Color3.fromRGB(0, 128, 128),   Text = Color3.fromRGB(220, 240, 240),   Element = Color3.fromRGB(20, 40, 50),   Glow = Color3.fromRGB(0, 200, 200)},
+    Coffee      = {Main = Color3.fromRGB(30, 25, 20),   Top = Color3.fromRGB(45, 35, 30),   Accent = Color3.fromRGB(210, 180, 140), Text = Color3.fromRGB(255, 245, 230),   Element = Color3.fromRGB(60, 50, 40),   Glow = Color3.fromRGB(160, 82, 45)},
+    Synthwave   = {Main = Color3.fromRGB(20, 10, 30),   Top = Color3.fromRGB(30, 15, 45),   Accent = Color3.fromRGB(255, 0, 255),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(50, 25, 70),   Glow = Color3.fromRGB(0, 255, 255)},
+    Solar       = {Main = Color3.fromRGB(240, 240, 240),Top = Color3.fromRGB(255, 255, 255), Accent = Color3.fromRGB(255, 165, 0),  Text = Color3.fromRGB(50, 50, 50),      Element = Color3.fromRGB(220, 220, 220),Glow = Color3.fromRGB(255, 140, 0)},
 
     -- ══════════════════════════════════════
-    --          NOVOS (92)
+    --    NOVOS: VERMELHOS / QUENTES (10)
     -- ══════════════════════════════════════
+    Inferno     = {Main = Color3.fromRGB(20, 5, 0),     Top = Color3.fromRGB(35, 10, 5),    Accent = Color3.fromRGB(255, 80, 0),    Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(50, 15, 10),   Glow = Color3.fromRGB(255, 50, 0)},
+    Magma       = {Main = Color3.fromRGB(25, 10, 5),    Top = Color3.fromRGB(40, 18, 10),   Accent = Color3.fromRGB(255, 120, 30),  Text = Color3.fromRGB(255, 235, 220),   Element = Color3.fromRGB(55, 25, 15),   Glow = Color3.fromRGB(255, 80, 20)},
+    Lava        = {Main = Color3.fromRGB(30, 8, 0),     Top = Color3.fromRGB(50, 12, 0),    Accent = Color3.fromRGB(255, 60, 0),    Text = Color3.fromRGB(255, 220, 200),   Element = Color3.fromRGB(65, 20, 5),    Glow = Color3.fromRGB(230, 30, 0)},
+    Volcano     = {Main = Color3.fromRGB(22, 12, 5),    Top = Color3.fromRGB(38, 18, 8),    Accent = Color3.fromRGB(255, 100, 10),  Text = Color3.fromRGB(255, 230, 210),   Element = Color3.fromRGB(52, 28, 12),   Glow = Color3.fromRGB(255, 60, 0)},
+    Blood       = {Main = Color3.fromRGB(20, 0, 0),     Top = Color3.fromRGB(35, 5, 5),     Accent = Color3.fromRGB(180, 0, 0),     Text = Color3.fromRGB(255, 220, 220),   Element = Color3.fromRGB(50, 10, 10),   Glow = Color3.fromRGB(200, 0, 0)},
+    Garnet      = {Main = Color3.fromRGB(28, 8, 12),    Top = Color3.fromRGB(44, 12, 18),   Accent = Color3.fromRGB(165, 0, 50),    Text = Color3.fromRGB(255, 230, 235),   Element = Color3.fromRGB(55, 18, 25),   Glow = Color3.fromRGB(200, 20, 60)},
+    Scarlet     = {Main = Color3.fromRGB(22, 5, 5),     Top = Color3.fromRGB(38, 10, 10),   Accent = Color3.fromRGB(255, 36, 0),    Text = Color3.fromRGB(255, 235, 230),   Element = Color3.fromRGB(52, 18, 18),   Glow = Color3.fromRGB(255, 20, 0)},
+    Burgundy    = {Main = Color3.fromRGB(30, 10, 20),   Top = Color3.fromRGB(50, 18, 32),   Accent = Color3.fromRGB(165, 42, 42),   Text = Color3.fromRGB(255, 230, 235),   Element = Color3.fromRGB(65, 25, 40),   Glow = Color3.fromRGB(200, 50, 80)},
+    Maroon      = {Main = Color3.fromRGB(30, 10, 10),   Top = Color3.fromRGB(50, 18, 18),   Accent = Color3.fromRGB(160, 32, 32),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(65, 25, 25),   Glow = Color3.fromRGB(200, 50, 50)},
+    Flamingo    = {Main = Color3.fromRGB(35, 20, 25),   Top = Color3.fromRGB(50, 28, 35),   Accent = Color3.fromRGB(255, 110, 150), Text = Color3.fromRGB(255, 240, 245),   Element = Color3.fromRGB(65, 38, 48),   Glow = Color3.fromRGB(255, 80, 130)},
 
-    -- 🔴 VERMELHOS / QUENTES
-    Inferno     = {Main = Color3.fromRGB(20,5,0),     Top = Color3.fromRGB(35,10,5),    Accent = Color3.fromRGB(255,80,0),    Text = Color3.fromRGB(255,240,230),   Element = Color3.fromRGB(50,15,10),   Glow = Color3.fromRGB(255,50,0)},
-    Magma       = {Main = Color3.fromRGB(25,10,5),    Top = Color3.fromRGB(40,18,10),   Accent = Color3.fromRGB(255,120,30),  Text = Color3.fromRGB(255,235,220),   Element = Color3.fromRGB(55,25,15),   Glow = Color3.fromRGB(255,80,20)},
-    Lava        = {Main = Color3.fromRGB(30,8,0),     Top = Color3.fromRGB(50,12,0),    Accent = Color3.fromRGB(255,60,0),    Text = Color3.fromRGB(255,220,200),   Element = Color3.fromRGB(65,20,5),    Glow = Color3.fromRGB(230,30,0)},
-    Volcano     = {Main = Color3.fromRGB(22,12,5),    Top = Color3.fromRGB(38,18,8),    Accent = Color3.fromRGB(255,100,10),  Text = Color3.fromRGB(255,230,210),   Element = Color3.fromRGB(52,28,12),   Glow = Color3.fromRGB(255,60,0)},
-    Blood       = {Main = Color3.fromRGB(20,0,0),     Top = Color3.fromRGB(35,5,5),     Accent = Color3.fromRGB(180,0,0),     Text = Color3.fromRGB(255,220,220),   Element = Color3.fromRGB(50,10,10),   Glow = Color3.fromRGB(200,0,0)},
-    Garnet      = {Main = Color3.fromRGB(28,8,12),    Top = Color3.fromRGB(44,12,18),   Accent = Color3.fromRGB(165,0,50),    Text = Color3.fromRGB(255,230,235),   Element = Color3.fromRGB(55,18,25),   Glow = Color3.fromRGB(200,20,60)},
-    Scarlet     = {Main = Color3.fromRGB(22,5,5),     Top = Color3.fromRGB(38,10,10),   Accent = Color3.fromRGB(255,36,0),    Text = Color3.fromRGB(255,235,230),   Element = Color3.fromRGB(52,18,18),   Glow = Color3.fromRGB(255,20,0)},
-    Burgundy    = {Main = Color3.fromRGB(30,10,20),   Top = Color3.fromRGB(50,18,32),   Accent = Color3.fromRGB(165,42,42),   Text = Color3.fromRGB(255,230,235),   Element = Color3.fromRGB(65,25,40),   Glow = Color3.fromRGB(200,50,80)},
-    Maroon      = {Main = Color3.fromRGB(30,10,10),   Top = Color3.fromRGB(50,18,18),   Accent = Color3.fromRGB(160,32,32),   Text = Color3.fromRGB(255,230,230),   Element = Color3.fromRGB(65,25,25),   Glow = Color3.fromRGB(200,50,50)},
-    Flamingo    = {Main = Color3.fromRGB(35,20,25),   Top = Color3.fromRGB(50,28,35),   Accent = Color3.fromRGB(255,110,150), Text = Color3.fromRGB(255,240,245),   Element = Color3.fromRGB(65,38,48),   Glow = Color3.fromRGB(255,80,130)},
+    -- ══════════════════════════════════════
+    --    NOVOS: LARANJAS / ÂMBAR (7)
+    -- ══════════════════════════════════════
+    Amber       = {Main = Color3.fromRGB(30, 22, 5),    Top = Color3.fromRGB(48, 35, 8),    Accent = Color3.fromRGB(255, 191, 0),   Text = Color3.fromRGB(255, 248, 220),   Element = Color3.fromRGB(62, 45, 12),   Glow = Color3.fromRGB(255, 160, 0)},
+    Copper      = {Main = Color3.fromRGB(28, 18, 10),   Top = Color3.fromRGB(45, 28, 15),   Accent = Color3.fromRGB(184, 115, 51),  Text = Color3.fromRGB(255, 240, 225),   Element = Color3.fromRGB(60, 38, 22),   Glow = Color3.fromRGB(210, 105, 30)},
+    Bronze      = {Main = Color3.fromRGB(25, 18, 10),   Top = Color3.fromRGB(42, 30, 15),   Accent = Color3.fromRGB(205, 127, 50),  Text = Color3.fromRGB(255, 240, 220),   Element = Color3.fromRGB(58, 40, 22),   Glow = Color3.fromRGB(180, 100, 30)},
+    Caramel     = {Main = Color3.fromRGB(32, 22, 10),   Top = Color3.fromRGB(50, 35, 18),   Accent = Color3.fromRGB(235, 155, 75),  Text = Color3.fromRGB(255, 245, 230),   Element = Color3.fromRGB(65, 45, 25),   Glow = Color3.fromRGB(200, 120, 40)},
+    Peach       = {Main = Color3.fromRGB(35, 25, 20),   Top = Color3.fromRGB(55, 40, 32),   Accent = Color3.fromRGB(255, 180, 130), Text = Color3.fromRGB(255, 245, 240),   Element = Color3.fromRGB(70, 55, 45),   Glow = Color3.fromRGB(255, 140, 90)},
+    Dusk        = {Main = Color3.fromRGB(30, 20, 25),   Top = Color3.fromRGB(48, 32, 38),   Accent = Color3.fromRGB(255, 130, 80),  Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(62, 42, 50),   Glow = Color3.fromRGB(220, 90, 60)},
+    Harvest     = {Main = Color3.fromRGB(28, 22, 8),    Top = Color3.fromRGB(45, 36, 14),   Accent = Color3.fromRGB(230, 140, 30),  Text = Color3.fromRGB(255, 245, 220),   Element = Color3.fromRGB(60, 48, 20),   Glow = Color3.fromRGB(200, 110, 20)},
 
-    -- 🟠 LARANJAS / ÂMBAR
-    Amber       = {Main = Color3.fromRGB(30,22,5),    Top = Color3.fromRGB(48,35,8),    Accent = Color3.fromRGB(255,191,0),   Text = Color3.fromRGB(255,248,220),   Element = Color3.fromRGB(62,45,12),   Glow = Color3.fromRGB(255,160,0)},
-    Copper      = {Main = Color3.fromRGB(28,18,10),   Top = Color3.fromRGB(45,28,15),   Accent = Color3.fromRGB(184,115,51),  Text = Color3.fromRGB(255,240,225),   Element = Color3.fromRGB(60,38,22),   Glow = Color3.fromRGB(210,105,30)},
-    Bronze      = {Main = Color3.fromRGB(25,18,10),   Top = Color3.fromRGB(42,30,15),   Accent = Color3.fromRGB(205,127,50),  Text = Color3.fromRGB(255,240,220),   Element = Color3.fromRGB(58,40,22),   Glow = Color3.fromRGB(180,100,30)},
-    Caramel     = {Main = Color3.fromRGB(32,22,10),   Top = Color3.fromRGB(50,35,18),   Accent = Color3.fromRGB(235,155,75),  Text = Color3.fromRGB(255,245,230),   Element = Color3.fromRGB(65,45,25),   Glow = Color3.fromRGB(200,120,40)},
-    Peach       = {Main = Color3.fromRGB(35,25,20),   Top = Color3.fromRGB(55,40,32),   Accent = Color3.fromRGB(255,180,130), Text = Color3.fromRGB(255,245,240),   Element = Color3.fromRGB(70,55,45),   Glow = Color3.fromRGB(255,140,90)},
-    Dusk        = {Main = Color3.fromRGB(30,20,25),   Top = Color3.fromRGB(48,32,38),   Accent = Color3.fromRGB(255,130,80),  Text = Color3.fromRGB(255,240,230),   Element = Color3.fromRGB(62,42,50),   Glow = Color3.fromRGB(220,90,60)},
-    Harvest     = {Main = Color3.fromRGB(28,22,8),    Top = Color3.fromRGB(45,36,14),   Accent = Color3.fromRGB(230,140,30),  Text = Color3.fromRGB(255,245,220),   Element = Color3.fromRGB(60,48,20),   Glow = Color3.fromRGB(200,110,20)},
+    -- ══════════════════════════════════════
+    --    NOVOS: AMARELOS / DOURADOS (4)
+    -- ══════════════════════════════════════
+    Topaz       = {Main = Color3.fromRGB(20, 22, 28),   Top = Color3.fromRGB(30, 35, 42),   Accent = Color3.fromRGB(240, 190, 50),  Text = Color3.fromRGB(255, 250, 220),   Element = Color3.fromRGB(42, 48, 60),   Glow = Color3.fromRGB(255, 210, 0)},
+    Neon        = {Main = Color3.fromRGB(8, 8, 8),      Top = Color3.fromRGB(15, 15, 15),   Accent = Color3.fromRGB(0, 255, 0),     Text = Color3.fromRGB(200, 255, 200),   Element = Color3.fromRGB(20, 30, 20),   Glow = Color3.fromRGB(0, 200, 0)},
+    Lemon       = {Main = Color3.fromRGB(28, 28, 8),    Top = Color3.fromRGB(42, 42, 15),   Accent = Color3.fromRGB(255, 255, 0),   Text = Color3.fromRGB(255, 255, 200),   Element = Color3.fromRGB(55, 55, 20),   Glow = Color3.fromRGB(230, 230, 0)},
+    Banana      = {Main = Color3.fromRGB(30, 28, 10),   Top = Color3.fromRGB(48, 45, 18),   Accent = Color3.fromRGB(255, 240, 80),  Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(62, 58, 25),   Glow = Color3.fromRGB(240, 210, 30)},
 
-    -- 🟡 AMARELOS / DOURADOS
-    Topaz       = {Main = Color3.fromRGB(20,22,28),   Top = Color3.fromRGB(30,35,42),   Accent = Color3.fromRGB(240,190,50),  Text = Color3.fromRGB(255,250,220),   Element = Color3.fromRGB(42,48,60),   Glow = Color3.fromRGB(255,210,0)},
-    Neon        = {Main = Color3.fromRGB(8,8,8),      Top = Color3.fromRGB(15,15,15),   Accent = Color3.fromRGB(0,255,0),     Text = Color3.fromRGB(200,255,200),   Element = Color3.fromRGB(20,30,20),   Glow = Color3.fromRGB(0,200,0)},
-    Lemon       = {Main = Color3.fromRGB(28,28,8),    Top = Color3.fromRGB(42,42,15),   Accent = Color3.fromRGB(255,255,0),   Text = Color3.fromRGB(255,255,200),   Element = Color3.fromRGB(55,55,20),   Glow = Color3.fromRGB(230,230,0)},
-    Banana      = {Main = Color3.fromRGB(30,28,10),   Top = Color3.fromRGB(48,45,18),   Accent = Color3.fromRGB(255,240,80),  Text = Color3.fromRGB(255,255,220),   Element = Color3.fromRGB(62,58,25),   Glow = Color3.fromRGB(240,210,30)},
+    -- ══════════════════════════════════════
+    --    NOVOS: VERDES (8)
+    -- ══════════════════════════════════════
+    Jade        = {Main = Color3.fromRGB(8, 28, 20),    Top = Color3.fromRGB(12, 45, 32),   Accent = Color3.fromRGB(0, 168, 107),   Text = Color3.fromRGB(220, 255, 240),   Element = Color3.fromRGB(18, 60, 42),   Glow = Color3.fromRGB(0, 200, 120)},
+    Lime        = {Main = Color3.fromRGB(15, 25, 5),    Top = Color3.fromRGB(25, 40, 8),    Accent = Color3.fromRGB(140, 255, 0),   Text = Color3.fromRGB(240, 255, 210),   Element = Color3.fromRGB(38, 58, 15),   Glow = Color3.fromRGB(100, 220, 0)},
+    Sage        = {Main = Color3.fromRGB(18, 25, 18),   Top = Color3.fromRGB(28, 38, 28),   Accent = Color3.fromRGB(110, 165, 105), Text = Color3.fromRGB(230, 245, 230),   Element = Color3.fromRGB(40, 55, 40),   Glow = Color3.fromRGB(80, 160, 80)},
+    Moss        = {Main = Color3.fromRGB(15, 22, 10),   Top = Color3.fromRGB(25, 35, 18),   Accent = Color3.fromRGB(90, 150, 60),   Text = Color3.fromRGB(225, 245, 220),   Element = Color3.fromRGB(38, 52, 28),   Glow = Color3.fromRGB(70, 130, 40)},
+    Jungle      = {Main = Color3.fromRGB(8, 20, 8),     Top = Color3.fromRGB(14, 32, 14),   Accent = Color3.fromRGB(20, 180, 60),   Text = Color3.fromRGB(210, 255, 220),   Element = Color3.fromRGB(20, 48, 20),   Glow = Color3.fromRGB(0, 160, 40)},
+    Olive       = {Main = Color3.fromRGB(20, 22, 10),   Top = Color3.fromRGB(32, 35, 15),   Accent = Color3.fromRGB(128, 128, 0),   Text = Color3.fromRGB(240, 240, 210),   Element = Color3.fromRGB(45, 48, 20),   Glow = Color3.fromRGB(100, 110, 0)},
+    Matrix      = {Main = Color3.fromRGB(0, 8, 0),      Top = Color3.fromRGB(0, 15, 0),     Accent = Color3.fromRGB(0, 255, 70),    Text = Color3.fromRGB(180, 255, 180),   Element = Color3.fromRGB(0, 25, 0),     Glow = Color3.fromRGB(0, 200, 50)},
+    Camo        = {Main = Color3.fromRGB(28, 32, 18),   Top = Color3.fromRGB(42, 48, 28),   Accent = Color3.fromRGB(80, 120, 50),   Text = Color3.fromRGB(230, 240, 215),   Element = Color3.fromRGB(55, 65, 38),   Glow = Color3.fromRGB(60, 100, 30)},
 
-    -- 🟢 VERDES
-    Jade        = {Main = Color3.fromRGB(8,28,20),    Top = Color3.fromRGB(12,45,32),   Accent = Color3.fromRGB(0,168,107),   Text = Color3.fromRGB(220,255,240),   Element = Color3.fromRGB(18,60,42),   Glow = Color3.fromRGB(0,200,120)},
-    Lime        = {Main = Color3.fromRGB(15,25,5),    Top = Color3.fromRGB(25,40,8),    Accent = Color3.fromRGB(140,255,0),   Text = Color3.fromRGB(240,255,210),   Element = Color3.fromRGB(38,58,15),   Glow = Color3.fromRGB(100,220,0)},
-    Sage        = {Main = Color3.fromRGB(18,25,18),   Top = Color3.fromRGB(28,38,28),   Accent = Color3.fromRGB(110,165,105), Text = Color3.fromRGB(230,245,230),   Element = Color3.fromRGB(40,55,40),   Glow = Color3.fromRGB(80,160,80)},
-    Moss        = {Main = Color3.fromRGB(15,22,10),   Top = Color3.fromRGB(25,35,18),   Accent = Color3.fromRGB(90,150,60),   Text = Color3.fromRGB(225,245,220),   Element = Color3.fromRGB(38,52,28),   Glow = Color3.fromRGB(70,130,40)},
-    Jungle      = {Main = Color3.fromRGB(8,20,8),     Top = Color3.fromRGB(14,32,14),   Accent = Color3.fromRGB(20,180,60),   Text = Color3.fromRGB(210,255,220),   Element = Color3.fromRGB(20,48,20),   Glow = Color3.fromRGB(0,160,40)},
-    Olive       = {Main = Color3.fromRGB(20,22,10),   Top = Color3.fromRGB(32,35,15),   Accent = Color3.fromRGB(128,128,0),   Text = Color3.fromRGB(240,240,210),   Element = Color3.fromRGB(45,48,20),   Glow = Color3.fromRGB(100,110,0)},
-    Matrix      = {Main = Color3.fromRGB(0,8,0),      Top = Color3.fromRGB(0,15,0),     Accent = Color3.fromRGB(0,255,70),    Text = Color3.fromRGB(180,255,180),   Element = Color3.fromRGB(0,25,0),     Glow = Color3.fromRGB(0,200,50)},
-    Camo        = {Main = Color3.fromRGB(28,32,18),   Top = Color3.fromRGB(42,48,28),   Accent = Color3.fromRGB(80,120,50),   Text = Color3.fromRGB(230,240,215),   Element = Color3.fromRGB(55,65,38),   Glow = Color3.fromRGB(60,100,30)},
+    -- ══════════════════════════════════════
+    --    NOVOS: AZUIS (12)
+    -- ══════════════════════════════════════
+    Sapphire    = {Main = Color3.fromRGB(5, 10, 40),    Top = Color3.fromRGB(10, 18, 60),   Accent = Color3.fromRGB(15, 82, 186),   Text = Color3.fromRGB(220, 235, 255),   Element = Color3.fromRGB(15, 28, 75),   Glow = Color3.fromRGB(0, 100, 255)},
+    Navy        = {Main = Color3.fromRGB(0, 0, 30),     Top = Color3.fromRGB(0, 0, 50),     Accent = Color3.fromRGB(30, 80, 200),   Text = Color3.fromRGB(220, 230, 255),   Element = Color3.fromRGB(0, 0, 65),     Glow = Color3.fromRGB(20, 60, 180)},
+    Azure       = {Main = Color3.fromRGB(5, 15, 35),    Top = Color3.fromRGB(10, 25, 55),   Accent = Color3.fromRGB(0, 127, 255),   Text = Color3.fromRGB(220, 240, 255),   Element = Color3.fromRGB(15, 35, 70),   Glow = Color3.fromRGB(0, 100, 230)},
+    Cobalt      = {Main = Color3.fromRGB(5, 12, 38),    Top = Color3.fromRGB(10, 20, 58),   Accent = Color3.fromRGB(0, 71, 171),    Text = Color3.fromRGB(215, 230, 255),   Element = Color3.fromRGB(14, 28, 72),   Glow = Color3.fromRGB(0, 80, 200)},
+    Teal        = {Main = Color3.fromRGB(5, 25, 28),    Top = Color3.fromRGB(10, 40, 45),   Accent = Color3.fromRGB(0, 180, 160),   Text = Color3.fromRGB(215, 255, 255),   Element = Color3.fromRGB(15, 55, 60),   Glow = Color3.fromRGB(0, 160, 150)},
+    Turquoise   = {Main = Color3.fromRGB(5, 28, 30),    Top = Color3.fromRGB(10, 44, 48),   Accent = Color3.fromRGB(64, 224, 208),  Text = Color3.fromRGB(215, 255, 255),   Element = Color3.fromRGB(15, 58, 62),   Glow = Color3.fromRGB(0, 200, 190)},
+    Arctic      = {Main = Color3.fromRGB(15, 28, 38),   Top = Color3.fromRGB(25, 44, 60),   Accent = Color3.fromRGB(135, 210, 255), Text = Color3.fromRGB(235, 250, 255),   Element = Color3.fromRGB(38, 60, 80),   Glow = Color3.fromRGB(100, 200, 255)},
+    Ice         = {Main = Color3.fromRGB(18, 30, 42),   Top = Color3.fromRGB(28, 48, 65),   Accent = Color3.fromRGB(200, 240, 255), Text = Color3.fromRGB(245, 252, 255),   Element = Color3.fromRGB(42, 65, 88),   Glow = Color3.fromRGB(160, 230, 255)},
+    Storm       = {Main = Color3.fromRGB(18, 22, 32),   Top = Color3.fromRGB(28, 35, 50),   Accent = Color3.fromRGB(80, 120, 200),  Text = Color3.fromRGB(225, 230, 245),   Element = Color3.fromRGB(40, 50, 72),   Glow = Color3.fromRGB(60, 100, 190)},
+    Slate       = {Main = Color3.fromRGB(20, 25, 32),   Top = Color3.fromRGB(32, 40, 50),   Accent = Color3.fromRGB(100, 140, 180), Text = Color3.fromRGB(220, 232, 245),   Element = Color3.fromRGB(45, 55, 70),   Glow = Color3.fromRGB(80, 120, 170)},
+    Horizon     = {Main = Color3.fromRGB(10, 20, 40),   Top = Color3.fromRGB(18, 32, 62),   Accent = Color3.fromRGB(80, 160, 255),  Text = Color3.fromRGB(225, 240, 255),   Element = Color3.fromRGB(25, 45, 80),   Glow = Color3.fromRGB(50, 140, 255)},
+    Depth       = {Main = Color3.fromRGB(5, 10, 25),    Top = Color3.fromRGB(8, 18, 40),    Accent = Color3.fromRGB(40, 80, 160),   Text = Color3.fromRGB(210, 225, 255),   Element = Color3.fromRGB(12, 25, 55),   Glow = Color3.fromRGB(30, 70, 160)},
 
-    -- 🔵 AZUIS
-    Sapphire    = {Main = Color3.fromRGB(5,10,40),    Top = Color3.fromRGB(10,18,60),   Accent = Color3.fromRGB(15,82,186),   Text = Color3.fromRGB(220,235,255),   Element = Color3.fromRGB(15,28,75),   Glow = Color3.fromRGB(0,100,255)},
-    Navy        = {Main = Color3.fromRGB(0,0,30),     Top = Color3.fromRGB(0,0,50),     Accent = Color3.fromRGB(30,80,200),   Text = Color3.fromRGB(220,230,255),   Element = Color3.fromRGB(0,0,65),     Glow = Color3.fromRGB(20,60,180)},
-    Azure       = {Main = Color3.fromRGB(5,15,35),    Top = Color3.fromRGB(10,25,55),   Accent = Color3.fromRGB(0,127,255),   Text = Color3.fromRGB(220,240,255),   Element = Color3.fromRGB(15,35,70),   Glow = Color3.fromRGB(0,100,230)},
-    Cobalt      = {Main = Color3.fromRGB(5,12,38),    Top = Color3.fromRGB(10,20,58),   Accent = Color3.fromRGB(0,71,171),    Text = Color3.fromRGB(215,230,255),   Element = Color3.fromRGB(14,28,72),   Glow = Color3.fromRGB(0,80,200)},
-    Teal        = {Main = Color3.fromRGB(5,25,28),    Top = Color3.fromRGB(10,40,45),   Accent = Color3.fromRGB(0,180,160),   Text = Color3.fromRGB(215,255,255),   Element = Color3.fromRGB(15,55,60),   Glow = Color3.fromRGB(0,160,150)},
-    Turquoise   = {Main = Color3.fromRGB(5,28,30),    Top = Color3.fromRGB(10,44,48),   Accent = Color3.fromRGB(64,224,208),  Text = Color3.fromRGB(215,255,255),   Element = Color3.fromRGB(15,58,62),   Glow = Color3.fromRGB(0,200,190)},
-    Arctic      = {Main = Color3.fromRGB(15,28,38),   Top = Color3.fromRGB(25,44,60),   Accent = Color3.fromRGB(135,210,255), Text = Color3.fromRGB(235,250,255),   Element = Color3.fromRGB(38,60,80),   Glow = Color3.fromRGB(100,200,255)},
-    Ice         = {Main = Color3.fromRGB(18,30,42),   Top = Color3.fromRGB(28,48,65),   Accent = Color3.fromRGB(200,240,255), Text = Color3.fromRGB(245,252,255),   Element = Color3.fromRGB(42,65,88),   Glow = Color3.fromRGB(160,230,255)},
-    Storm       = {Main = Color3.fromRGB(18,22,32),   Top = Color3.fromRGB(28,35,50),   Accent = Color3.fromRGB(80,120,200),  Text = Color3.fromRGB(225,230,245),   Element = Color3.fromRGB(40,50,72),   Glow = Color3.fromRGB(60,100,190)},
-    Slate       = {Main = Color3.fromRGB(20,25,32),   Top = Color3.fromRGB(32,40,50),   Accent = Color3.fromRGB(100,140,180), Text = Color3.fromRGB(220,232,245),   Element = Color3.fromRGB(45,55,70),   Glow = Color3.fromRGB(80,120,170)},
-    Horizon     = {Main = Color3.fromRGB(10,20,40),   Top = Color3.fromRGB(18,32,62),   Accent = Color3.fromRGB(80,160,255),  Text = Color3.fromRGB(225,240,255),   Element = Color3.fromRGB(25,45,80),   Glow = Color3.fromRGB(50,140,255)},
-    Depth       = {Main = Color3.fromRGB(5,10,25),    Top = Color3.fromRGB(8,18,40),    Accent = Color3.fromRGB(40,80,160),   Text = Color3.fromRGB(210,225,255),   Element = Color3.fromRGB(12,25,55),   Glow = Color3.fromRGB(30,70,160)},
+    -- ══════════════════════════════════════
+    --    NOVOS: ROXOS / VIOLETAS (10)
+    -- ══════════════════════════════════════
+    Nebula      = {Main = Color3.fromRGB(18, 8, 28),    Top = Color3.fromRGB(28, 14, 42),   Accent = Color3.fromRGB(180, 50, 255),  Text = Color3.fromRGB(245, 225, 255),   Element = Color3.fromRGB(40, 20, 58),   Glow = Color3.fromRGB(150, 0, 255)},
+    Galaxy      = {Main = Color3.fromRGB(10, 5, 30),    Top = Color3.fromRGB(18, 10, 48),   Accent = Color3.fromRGB(140, 80, 255),  Text = Color3.fromRGB(235, 225, 255),   Element = Color3.fromRGB(25, 15, 65),   Glow = Color3.fromRGB(100, 50, 255)},
+    Cosmos      = {Main = Color3.fromRGB(5, 8, 22),     Top = Color3.fromRGB(10, 14, 35),   Accent = Color3.fromRGB(100, 60, 220),  Text = Color3.fromRGB(225, 220, 255),   Element = Color3.fromRGB(15, 20, 50),   Glow = Color3.fromRGB(80, 40, 200)},
+    Plum        = {Main = Color3.fromRGB(25, 10, 30),   Top = Color3.fromRGB(40, 18, 48),   Accent = Color3.fromRGB(150, 50, 180),  Text = Color3.fromRGB(248, 232, 255),   Element = Color3.fromRGB(55, 25, 65),   Glow = Color3.fromRGB(180, 60, 220)},
+    Orchid      = {Main = Color3.fromRGB(28, 12, 28),   Top = Color3.fromRGB(44, 20, 44),   Accent = Color3.fromRGB(218, 112, 214), Text = Color3.fromRGB(252, 235, 252),   Element = Color3.fromRGB(58, 28, 58),   Glow = Color3.fromRGB(200, 80, 200)},
+    Ultraviolet = {Main = Color3.fromRGB(12, 0, 28),    Top = Color3.fromRGB(20, 0, 45),    Accent = Color3.fromRGB(148, 0, 255),   Text = Color3.fromRGB(240, 215, 255),   Element = Color3.fromRGB(30, 5, 60),    Glow = Color3.fromRGB(120, 0, 255)},
+    Grape       = {Main = Color3.fromRGB(22, 8, 28),    Top = Color3.fromRGB(35, 14, 44),   Accent = Color3.fromRGB(130, 30, 160),  Text = Color3.fromRGB(245, 228, 252),   Element = Color3.fromRGB(50, 20, 62),   Glow = Color3.fromRGB(170, 40, 210)},
+    Indigo      = {Main = Color3.fromRGB(15, 10, 40),   Top = Color3.fromRGB(24, 16, 62),   Accent = Color3.fromRGB(75, 0, 130),    Text = Color3.fromRGB(225, 218, 255),   Element = Color3.fromRGB(32, 22, 75),   Glow = Color3.fromRGB(100, 0, 180)},
+    Phantom     = {Main = Color3.fromRGB(12, 5, 18),    Top = Color3.fromRGB(20, 8, 30),    Accent = Color3.fromRGB(100, 0, 160),   Text = Color3.fromRGB(235, 220, 255),   Element = Color3.fromRGB(28, 12, 42),   Glow = Color3.fromRGB(130, 0, 200)},
+    Specter     = {Main = Color3.fromRGB(15, 10, 22),   Top = Color3.fromRGB(25, 18, 36),   Accent = Color3.fromRGB(170, 100, 255), Text = Color3.fromRGB(242, 235, 255),   Element = Color3.fromRGB(38, 28, 55),   Glow = Color3.fromRGB(140, 80, 230)},
 
-    -- 🟣 ROXOS / VIOLETAS
-    Nebula      = {Main = Color3.fromRGB(18,8,28),    Top = Color3.fromRGB(28,14,42),   Accent = Color3.fromRGB(180,50,255),  Text = Color3.fromRGB(245,225,255),   Element = Color3.fromRGB(40,20,58),   Glow = Color3.fromRGB(150,0,255)},
-    Galaxy      = {Main = Color3.fromRGB(10,5,30),    Top = Color3.fromRGB(18,10,48),   Accent = Color3.fromRGB(140,80,255),  Text = Color3.fromRGB(235,225,255),   Element = Color3.fromRGB(25,15,65),   Glow = Color3.fromRGB(100,50,255)},
-    Cosmos      = {Main = Color3.fromRGB(5,8,22),     Top = Color3.fromRGB(10,14,35),   Accent = Color3.fromRGB(100,60,220),  Text = Color3.fromRGB(225,220,255),   Element = Color3.fromRGB(15,20,50),   Glow = Color3.fromRGB(80,40,200)},
-    Plum        = {Main = Color3.fromRGB(25,10,30),   Top = Color3.fromRGB(40,18,48),   Accent = Color3.fromRGB(150,50,180),  Text = Color3.fromRGB(248,232,255),   Element = Color3.fromRGB(55,25,65),   Glow = Color3.fromRGB(180,60,220)},
-    Orchid      = {Main = Color3.fromRGB(28,12,28),   Top = Color3.fromRGB(44,20,44),   Accent = Color3.fromRGB(218,112,214), Text = Color3.fromRGB(252,235,252),   Element = Color3.fromRGB(58,28,58),   Glow = Color3.fromRGB(200,80,200)},
-    Ultraviolet = {Main = Color3.fromRGB(12,0,28),    Top = Color3.fromRGB(20,0,45),    Accent = Color3.fromRGB(148,0,255),   Text = Color3.fromRGB(240,215,255),   Element = Color3.fromRGB(30,5,60),    Glow = Color3.fromRGB(120,0,255)},
-    Grape       = {Main = Color3.fromRGB(22,8,28),    Top = Color3.fromRGB(35,14,44),   Accent = Color3.fromRGB(130,30,160),  Text = Color3.fromRGB(245,228,252),   Element = Color3.fromRGB(50,20,62),   Glow = Color3.fromRGB(170,40,210)},
-    Indigo      = {Main = Color3.fromRGB(15,10,40),   Top = Color3.fromRGB(24,16,62),   Accent = Color3.fromRGB(75,0,130),    Text = Color3.fromRGB(225,218,255),   Element = Color3.fromRGB(32,22,75),   Glow = Color3.fromRGB(100,0,180)},
-    Phantom     = {Main = Color3.fromRGB(12,5,18),    Top = Color3.fromRGB(20,8,30),    Accent = Color3.fromRGB(100,0,160),   Text = Color3.fromRGB(235,220,255),   Element = Color3.fromRGB(28,12,42),   Glow = Color3.fromRGB(130,0,200)},
-    Specter     = {Main = Color3.fromRGB(15,10,22),   Top = Color3.fromRGB(25,18,36),   Accent = Color3.fromRGB(170,100,255), Text = Color3.fromRGB(242,235,255),   Element = Color3.fromRGB(38,28,55),   Glow = Color3.fromRGB(140,80,230)},
+    -- ══════════════════════════════════════
+    --    NOVOS: ROSAS / MAGENTAS (6)
+    -- ══════════════════════════════════════
+    Sakura      = {Main = Color3.fromRGB(35, 18, 25),   Top = Color3.fromRGB(55, 28, 40),   Accent = Color3.fromRGB(255, 182, 193), Text = Color3.fromRGB(255, 242, 248),   Element = Color3.fromRGB(72, 38, 55),   Glow = Color3.fromRGB(255, 150, 175)},
+    Rose        = {Main = Color3.fromRGB(35, 15, 22),   Top = Color3.fromRGB(55, 25, 36),   Accent = Color3.fromRGB(255, 100, 140), Text = Color3.fromRGB(255, 238, 244),   Element = Color3.fromRGB(70, 35, 50),   Glow = Color3.fromRGB(255, 70, 120)},
+    Magenta     = {Main = Color3.fromRGB(25, 5, 25),    Top = Color3.fromRGB(40, 8, 40),    Accent = Color3.fromRGB(255, 0, 255),   Text = Color3.fromRGB(255, 220, 255),   Element = Color3.fromRGB(55, 12, 55),   Glow = Color3.fromRGB(220, 0, 220)},
+    Blush       = {Main = Color3.fromRGB(38, 22, 28),   Top = Color3.fromRGB(58, 35, 44),   Accent = Color3.fromRGB(255, 160, 180), Text = Color3.fromRGB(255, 242, 246),   Element = Color3.fromRGB(75, 48, 58),   Glow = Color3.fromRGB(255, 120, 155)},
+    Hotpink     = {Main = Color3.fromRGB(30, 8, 20),    Top = Color3.fromRGB(48, 14, 32),   Accent = Color3.fromRGB(255, 20, 147),  Text = Color3.fromRGB(255, 225, 242),   Element = Color3.fromRGB(62, 18, 42),   Glow = Color3.fromRGB(255, 0, 120)},
+    Rosegold    = {Main = Color3.fromRGB(32, 22, 20),   Top = Color3.fromRGB(50, 35, 32),   Accent = Color3.fromRGB(220, 150, 130), Text = Color3.fromRGB(255, 245, 242),   Element = Color3.fromRGB(65, 48, 45),   Glow = Color3.fromRGB(200, 120, 100)},
 
-    -- 🩷 ROSAS / MAGENTAS
-    Sakura      = {Main = Color3.fromRGB(35,18,25),   Top = Color3.fromRGB(55,28,40),   Accent = Color3.fromRGB(255,182,193), Text = Color3.fromRGB(255,242,248),   Element = Color3.fromRGB(72,38,55),   Glow = Color3.fromRGB(255,150,175)},
-    Rose        = {Main = Color3.fromRGB(35,15,22),   Top = Color3.fromRGB(55,25,36),   Accent = Color3.fromRGB(255,100,140), Text = Color3.fromRGB(255,238,244),   Element = Color3.fromRGB(70,35,50),   Glow = Color3.fromRGB(255,70,120)},
-    Magenta     = {Main = Color3.fromRGB(25,5,25),    Top = Color3.fromRGB(40,8,40),    Accent = Color3.fromRGB(255,0,255),   Text = Color3.fromRGB(255,220,255),   Element = Color3.fromRGB(55,12,55),   Glow = Color3.fromRGB(220,0,220)},
-    Blush       = {Main = Color3.fromRGB(38,22,28),   Top = Color3.fromRGB(58,35,44),   Accent = Color3.fromRGB(255,160,180), Text = Color3.fromRGB(255,242,246),   Element = Color3.fromRGB(75,48,58),   Glow = Color3.fromRGB(255,120,155)},
-    Hotpink     = {Main = Color3.fromRGB(30,8,20),    Top = Color3.fromRGB(48,14,32),   Accent = Color3.fromRGB(255,20,147),  Text = Color3.fromRGB(255,225,242),   Element = Color3.fromRGB(62,18,42),   Glow = Color3.fromRGB(255,0,120)},
-    Rosegold    = {Main = Color3.fromRGB(32,22,20),   Top = Color3.fromRGB(50,35,32),   Accent = Color3.fromRGB(220,150,130), Text = Color3.fromRGB(255,245,242),   Element = Color3.fromRGB(65,48,45),   Glow = Color3.fromRGB(200,120,100)},
+    -- ══════════════════════════════════════
+    --    NOVOS: NEUTROS / MONOCROMÁTICOS (10)
+    -- ══════════════════════════════════════
+    Obsidian    = {Main = Color3.fromRGB(8, 8, 10),     Top = Color3.fromRGB(15, 15, 18),   Accent = Color3.fromRGB(80, 80, 100),   Text = Color3.fromRGB(210, 210, 220),   Element = Color3.fromRGB(22, 22, 28),   Glow = Color3.fromRGB(60, 60, 90)},
+    Onyx        = {Main = Color3.fromRGB(5, 5, 5),      Top = Color3.fromRGB(12, 12, 12),   Accent = Color3.fromRGB(60, 60, 60),    Text = Color3.fromRGB(200, 200, 200),   Element = Color3.fromRGB(20, 20, 20),   Glow = Color3.fromRGB(40, 40, 40)},
+    Pearl       = {Main = Color3.fromRGB(235, 235, 235),Top = Color3.fromRGB(250, 250, 250), Accent = Color3.fromRGB(180, 180, 200), Text = Color3.fromRGB(40, 40, 60),      Element = Color3.fromRGB(215, 215, 225),Glow = Color3.fromRGB(160, 160, 190)},
+    Ivory       = {Main = Color3.fromRGB(240, 235, 220),Top = Color3.fromRGB(255, 252, 240), Accent = Color3.fromRGB(200, 175, 120), Text = Color3.fromRGB(50, 45, 30),      Element = Color3.fromRGB(220, 215, 200),Glow = Color3.fromRGB(180, 155, 90)},
+    Silver      = {Main = Color3.fromRGB(25, 28, 30),   Top = Color3.fromRGB(40, 44, 48),   Accent = Color3.fromRGB(192, 192, 192), Text = Color3.fromRGB(235, 240, 245),   Element = Color3.fromRGB(55, 60, 65),   Glow = Color3.fromRGB(160, 160, 165)},
+    Ghost       = {Main = Color3.fromRGB(230, 232, 235),Top = Color3.fromRGB(245, 248, 252), Accent = Color3.fromRGB(150, 160, 175), Text = Color3.fromRGB(40, 45, 55),      Element = Color3.fromRGB(210, 214, 220),Glow = Color3.fromRGB(130, 140, 160)},
+    Titanium    = {Main = Color3.fromRGB(22, 24, 26),   Top = Color3.fromRGB(36, 38, 42),   Accent = Color3.fromRGB(140, 148, 158), Text = Color3.fromRGB(225, 228, 232),   Element = Color3.fromRGB(50, 54, 58),   Glow = Color3.fromRGB(110, 118, 130)},
+    Quicksilver = {Main = Color3.fromRGB(20, 22, 25),   Top = Color3.fromRGB(35, 38, 42),   Accent = Color3.fromRGB(180, 188, 195), Text = Color3.fromRGB(235, 240, 245),   Element = Color3.fromRGB(48, 52, 58),   Glow = Color3.fromRGB(150, 158, 168)},
+    Opal        = {Main = Color3.fromRGB(232, 235, 240),Top = Color3.fromRGB(248, 250, 255), Accent = Color3.fromRGB(160, 200, 220), Text = Color3.fromRGB(40, 50, 65),      Element = Color3.fromRGB(212, 218, 228),Glow = Color3.fromRGB(130, 180, 210)},
+    Sepia       = {Main = Color3.fromRGB(30, 22, 14),   Top = Color3.fromRGB(48, 35, 22),   Accent = Color3.fromRGB(180, 130, 80),  Text = Color3.fromRGB(255, 242, 220),   Element = Color3.fromRGB(62, 48, 32),   Glow = Color3.fromRGB(150, 100, 50)},
 
-    -- ⚪ NEUTROS / MONOCROMÁTICOS
-    Obsidian    = {Main = Color3.fromRGB(8,8,10),     Top = Color3.fromRGB(15,15,18),   Accent = Color3.fromRGB(80,80,100),   Text = Color3.fromRGB(210,210,220),   Element = Color3.fromRGB(22,22,28),   Glow = Color3.fromRGB(60,60,90)},
-    Onyx        = {Main = Color3.fromRGB(5,5,5),      Top = Color3.fromRGB(12,12,12),   Accent = Color3.fromRGB(60,60,60),    Text = Color3.fromRGB(200,200,200),   Element = Color3.fromRGB(20,20,20),   Glow = Color3.fromRGB(40,40,40)},
-    Pearl       = {Main = Color3.fromRGB(235,235,235),Top = Color3.fromRGB(250,250,250), Accent = Color3.fromRGB(180,180,200), Text = Color3.fromRGB(40,40,60),      Element = Color3.fromRGB(215,215,225),Glow = Color3.fromRGB(160,160,190)},
-    Ivory       = {Main = Color3.fromRGB(240,235,220),Top = Color3.fromRGB(255,252,240), Accent = Color3.fromRGB(200,175,120), Text = Color3.fromRGB(50,45,30),      Element = Color3.fromRGB(220,215,200),Glow = Color3.fromRGB(180,155,90)},
-    Silver      = {Main = Color3.fromRGB(25,28,30),   Top = Color3.fromRGB(40,44,48),   Accent = Color3.fromRGB(192,192,192), Text = Color3.fromRGB(235,240,245),   Element = Color3.fromRGB(55,60,65),   Glow = Color3.fromRGB(160,160,165)},
-    Ghost       = {Main = Color3.fromRGB(230,232,235),Top = Color3.fromRGB(245,248,252), Accent = Color3.fromRGB(150,160,175), Text = Color3.fromRGB(40,45,55),      Element = Color3.fromRGB(210,214,220),Glow = Color3.fromRGB(130,140,160)},
-    Titanium    = {Main = Color3.fromRGB(22,24,26),   Top = Color3.fromRGB(36,38,42),   Accent = Color3.fromRGB(140,148,158), Text = Color3.fromRGB(225,228,232),   Element = Color3.fromRGB(50,54,58),   Glow = Color3.fromRGB(110,118,130)},
-    Quicksilver = {Main = Color3.fromRGB(20,22,25),   Top = Color3.fromRGB(35,38,42),   Accent = Color3.fromRGB(180,188,195), Text = Color3.fromRGB(235,240,245),   Element = Color3.fromRGB(48,52,58),   Glow = Color3.fromRGB(150,158,168)},
-    Opal        = {Main = Color3.fromRGB(232,235,240),Top = Color3.fromRGB(248,250,255), Accent = Color3.fromRGB(160,200,220), Text = Color3.fromRGB(40,50,65),      Element = Color3.fromRGB(212,218,228),Glow = Color3.fromRGB(130,180,210)},
-    Sepia       = {Main = Color3.fromRGB(30,22,14),   Top = Color3.fromRGB(48,35,22),   Accent = Color3.fromRGB(180,130,80),  Text = Color3.fromRGB(255,242,220),   Element = Color3.fromRGB(62,48,32),   Glow = Color3.fromRGB(150,100,50)},
+    -- ══════════════════════════════════════
+    --    NOVOS: NATUREZA / TERRA (10)
+    -- ══════════════════════════════════════
+    Sand        = {Main = Color3.fromRGB(32, 28, 18),   Top = Color3.fromRGB(50, 44, 28),   Accent = Color3.fromRGB(210, 185, 135), Text = Color3.fromRGB(255, 248, 230),   Element = Color3.fromRGB(65, 58, 38),   Glow = Color3.fromRGB(185, 155, 90)},
+    Earth       = {Main = Color3.fromRGB(28, 22, 14),   Top = Color3.fromRGB(44, 35, 22),   Accent = Color3.fromRGB(160, 120, 70),  Text = Color3.fromRGB(245, 235, 215),   Element = Color3.fromRGB(58, 45, 28),   Glow = Color3.fromRGB(130, 90, 45)},
+    Swamp       = {Main = Color3.fromRGB(14, 20, 10),   Top = Color3.fromRGB(22, 32, 16),   Accent = Color3.fromRGB(60, 100, 40),   Text = Color3.fromRGB(215, 235, 210),   Element = Color3.fromRGB(30, 45, 22),   Glow = Color3.fromRGB(40, 80, 20)},
+    Reef        = {Main = Color3.fromRGB(5, 25, 30),    Top = Color3.fromRGB(10, 40, 48),   Accent = Color3.fromRGB(0, 220, 180),   Text = Color3.fromRGB(210, 255, 252),   Element = Color3.fromRGB(15, 55, 65),   Glow = Color3.fromRGB(0, 195, 165)},
+    Coral       = {Main = Color3.fromRGB(35, 20, 18),   Top = Color3.fromRGB(55, 32, 28),   Accent = Color3.fromRGB(255, 127, 80),  Text = Color3.fromRGB(255, 240, 235),   Element = Color3.fromRGB(72, 44, 40),   Glow = Color3.fromRGB(255, 90, 60)},
+    Petal       = {Main = Color3.fromRGB(38, 22, 28),   Top = Color3.fromRGB(58, 36, 44),   Accent = Color3.fromRGB(255, 155, 195), Text = Color3.fromRGB(255, 242, 248),   Element = Color3.fromRGB(75, 48, 60),   Glow = Color3.fromRGB(255, 120, 170)},
+    Autumn      = {Main = Color3.fromRGB(32, 20, 10),   Top = Color3.fromRGB(50, 32, 15),   Accent = Color3.fromRGB(210, 100, 30),  Text = Color3.fromRGB(255, 238, 215),   Element = Color3.fromRGB(65, 42, 20),   Glow = Color3.fromRGB(200, 80, 20)},
+    Spring      = {Main = Color3.fromRGB(20, 30, 15),   Top = Color3.fromRGB(32, 48, 24),   Accent = Color3.fromRGB(120, 220, 80),  Text = Color3.fromRGB(232, 255, 225),   Element = Color3.fromRGB(44, 65, 32),   Glow = Color3.fromRGB(90, 200, 50)},
+    Dawn        = {Main = Color3.fromRGB(35, 22, 18),   Top = Color3.fromRGB(55, 35, 28),   Accent = Color3.fromRGB(255, 180, 100), Text = Color3.fromRGB(255, 245, 232),   Element = Color3.fromRGB(72, 48, 38),   Glow = Color3.fromRGB(255, 145, 65)},
+    Tan         = {Main = Color3.fromRGB(30, 24, 16),   Top = Color3.fromRGB(48, 38, 25),   Accent = Color3.fromRGB(200, 170, 110), Text = Color3.fromRGB(252, 245, 232),   Element = Color3.fromRGB(62, 50, 32),   Glow = Color3.fromRGB(170, 135, 75)},
 
-    -- 🌍 NATUREZA / TERRA
-    Sand        = {Main = Color3.fromRGB(32,28,18),   Top = Color3.fromRGB(50,44,28),   Accent = Color3.fromRGB(210,185,135), Text = Color3.fromRGB(255,248,230),   Element = Color3.fromRGB(65,58,38),   Glow = Color3.fromRGB(185,155,90)},
-    Earth       = {Main = Color3.fromRGB(28,22,14),   Top = Color3.fromRGB(44,35,22),   Accent = Color3.fromRGB(160,120,70),  Text = Color3.fromRGB(245,235,215),   Element = Color3.fromRGB(58,45,28),   Glow = Color3.fromRGB(130,90,45)},
-    Tan         = {Main = Color3.fromRGB(30,24,16),   Top = Color3.fromRGB(48,38,25),   Accent = Color3.fromRGB(200,170,110), Text = Color3.fromRGB(252,245,232),   Element = Color3.fromRGB(62,50,32),   Glow = Color3.fromRGB(170,135,75)},
-    Swamp       = {Main = Color3.fromRGB(14,20,10),   Top = Color3.fromRGB(22,32,16),   Accent = Color3.fromRGB(60,100,40),   Text = Color3.fromRGB(215,235,210),   Element = Color3.fromRGB(30,45,22),   Glow = Color3.fromRGB(40,80,20)},
-    Reef        = {Main = Color3.fromRGB(5,25,30),    Top = Color3.fromRGB(10,40,48),   Accent = Color3.fromRGB(0,220,180),   Text = Color3.fromRGB(210,255,252),   Element = Color3.fromRGB(15,55,65),   Glow = Color3.fromRGB(0,195,165)},
-    Coral       = {Main = Color3.fromRGB(35,20,18),   Top = Color3.fromRGB(55,32,28),   Accent = Color3.fromRGB(255,127,80),  Text = Color3.fromRGB(255,240,235),   Element = Color3.fromRGB(72,44,40),   Glow = Color3.fromRGB(255,90,60)},
-    Petal       = {Main = Color3.fromRGB(38,22,28),   Top = Color3.fromRGB(58,36,44),   Accent = Color3.fromRGB(255,155,195), Text = Color3.fromRGB(255,242,248),   Element = Color3.fromRGB(75,48,60),   Glow = Color3.fromRGB(255,120,170)},
-    Autumn      = {Main = Color3.fromRGB(32,20,10),   Top = Color3.fromRGB(50,32,15),   Accent = Color3.fromRGB(210,100,30),  Text = Color3.fromRGB(255,238,215),   Element = Color3.fromRGB(65,42,20),   Glow = Color3.fromRGB(200,80,20)},
-    Spring      = {Main = Color3.fromRGB(20,30,15),   Top = Color3.fromRGB(32,48,24),   Accent = Color3.fromRGB(120,220,80),  Text = Color3.fromRGB(232,255,225),   Element = Color3.fromRGB(44,65,32),   Glow = Color3.fromRGB(90,200,50)},
-    Dawn        = {Main = Color3.fromRGB(35,22,18),   Top = Color3.fromRGB(55,35,28),   Accent = Color3.fromRGB(255,180,100), Text = Color3.fromRGB(255,245,232),   Element = Color3.fromRGB(72,48,38),   Glow = Color3.fromRGB(255,145,65)},
+    -- ══════════════════════════════════════
+    --    NOVOS: ESPAÇO / FUTURISTA (7)
+    -- ══════════════════════════════════════
+    Infrared    = {Main = Color3.fromRGB(20, 5, 5),     Top = Color3.fromRGB(35, 8, 8),     Accent = Color3.fromRGB(255, 50, 50),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(50, 12, 12),   Glow = Color3.fromRGB(255, 0, 0)},
+    Pulsar      = {Main = Color3.fromRGB(5, 10, 25),    Top = Color3.fromRGB(10, 18, 42),   Accent = Color3.fromRGB(60, 200, 255),  Text = Color3.fromRGB(220, 248, 255),   Element = Color3.fromRGB(15, 28, 58),   Glow = Color3.fromRGB(0, 180, 255)},
+    Quasar      = {Main = Color3.fromRGB(10, 5, 25),    Top = Color3.fromRGB(18, 10, 42),   Accent = Color3.fromRGB(120, 50, 255),  Text = Color3.fromRGB(235, 220, 255),   Element = Color3.fromRGB(25, 15, 58),   Glow = Color3.fromRGB(90, 30, 255)},
+    Aurora      = {Main = Color3.fromRGB(5, 20, 15),    Top = Color3.fromRGB(8, 32, 25),    Accent = Color3.fromRGB(50, 255, 160),  Text = Color3.fromRGB(210, 255, 240),   Element = Color3.fromRGB(12, 45, 35),   Glow = Color3.fromRGB(20, 230, 140)},
+    Plasma      = {Main = Color3.fromRGB(12, 5, 25),    Top = Color3.fromRGB(22, 10, 42),   Accent = Color3.fromRGB(200, 0, 255),   Text = Color3.fromRGB(242, 215, 255),   Element = Color3.fromRGB(32, 15, 58),   Glow = Color3.fromRGB(180, 0, 255)},
+    Thunder     = {Main = Color3.fromRGB(20, 20, 10),   Top = Color3.fromRGB(32, 32, 16),   Accent = Color3.fromRGB(255, 240, 50),  Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(45, 45, 22),   Glow = Color3.fromRGB(255, 220, 0)},
+    Photon      = {Main = Color3.fromRGB(5, 5, 15),     Top = Color3.fromRGB(10, 10, 25),   Accent = Color3.fromRGB(255, 255, 200), Text = Color3.fromRGB(255, 255, 240),   Element = Color3.fromRGB(15, 15, 38),   Glow = Color3.fromRGB(255, 255, 150)},
 
-    -- 🌌 ESPAÇO / FUTURISTA
-    Infrared    = {Main = Color3.fromRGB(20,5,5),     Top = Color3.fromRGB(35,8,8),     Accent = Color3.fromRGB(255,50,50),   Text = Color3.fromRGB(255,230,230),   Element = Color3.fromRGB(50,12,12),   Glow = Color3.fromRGB(255,0,0)},
-    Pulsar      = {Main = Color3.fromRGB(5,10,25),    Top = Color3.fromRGB(10,18,42),   Accent = Color3.fromRGB(60,200,255),  Text = Color3.fromRGB(220,248,255),   Element = Color3.fromRGB(15,28,58),   Glow = Color3.fromRGB(0,180,255)},
-    Quasar      = {Main = Color3.fromRGB(10,5,25),    Top = Color3.fromRGB(18,10,42),   Accent = Color3.fromRGB(120,50,255),  Text = Color3.fromRGB(235,220,255),   Element = Color3.fromRGB(25,15,58),   Glow = Color3.fromRGB(90,30,255)},
-    Aurora      = {Main = Color3.fromRGB(5,20,15),    Top = Color3.fromRGB(8,32,25),    Accent = Color3.fromRGB(50,255,160),  Text = Color3.fromRGB(210,255,240),   Element = Color3.fromRGB(12,45,35),   Glow = Color3.fromRGB(20,230,140)},
-    Plasma      = {Main = Color3.fromRGB(12,5,25),    Top = Color3.fromRGB(22,10,42),   Accent = Color3.fromRGB(200,0,255),   Text = Color3.fromRGB(242,215,255),   Element = Color3.fromRGB(32,15,58),   Glow = Color3.fromRGB(180,0,255)},
-    Thunder     = {Main = Color3.fromRGB(20,20,10),   Top = Color3.fromRGB(32,32,16),   Accent = Color3.fromRGB(255,240,50),  Text = Color3.fromRGB(255,255,220),   Element = Color3.fromRGB(45,45,22),   Glow = Color3.fromRGB(255,220,0)},
-    Photon      = {Main = Color3.fromRGB(5,5,15),     Top = Color3.fromRGB(10,10,25),   Accent = Color3.fromRGB(255,255,200), Text = Color3.fromRGB(255,255,240),   Element = Color3.fromRGB(15,15,38),   Glow = Color3.fromRGB(255,255,150)},
+    -- ══════════════════════════════════════
+    --    NOVOS: ESTÉTICOS / TEMÁTICOS (13)
+    -- ══════════════════════════════════════
+    Vaporwave   = {Main = Color3.fromRGB(20, 10, 35),   Top = Color3.fromRGB(32, 16, 55),   Accent = Color3.fromRGB(255, 100, 255), Text = Color3.fromRGB(255, 230, 255),   Element = Color3.fromRGB(48, 24, 75),   Glow = Color3.fromRGB(100, 220, 255)},
+    Retro       = {Main = Color3.fromRGB(25, 20, 8),    Top = Color3.fromRGB(38, 32, 12),   Accent = Color3.fromRGB(255, 190, 0),   Text = Color3.fromRGB(255, 248, 220),   Element = Color3.fromRGB(52, 44, 18),   Glow = Color3.fromRGB(220, 140, 0)},
+    Glitch      = {Main = Color3.fromRGB(5, 0, 5),      Top = Color3.fromRGB(10, 0, 10),    Accent = Color3.fromRGB(0, 255, 180),   Text = Color3.fromRGB(200, 255, 240),   Element = Color3.fromRGB(20, 0, 20),    Glow = Color3.fromRGB(255, 0, 255)},
+    Pixel       = {Main = Color3.fromRGB(15, 15, 25),   Top = Color3.fromRGB(25, 25, 40),   Accent = Color3.fromRGB(80, 200, 255),  Text = Color3.fromRGB(225, 240, 255),   Element = Color3.fromRGB(38, 38, 58),   Glow = Color3.fromRGB(50, 180, 255)},
+    Stealth     = {Main = Color3.fromRGB(8, 8, 10),     Top = Color3.fromRGB(14, 14, 18),   Accent = Color3.fromRGB(50, 55, 65),    Text = Color3.fromRGB(180, 185, 200),   Element = Color3.fromRGB(20, 22, 28),   Glow = Color3.fromRGB(40, 45, 60)},
+    Eclipse     = {Main = Color3.fromRGB(5, 5, 8),      Top = Color3.fromRGB(10, 10, 16),   Accent = Color3.fromRGB(255, 215, 0),   Text = Color3.fromRGB(255, 250, 235),   Element = Color3.fromRGB(18, 18, 28),   Glow = Color3.fromRGB(230, 190, 0)},
+    Shadow      = {Main = Color3.fromRGB(10, 10, 15),   Top = Color3.fromRGB(18, 18, 26),   Accent = Color3.fromRGB(80, 80, 120),   Text = Color3.fromRGB(210, 210, 230),   Element = Color3.fromRGB(28, 28, 40),   Glow = Color3.fromRGB(60, 60, 100)},
+    Holographic = {Main = Color3.fromRGB(12, 18, 22),   Top = Color3.fromRGB(20, 30, 38),   Accent = Color3.fromRGB(160, 255, 240), Text = Color3.fromRGB(240, 255, 252),   Element = Color3.fromRGB(30, 45, 56),   Glow = Color3.fromRGB(100, 230, 255)},
+    Crystal     = {Main = Color3.fromRGB(18, 25, 35),   Top = Color3.fromRGB(28, 40, 56),   Accent = Color3.fromRGB(180, 230, 255), Text = Color3.fromRGB(240, 250, 255),   Element = Color3.fromRGB(40, 58, 80),   Glow = Color3.fromRGB(150, 215, 255)},
+    Laser       = {Main = Color3.fromRGB(5, 15, 10),    Top = Color3.fromRGB(8, 25, 16),    Accent = Color3.fromRGB(0, 255, 100),   Text = Color3.fromRGB(210, 255, 230),   Element = Color3.fromRGB(12, 38, 24),   Glow = Color3.fromRGB(0, 230, 80)},
+    HackerGreen = {Main = Color3.fromRGB(0, 5, 0),      Top = Color3.fromRGB(0, 10, 0),     Accent = Color3.fromRGB(0, 200, 0),     Text = Color3.fromRGB(180, 255, 180),   Element = Color3.fromRGB(0, 20, 0),     Glow = Color3.fromRGB(0, 255, 0)},
+    Terminal    = {Main = Color3.fromRGB(0, 0, 0),      Top = Color3.fromRGB(10, 10, 10),   Accent = Color3.fromRGB(0, 255, 80),    Text = Color3.fromRGB(180, 255, 200),   Element = Color3.fromRGB(18, 18, 18),   Glow = Color3.fromRGB(0, 200, 60)},
+    Monochrome  = {Main = Color3.fromRGB(15, 15, 15),   Top = Color3.fromRGB(30, 30, 30),   Accent = Color3.fromRGB(200, 200, 200), Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(45, 45, 45),   Glow = Color3.fromRGB(150, 150, 150)},
 
-    -- 🎮 ESTÉTICOS / TEMÁTICOS
-    Vaporwave   = {Main = Color3.fromRGB(20,10,35),   Top = Color3.fromRGB(32,16,55),   Accent = Color3.fromRGB(255,100,255), Text = Color3.fromRGB(255,230,255),   Element = Color3.fromRGB(48,24,75),   Glow = Color3.fromRGB(100,220,255)},
-    Retro       = {Main = Color3.fromRGB(25,20,8),    Top = Color3.fromRGB(38,32,12),   Accent = Color3.fromRGB(255,190,0),   Text = Color3.fromRGB(255,248,220),   Element = Color3.fromRGB(52,44,18),   Glow = Color3.fromRGB(220,140,0)},
-    Glitch      = {Main = Color3.fromRGB(5,0,5),      Top = Color3.fromRGB(10,0,10),    Accent = Color3.fromRGB(0,255,180),   Text = Color3.fromRGB(200,255,240),   Element = Color3.fromRGB(20,0,20),    Glow = Color3.fromRGB(255,0,255)},
-    Pixel       = {Main = Color3.fromRGB(15,15,25),   Top = Color3.fromRGB(25,25,40),   Accent = Color3.fromRGB(80,200,255),  Text = Color3.fromRGB(225,240,255),   Element = Color3.fromRGB(38,38,58),   Glow = Color3.fromRGB(50,180,255)},
-    Stealth     = {Main = Color3.fromRGB(8,8,10),     Top = Color3.fromRGB(14,14,18),   Accent = Color3.fromRGB(50,55,65),    Text = Color3.fromRGB(180,185,200),   Element = Color3.fromRGB(20,22,28),   Glow = Color3.fromRGB(40,45,60)},
-    Eclipse     = {Main = Color3.fromRGB(5,5,8),      Top = Color3.fromRGB(10,10,16),   Accent = Color3.fromRGB(255,215,0),   Text = Color3.fromRGB(255,250,235),   Element = Color3.fromRGB(18,18,28),   Glow = Color3.fromRGB(230,190,0)},
-    Shadow      = {Main = Color3.fromRGB(10,10,15),   Top = Color3.fromRGB(18,18,26),   Accent = Color3.fromRGB(80,80,120),   Text = Color3.fromRGB(210,210,230),   Element = Color3.fromRGB(28,28,40),   Glow = Color3.fromRGB(60,60,100)},
-    Holographic = {Main = Color3.fromRGB(12,18,22),   Top = Color3.fromRGB(20,30,38),   Accent = Color3.fromRGB(160,255,240), Text = Color3.fromRGB(240,255,252),   Element = Color3.fromRGB(30,45,56),   Glow = Color3.fromRGB(100,230,255)},
-    Crystal     = {Main = Color3.fromRGB(18,25,35),   Top = Color3.fromRGB(28,40,56),   Accent = Color3.fromRGB(180,230,255), Text = Color3.fromRGB(240,250,255),   Element = Color3.fromRGB(40,58,80),   Glow = Color3.fromRGB(150,215,255)},
-    Laser       = {Main = Color3.fromRGB(5,15,10),    Top = Color3.fromRGB(8,25,16),    Accent = Color3.fromRGB(0,255,100),   Text = Color3.fromRGB(210,255,230),   Element = Color3.fromRGB(12,38,24),   Glow = Color3.fromRGB(0,230,80)},
-    HackerGreen = {Main = Color3.fromRGB(0,5,0),      Top = Color3.fromRGB(0,10,0),     Accent = Color3.fromRGB(0,200,0),     Text = Color3.fromRGB(180,255,180),   Element = Color3.fromRGB(0,20,0),     Glow = Color3.fromRGB(0,255,0)},
-    Terminal    = {Main = Color3.fromRGB(0,0,0),      Top = Color3.fromRGB(10,10,10),   Accent = Color3.fromRGB(0,255,80),    Text = Color3.fromRGB(180,255,200),   Element = Color3.fromRGB(18,18,18),   Glow = Color3.fromRGB(0,200,60)},
-    Monochrome  = {Main = Color3.fromRGB(15,15,15),   Top = Color3.fromRGB(30,30,30),   Accent = Color3.fromRGB(200,200,200), Text = Color3.fromRGB(255,255,255),   Element = Color3.fromRGB(45,45,45),   Glow = Color3.fromRGB(150,150,150)},
+    -- ══════════════════════════════════════
+    --    NOVOS: CANDY / DOCES (6)
+    -- ══════════════════════════════════════
+    Candy       = {Main = Color3.fromRGB(38, 18, 30),   Top = Color3.fromRGB(58, 28, 48),   Accent = Color3.fromRGB(255, 80, 200),  Text = Color3.fromRGB(255, 235, 252),   Element = Color3.fromRGB(75, 38, 65),   Glow = Color3.fromRGB(255, 50, 180)},
+    Cotton      = {Main = Color3.fromRGB(40, 28, 35),   Top = Color3.fromRGB(62, 44, 55),   Accent = Color3.fromRGB(255, 170, 220), Text = Color3.fromRGB(255, 245, 252),   Element = Color3.fromRGB(80, 58, 72),   Glow = Color3.fromRGB(255, 140, 210)},
+    Strawberry  = {Main = Color3.fromRGB(32, 12, 15),   Top = Color3.fromRGB(50, 18, 24),   Accent = Color3.fromRGB(255, 80, 100),  Text = Color3.fromRGB(255, 235, 238),   Element = Color3.fromRGB(65, 25, 32),   Glow = Color3.fromRGB(255, 50, 80)},
+    Blueberry   = {Main = Color3.fromRGB(18, 12, 32),   Top = Color3.fromRGB(28, 18, 50),   Accent = Color3.fromRGB(100, 130, 255), Text = Color3.fromRGB(230, 232, 255),   Element = Color3.fromRGB(40, 28, 70),   Glow = Color3.fromRGB(80, 110, 255)},
+    Watermelon  = {Main = Color3.fromRGB(28, 18, 18),   Top = Color3.fromRGB(45, 28, 28),   Accent = Color3.fromRGB(255, 80, 80),   Text = Color3.fromRGB(255, 235, 235),   Element = Color3.fromRGB(60, 38, 38),   Glow = Color3.fromRGB(0, 180, 80)},
+    Grape2      = {Main = Color3.fromRGB(28, 10, 35),   Top = Color3.fromRGB(44, 16, 55),   Accent = Color3.fromRGB(180, 80, 220),  Text = Color3.fromRGB(248, 230, 255),   Element = Color3.fromRGB(60, 22, 75),   Glow = Color3.fromRGB(160, 50, 210)},
 
-    -- 🍬 DOCES / CANDY
-    Candy       = {Main = Color3.fromRGB(38,18,30),   Top = Color3.fromRGB(58,28,48),   Accent = Color3.fromRGB(255,80,200),  Text = Color3.fromRGB(255,235,252),   Element = Color3.fromRGB(75,38,65),   Glow = Color3.fromRGB(255,50,180)},
-    Cotton      = {Main = Color3.fromRGB(40,28,35),   Top = Color3.fromRGB(62,44,55),   Accent = Color3.fromRGB(255,170,220), Text = Color3.fromRGB(255,245,252),   Element = Color3.fromRGB(80,58,72),   Glow = Color3.fromRGB(255,140,210)},
-    Strawberry  = {Main = Color3.fromRGB(32,12,15),   Top = Color3.fromRGB(50,18,24),   Accent = Color3.fromRGB(255,80,100),  Text = Color3.fromRGB(255,235,238),   Element = Color3.fromRGB(65,25,32),   Glow = Color3.fromRGB(255,50,80)},
-    Blueberry   = {Main = Color3.fromRGB(18,12,32),   Top = Color3.fromRGB(28,18,50),   Accent = Color3.fromRGB(100,130,255), Text = Color3.fromRGB(230,232,255),   Element = Color3.fromRGB(40,28,70),   Glow = Color3.fromRGB(80,110,255)},
-    Watermelon  = {Main = Color3.fromRGB(28,18,18),   Top = Color3.fromRGB(45,28,28),   Accent = Color3.fromRGB(255,80,80),   Text = Color3.fromRGB(255,235,235),   Element = Color3.fromRGB(60,38,38),   Glow = Color3.fromRGB(0,180,80)},
-    Grape2      = {Main = Color3.fromRGB(28,10,35),   Top = Color3.fromRGB(44,16,55),   Accent = Color3.fromRGB(180,80,220),  Text = Color3.fromRGB(248,230,255),   Element = Color3.fromRGB(60,22,75),   Glow = Color3.fromRGB(160,50,210)},
-
-    -- 🌅 GRADIENTES / ESPECIAIS
-    Nocturn     = {Main = Color3.fromRGB(8,5,18),     Top = Color3.fromRGB(15,10,30),   Accent = Color3.fromRGB(90,60,200),   Text = Color3.fromRGB(228,222,255),   Element = Color3.fromRGB(22,15,45),   Glow = Color3.fromRGB(70,40,180)},
-    Radiant     = {Main = Color3.fromRGB(35,28,10),   Top = Color3.fromRGB(55,44,16),   Accent = Color3.fromRGB(255,220,50),  Text = Color3.fromRGB(255,252,230),   Element = Color3.fromRGB(72,58,22),   Glow = Color3.fromRGB(255,200,0)},
-    Dawnbreak   = {Main = Color3.fromRGB(30,15,20),   Top = Color3.fromRGB(48,24,32),   Accent = Color3.fromRGB(255,140,120), Text = Color3.fromRGB(255,242,238),   Element = Color3.fromRGB(62,34,44),   Glow = Color3.fromRGB(255,100,80)},
-    Midnight2   = {Main = Color3.fromRGB(5,5,15),     Top = Color3.fromRGB(10,10,25),   Accent = Color3.fromRGB(60,80,180),   Text = Color3.fromRGB(220,225,255),   Element = Color3.fromRGB(15,15,40),   Glow = Color3.fromRGB(40,60,160)},
-    Spectral    = {Main = Color3.fromRGB(10,10,20),   Top = Color3.fromRGB(18,18,35),   Accent = Color3.fromRGB(100,255,220), Text = Color3.fromRGB(225,255,250),   Element = Color3.fromRGB(26,26,52),   Glow = Color3.fromRGB(60,230,200)},
-    Pulse       = {Main = Color3.fromRGB(8,5,20),     Top = Color3.fromRGB(14,10,35),   Accent = Color3.fromRGB(255,50,150),  Text = Color3.fromRGB(255,225,242),   Element = Color3.fromRGB(20,15,50),   Glow = Color3.fromRGB(220,0,130)},
-    Fusion      = {Main = Color3.fromRGB(15,10,25),   Top = Color3.fromRGB(25,18,40),   Accent = Color3.fromRGB(255,100,50),  Text = Color3.fromRGB(255,240,230),   Element = Color3.fromRGB(38,28,58),   Glow = Color3.fromRGB(255,60,30)},
+    -- ══════════════════════════════════════
+    --    NOVOS: GRADIENTES / ESPECIAIS (7)
+    -- ══════════════════════════════════════
+    Nocturn     = {Main = Color3.fromRGB(8, 5, 18),     Top = Color3.fromRGB(15, 10, 30),   Accent = Color3.fromRGB(90, 60, 200),   Text = Color3.fromRGB(228, 222, 255),   Element = Color3.fromRGB(22, 15, 45),   Glow = Color3.fromRGB(70, 40, 180)},
+    Radiant     = {Main = Color3.fromRGB(35, 28, 10),   Top = Color3.fromRGB(55, 44, 16),   Accent = Color3.fromRGB(255, 220, 50),  Text = Color3.fromRGB(255, 252, 230),   Element = Color3.fromRGB(72, 58, 22),   Glow = Color3.fromRGB(255, 200, 0)},
+    Dawnbreak   = {Main = Color3.fromRGB(30, 15, 20),   Top = Color3.fromRGB(48, 24, 32),   Accent = Color3.fromRGB(255, 140, 120), Text = Color3.fromRGB(255, 242, 238),   Element = Color3.fromRGB(62, 34, 44),   Glow = Color3.fromRGB(255, 100, 80)},
+    Spectral    = {Main = Color3.fromRGB(10, 10, 20),   Top = Color3.fromRGB(18, 18, 35),   Accent = Color3.fromRGB(100, 255, 220), Text = Color3.fromRGB(225, 255, 250),   Element = Color3.fromRGB(26, 26, 52),   Glow = Color3.fromRGB(60, 230, 200)},
+    Pulse       = {Main = Color3.fromRGB(8, 5, 20),     Top = Color3.fromRGB(14, 10, 35),   Accent = Color3.fromRGB(255, 50, 150),  Text = Color3.fromRGB(255, 225, 242),   Element = Color3.fromRGB(20, 15, 50),   Glow = Color3.fromRGB(220, 0, 130)},
+    Fusion      = {Main = Color3.fromRGB(15, 10, 25),   Top = Color3.fromRGB(25, 18, 40),   Accent = Color3.fromRGB(255, 100, 50),  Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(38, 28, 58),   Glow = Color3.fromRGB(255, 60, 30)},
+    Midnight2   = {Main = Color3.fromRGB(5, 5, 15),     Top = Color3.fromRGB(10, 10, 25),   Accent = Color3.fromRGB(60, 80, 180),   Text = Color3.fromRGB(220, 225, 255),   Element = Color3.fromRGB(15, 15, 40),   Glow = Color3.fromRGB(40, 60, 160)},
 }
 
 Library.CurrentTheme = Library.Themes.Default
