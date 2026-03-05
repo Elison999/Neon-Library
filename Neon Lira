@@ -1,85 +1,109 @@
---[[ 
-    NEON UI LIBRARY (AUTO-LOGIN UPDATE)
-    - Update: Auto-Login (Checks saved key instantly)
-    - Feature: Search Bar (Auto Tab Switch & Scroll)
-    - Feature: MultiDropdown & Dynamic Refresh
-    - System: Save/Load Config & Key
+--[[
+    ╔══════════════════════════════════════════════════════╗
+    ║         NEON UI LIBRARY  v2.0 — MODERN EDITION       ║
+    ╠══════════════════════════════════════════════════════╣
+    ║  [NOVO] Ripple click em todos os botões              ║
+    ║  [NOVO] Sistema de Tooltip (descrição ao hover)      ║
+    ║  [NOVO] Toast Notification (pill no topo)            ║
+    ║  [NOVO] Notificações com Tipo: success/error/warn    ║
+    ║  [NOVO] Botão Minimizar (colapsa a janela)           ║
+    ║  [NOVO] Indicador de Tab animado (barra lateral)     ║
+    ║  [NOVO] Badge nas Tabs: NEW · HOT · BETA · UP        ║
+    ║  [NOVO] Hover glow nos elementos                     ║
+    ║  [NOVO] Elemento ProgressBar com shimmer             ║
+    ║  [NOVO] Elemento Separator com label                 ║
+    ║  [NOVO] Animação spring ao abrir a janela            ║
+    ║  [NOVO] Glow pulsante (breathing) na borda           ║
+    ║  [NOVO] Gradiente do Topbar usa a cor Accent         ║
+    ║  [NOVO] Hover nos itens de Dropdown                  ║
+    ║  138 temas incluídos                                 ║
+    ║  Feature: Search Bar, MultiDropdown, Auto-Login      ║
+    ║  System: Save/Load Config & Key                      ║
+    ╚══════════════════════════════════════════════════════╝
 ]]
 
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local CoreGui = game:GetService("CoreGui")
-local HttpService = game:GetService("HttpService")
+local TweenService     = game:GetService("TweenService")
+local RunService       = game:GetService("RunService")
+local CoreGui          = game:GetService("CoreGui")
+local HttpService      = game:GetService("HttpService")
 
 local Library = {}
 
 -- // Configurações //
 Library.Settings = {
-    Theme = "Default",
-    Transparency = false,
-    Language = "English"
+    Theme       = "Default",
+    Transparency= false,
+    Language    = "English",
+    PulseGlow   = true,   -- Breathing glow na borda
+    Tooltips    = true,   -- Tooltips ao hover
 }
 
-Library.Flags = {}    
-Library.Elements = {} 
-Library.SearchIndex = {} 
+Library.Flags       = {}
+Library.Elements    = {}
+Library.SearchIndex = {}
 
 -- // Traduções //
 Library.Translations = {
     English = {
-        ConfigTab = "Configuration",
-        LangDrop = "Language",
-        TransToggle = "Transparent Background (50%)",
-        ThemeDrop = "Themes",
-        SaveBtn = "Save Config",
-        LoadBtn = "Load Config",
-        SaveMsg = "Configuration Saved!",
-        LoadMsg = "Configuration Loaded!",
-        LoadErr = "Config file not found.",
-        KeyTitle = "Key System",
-        KeyPlaceholder = "Enter Key...",
-        CheckKey = "Login",
-        GetKey = "Get Link",
-        LinkCopied = "Link copied!",
-        KeySuccess = "Success",
-        KeyVerified = "Key Verified!",
-        KeyError = "Error",
+        ConfigTab    = "Configuration",
+        LangDrop     = "Language",
+        TransToggle  = "Transparent Background (50%)",
+        ThemeDrop    = "Themes",
+        SaveBtn      = "Save Config",
+        LoadBtn      = "Load Config",
+        SaveMsg      = "Configuration Saved!",
+        LoadMsg      = "Configuration Loaded!",
+        LoadErr      = "Config file not found.",
+        KeyTitle     = "Key System",
+        KeyPlaceholder="Enter Key...",
+        CheckKey     = "Login",
+        GetKey       = "Get Link",
+        LinkCopied   = "Link copied!",
+        KeySuccess   = "Success",
+        KeyVerified  = "Key Verified!",
+        KeyError     = "Error",
         KeyIncorrect = "Incorrect Key!",
-        Binding = "Press key...",
-        NoBind = "None",
+        Binding      = "Press key...",
+        NoBind       = "None",
         ScriptsTitle = "Scripts Hub",
-        ExecScript = "Executed: ",
-        MultiSelect = "Selected: ",
-        SearchPlace = "Search...",
-        AutoLogin = "Auto-Login Successful!"
+        ExecScript   = "Executed: ",
+        MultiSelect  = "Selected: ",
+        SearchPlace  = "Search...",
+        AutoLogin    = "Auto-Login Successful!",
+        Progress     = "Progress",
+        PulseToggle  = "Pulse Glow Effect",
+        TooltipToggle= "Enable Tooltips",
     },
     Portuguese = {
-        ConfigTab = "Configuração",
-        LangDrop = "Idioma",
-        TransToggle = "Fundo Transparente (50%)",
-        ThemeDrop = "Temas",
-        SaveBtn = "Salvar Configuração",
-        LoadBtn = "Carregar Configuração",
-        SaveMsg = "Configuração Salva!",
-        LoadMsg = "Configuração Carregada!",
-        LoadErr = "Arquivo de config não achado.",
-        KeyTitle = "Sistema de Key",
-        KeyPlaceholder = "Digite a Key...",
-        CheckKey = "Entrar",
-        GetKey = "Pegar Link",
-        LinkCopied = "Link copiado!",
-        KeySuccess = "Sucesso",
-        KeyVerified = "Key Verificada!",
-        KeyError = "Erro",
+        ConfigTab    = "Configuração",
+        LangDrop     = "Idioma",
+        TransToggle  = "Fundo Transparente (50%)",
+        ThemeDrop    = "Temas",
+        SaveBtn      = "Salvar Configuração",
+        LoadBtn      = "Carregar Configuração",
+        SaveMsg      = "Configuração Salva!",
+        LoadMsg      = "Configuração Carregada!",
+        LoadErr      = "Arquivo de config não achado.",
+        KeyTitle     = "Sistema de Key",
+        KeyPlaceholder="Digite a Key...",
+        CheckKey     = "Entrar",
+        GetKey       = "Pegar Link",
+        LinkCopied   = "Link copiado!",
+        KeySuccess   = "Sucesso",
+        KeyVerified  = "Key Verificada!",
+        KeyError     = "Erro",
         KeyIncorrect = "Key Incorreta!",
-        Binding = "Aperte a tecla...",
-        NoBind = "Nenhum",
+        Binding      = "Aperte a tecla...",
+        NoBind       = "Nenhum",
         ScriptsTitle = "Hub de Scripts",
-        ExecScript = "Executado: ",
-        MultiSelect = "Selecionado: ",
-        SearchPlace = "Procurar...",
-        AutoLogin = "Login Automático com Sucesso!"
+        ExecScript   = "Executado: ",
+        MultiSelect  = "Selecionado: ",
+        SearchPlace  = "Procurar...",
+        AutoLogin    = "Login Automático com Sucesso!",
+        Progress     = "Progresso",
+        PulseToggle  = "Efeito Glow Pulsante",
+        TooltipToggle= "Ativar Tooltips",
     }
 }
 
@@ -89,218 +113,175 @@ function Library:GetText(Key)
     return Library.Translations[Lang][Key] or Key
 end
 
--- // Temas // (120 temas no total)
+-- // Temas (138 temas) //
 Library.Themes = {
-
-    -- ══════════════════════════════════════
-    --          ORIGINAIS (28)
-    -- ══════════════════════════════════════
-    Default     = {Main = Color3.fromRGB(20, 20, 20),   Top = Color3.fromRGB(30, 30, 30),   Accent = Color3.fromRGB(0, 160, 255),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(35, 35, 35),   Glow = Color3.fromRGB(0, 110, 220)},
-    DarkBlue    = {Main = Color3.fromRGB(15, 20, 30),   Top = Color3.fromRGB(20, 25, 40),   Accent = Color3.fromRGB(50, 100, 255),  Text = Color3.fromRGB(240, 240, 255),   Element = Color3.fromRGB(25, 30, 45),   Glow = Color3.fromRGB(40, 80, 200)},
-    DarkRed     = {Main = Color3.fromRGB(30, 15, 15),   Top = Color3.fromRGB(40, 20, 20),   Accent = Color3.fromRGB(255, 60, 60),   Text = Color3.fromRGB(255, 240, 240),   Element = Color3.fromRGB(45, 25, 25),   Glow = Color3.fromRGB(200, 40, 40)},
-    Ocean       = {Main = Color3.fromRGB(10, 30, 35),   Top = Color3.fromRGB(15, 40, 45),   Accent = Color3.fromRGB(0, 200, 200),   Text = Color3.fromRGB(220, 255, 255),   Element = Color3.fromRGB(20, 50, 55),   Glow = Color3.fromRGB(0, 150, 150)},
-    Amethyst    = {Main = Color3.fromRGB(30, 20, 35),   Top = Color3.fromRGB(40, 25, 45),   Accent = Color3.fromRGB(180, 80, 255),  Text = Color3.fromRGB(250, 230, 255),   Element = Color3.fromRGB(45, 30, 50),   Glow = Color3.fromRGB(140, 60, 200)},
-    Emerald     = {Main = Color3.fromRGB(20, 35, 20),   Top = Color3.fromRGB(25, 45, 25),   Accent = Color3.fromRGB(50, 200, 80),   Text = Color3.fromRGB(230, 255, 230),   Element = Color3.fromRGB(30, 50, 30),   Glow = Color3.fromRGB(40, 160, 60)},
-    Sunset      = {Main = Color3.fromRGB(35, 25, 20),   Top = Color3.fromRGB(45, 30, 25),   Accent = Color3.fromRGB(255, 140, 50),  Text = Color3.fromRGB(255, 240, 220),   Element = Color3.fromRGB(50, 35, 30),   Glow = Color3.fromRGB(200, 100, 40)},
-    Carbon      = {Main = Color3.fromRGB(10, 10, 10),   Top = Color3.fromRGB(20, 20, 20),   Accent = Color3.fromRGB(120, 120, 120), Text = Color3.fromRGB(200, 200, 200),   Element = Color3.fromRGB(30, 30, 30),   Glow = Color3.fromRGB(80, 80, 80)},
-    Midnight    = {Main = Color3.fromRGB(10, 10, 20),   Top = Color3.fromRGB(15, 15, 30),   Accent = Color3.fromRGB(100, 100, 255), Text = Color3.fromRGB(240, 240, 255),   Element = Color3.fromRGB(25, 25, 45),   Glow = Color3.fromRGB(80, 80, 220)},
-    Dracula     = {Main = Color3.fromRGB(40, 42, 54),   Top = Color3.fromRGB(68, 71, 90),   Accent = Color3.fromRGB(189, 147, 249), Text = Color3.fromRGB(248, 248, 242),   Element = Color3.fromRGB(98, 114, 164), Glow = Color3.fromRGB(255, 121, 198)},
-    Cyberpunk   = {Main = Color3.fromRGB(10, 10, 15),   Top = Color3.fromRGB(20, 20, 25),   Accent = Color3.fromRGB(255, 230, 0),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(30, 30, 35),   Glow = Color3.fromRGB(0, 255, 255)},
-    Void        = {Main = Color3.fromRGB(5, 5, 5),      Top = Color3.fromRGB(15, 15, 15),   Accent = Color3.fromRGB(255, 255, 255), Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(25, 25, 25),   Glow = Color3.fromRGB(150, 150, 150)},
-    Bubblegum   = {Main = Color3.fromRGB(35, 25, 35),   Top = Color3.fromRGB(45, 30, 45),   Accent = Color3.fromRGB(255, 100, 180), Text = Color3.fromRGB(255, 240, 255),   Element = Color3.fromRGB(55, 40, 55),   Glow = Color3.fromRGB(100, 200, 255)},
-    Mint        = {Main = Color3.fromRGB(20, 30, 25),   Top = Color3.fromRGB(30, 45, 35),   Accent = Color3.fromRGB(0, 255, 170),   Text = Color3.fromRGB(230, 255, 240),   Element = Color3.fromRGB(40, 60, 50),   Glow = Color3.fromRGB(0, 200, 140)},
-    Gold        = {Main = Color3.fromRGB(30, 25, 10),   Top = Color3.fromRGB(45, 40, 20),   Accent = Color3.fromRGB(255, 215, 0),   Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(55, 50, 30),   Glow = Color3.fromRGB(220, 180, 0)},
-    Crimson     = {Main = Color3.fromRGB(25, 10, 10),   Top = Color3.fromRGB(40, 15, 15),   Accent = Color3.fromRGB(220, 20, 60),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(50, 25, 25),   Glow = Color3.fromRGB(255, 0, 50)},
-    Frost       = {Main = Color3.fromRGB(20, 30, 40),   Top = Color3.fromRGB(30, 45, 60),   Accent = Color3.fromRGB(100, 200, 255), Text = Color3.fromRGB(240, 250, 255),   Element = Color3.fromRGB(40, 60, 80),   Glow = Color3.fromRGB(150, 220, 255)},
-    Toxic       = {Main = Color3.fromRGB(15, 25, 10),   Top = Color3.fromRGB(25, 35, 15),   Accent = Color3.fromRGB(180, 255, 50),  Text = Color3.fromRGB(240, 255, 220),   Element = Color3.fromRGB(35, 50, 25),   Glow = Color3.fromRGB(100, 200, 0)},
-    Royal       = {Main = Color3.fromRGB(10, 10, 35),   Top = Color3.fromRGB(20, 20, 55),   Accent = Color3.fromRGB(255, 180, 50),  Text = Color3.fromRGB(255, 240, 200),   Element = Color3.fromRGB(30, 30, 70),   Glow = Color3.fromRGB(255, 215, 0)},
-    Rust        = {Main = Color3.fromRGB(30, 20, 15),   Top = Color3.fromRGB(45, 30, 25),   Accent = Color3.fromRGB(200, 80, 30),   Text = Color3.fromRGB(255, 230, 210),   Element = Color3.fromRGB(60, 40, 30),   Glow = Color3.fromRGB(255, 100, 50)},
-    Lavender    = {Main = Color3.fromRGB(25, 20, 30),   Top = Color3.fromRGB(35, 30, 45),   Accent = Color3.fromRGB(200, 160, 255), Text = Color3.fromRGB(250, 240, 255),   Element = Color3.fromRGB(50, 45, 60),   Glow = Color3.fromRGB(160, 120, 220)},
-    Steel       = {Main = Color3.fromRGB(25, 30, 35),   Top = Color3.fromRGB(40, 45, 50),   Accent = Color3.fromRGB(100, 150, 200), Text = Color3.fromRGB(220, 230, 240),   Element = Color3.fromRGB(50, 55, 60),   Glow = Color3.fromRGB(120, 160, 180)},
-    Forest      = {Main = Color3.fromRGB(15, 25, 15),   Top = Color3.fromRGB(25, 40, 25),   Accent = Color3.fromRGB(34, 139, 34),   Text = Color3.fromRGB(230, 255, 230),   Element = Color3.fromRGB(35, 50, 35),   Glow = Color3.fromRGB(50, 205, 50)},
-    Cherry      = {Main = Color3.fromRGB(25, 15, 20),   Top = Color3.fromRGB(40, 25, 30),   Accent = Color3.fromRGB(255, 50, 100),  Text = Color3.fromRGB(255, 230, 240),   Element = Color3.fromRGB(55, 35, 45),   Glow = Color3.fromRGB(200, 80, 120)},
-    Abyss       = {Main = Color3.fromRGB(5, 15, 20),    Top = Color3.fromRGB(10, 25, 30),   Accent = Color3.fromRGB(0, 128, 128),   Text = Color3.fromRGB(220, 240, 240),   Element = Color3.fromRGB(20, 40, 50),   Glow = Color3.fromRGB(0, 200, 200)},
-    Coffee      = {Main = Color3.fromRGB(30, 25, 20),   Top = Color3.fromRGB(45, 35, 30),   Accent = Color3.fromRGB(210, 180, 140), Text = Color3.fromRGB(255, 245, 230),   Element = Color3.fromRGB(60, 50, 40),   Glow = Color3.fromRGB(160, 82, 45)},
-    Synthwave   = {Main = Color3.fromRGB(20, 10, 30),   Top = Color3.fromRGB(30, 15, 45),   Accent = Color3.fromRGB(255, 0, 255),   Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(50, 25, 70),   Glow = Color3.fromRGB(0, 255, 255)},
-    Solar       = {Main = Color3.fromRGB(240, 240, 240),Top = Color3.fromRGB(255, 255, 255), Accent = Color3.fromRGB(255, 165, 0),  Text = Color3.fromRGB(50, 50, 50),      Element = Color3.fromRGB(220, 220, 220),Glow = Color3.fromRGB(255, 140, 0)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: VERMELHOS / QUENTES (10)
-    -- ══════════════════════════════════════
-    Inferno     = {Main = Color3.fromRGB(20, 5, 0),     Top = Color3.fromRGB(35, 10, 5),    Accent = Color3.fromRGB(255, 80, 0),    Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(50, 15, 10),   Glow = Color3.fromRGB(255, 50, 0)},
-    Magma       = {Main = Color3.fromRGB(25, 10, 5),    Top = Color3.fromRGB(40, 18, 10),   Accent = Color3.fromRGB(255, 120, 30),  Text = Color3.fromRGB(255, 235, 220),   Element = Color3.fromRGB(55, 25, 15),   Glow = Color3.fromRGB(255, 80, 20)},
-    Lava        = {Main = Color3.fromRGB(30, 8, 0),     Top = Color3.fromRGB(50, 12, 0),    Accent = Color3.fromRGB(255, 60, 0),    Text = Color3.fromRGB(255, 220, 200),   Element = Color3.fromRGB(65, 20, 5),    Glow = Color3.fromRGB(230, 30, 0)},
-    Volcano     = {Main = Color3.fromRGB(22, 12, 5),    Top = Color3.fromRGB(38, 18, 8),    Accent = Color3.fromRGB(255, 100, 10),  Text = Color3.fromRGB(255, 230, 210),   Element = Color3.fromRGB(52, 28, 12),   Glow = Color3.fromRGB(255, 60, 0)},
-    Blood       = {Main = Color3.fromRGB(20, 0, 0),     Top = Color3.fromRGB(35, 5, 5),     Accent = Color3.fromRGB(180, 0, 0),     Text = Color3.fromRGB(255, 220, 220),   Element = Color3.fromRGB(50, 10, 10),   Glow = Color3.fromRGB(200, 0, 0)},
-    Garnet      = {Main = Color3.fromRGB(28, 8, 12),    Top = Color3.fromRGB(44, 12, 18),   Accent = Color3.fromRGB(165, 0, 50),    Text = Color3.fromRGB(255, 230, 235),   Element = Color3.fromRGB(55, 18, 25),   Glow = Color3.fromRGB(200, 20, 60)},
-    Scarlet     = {Main = Color3.fromRGB(22, 5, 5),     Top = Color3.fromRGB(38, 10, 10),   Accent = Color3.fromRGB(255, 36, 0),    Text = Color3.fromRGB(255, 235, 230),   Element = Color3.fromRGB(52, 18, 18),   Glow = Color3.fromRGB(255, 20, 0)},
-    Burgundy    = {Main = Color3.fromRGB(30, 10, 20),   Top = Color3.fromRGB(50, 18, 32),   Accent = Color3.fromRGB(165, 42, 42),   Text = Color3.fromRGB(255, 230, 235),   Element = Color3.fromRGB(65, 25, 40),   Glow = Color3.fromRGB(200, 50, 80)},
-    Maroon      = {Main = Color3.fromRGB(30, 10, 10),   Top = Color3.fromRGB(50, 18, 18),   Accent = Color3.fromRGB(160, 32, 32),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(65, 25, 25),   Glow = Color3.fromRGB(200, 50, 50)},
-    Flamingo    = {Main = Color3.fromRGB(35, 20, 25),   Top = Color3.fromRGB(50, 28, 35),   Accent = Color3.fromRGB(255, 110, 150), Text = Color3.fromRGB(255, 240, 245),   Element = Color3.fromRGB(65, 38, 48),   Glow = Color3.fromRGB(255, 80, 130)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: LARANJAS / ÂMBAR (7)
-    -- ══════════════════════════════════════
-    Amber       = {Main = Color3.fromRGB(30, 22, 5),    Top = Color3.fromRGB(48, 35, 8),    Accent = Color3.fromRGB(255, 191, 0),   Text = Color3.fromRGB(255, 248, 220),   Element = Color3.fromRGB(62, 45, 12),   Glow = Color3.fromRGB(255, 160, 0)},
-    Copper      = {Main = Color3.fromRGB(28, 18, 10),   Top = Color3.fromRGB(45, 28, 15),   Accent = Color3.fromRGB(184, 115, 51),  Text = Color3.fromRGB(255, 240, 225),   Element = Color3.fromRGB(60, 38, 22),   Glow = Color3.fromRGB(210, 105, 30)},
-    Bronze      = {Main = Color3.fromRGB(25, 18, 10),   Top = Color3.fromRGB(42, 30, 15),   Accent = Color3.fromRGB(205, 127, 50),  Text = Color3.fromRGB(255, 240, 220),   Element = Color3.fromRGB(58, 40, 22),   Glow = Color3.fromRGB(180, 100, 30)},
-    Caramel     = {Main = Color3.fromRGB(32, 22, 10),   Top = Color3.fromRGB(50, 35, 18),   Accent = Color3.fromRGB(235, 155, 75),  Text = Color3.fromRGB(255, 245, 230),   Element = Color3.fromRGB(65, 45, 25),   Glow = Color3.fromRGB(200, 120, 40)},
-    Peach       = {Main = Color3.fromRGB(35, 25, 20),   Top = Color3.fromRGB(55, 40, 32),   Accent = Color3.fromRGB(255, 180, 130), Text = Color3.fromRGB(255, 245, 240),   Element = Color3.fromRGB(70, 55, 45),   Glow = Color3.fromRGB(255, 140, 90)},
-    Dusk        = {Main = Color3.fromRGB(30, 20, 25),   Top = Color3.fromRGB(48, 32, 38),   Accent = Color3.fromRGB(255, 130, 80),  Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(62, 42, 50),   Glow = Color3.fromRGB(220, 90, 60)},
-    Harvest     = {Main = Color3.fromRGB(28, 22, 8),    Top = Color3.fromRGB(45, 36, 14),   Accent = Color3.fromRGB(230, 140, 30),  Text = Color3.fromRGB(255, 245, 220),   Element = Color3.fromRGB(60, 48, 20),   Glow = Color3.fromRGB(200, 110, 20)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: AMARELOS / DOURADOS (4)
-    -- ══════════════════════════════════════
-    Topaz       = {Main = Color3.fromRGB(20, 22, 28),   Top = Color3.fromRGB(30, 35, 42),   Accent = Color3.fromRGB(240, 190, 50),  Text = Color3.fromRGB(255, 250, 220),   Element = Color3.fromRGB(42, 48, 60),   Glow = Color3.fromRGB(255, 210, 0)},
-    Neon        = {Main = Color3.fromRGB(8, 8, 8),      Top = Color3.fromRGB(15, 15, 15),   Accent = Color3.fromRGB(0, 255, 0),     Text = Color3.fromRGB(200, 255, 200),   Element = Color3.fromRGB(20, 30, 20),   Glow = Color3.fromRGB(0, 200, 0)},
-    Lemon       = {Main = Color3.fromRGB(28, 28, 8),    Top = Color3.fromRGB(42, 42, 15),   Accent = Color3.fromRGB(255, 255, 0),   Text = Color3.fromRGB(255, 255, 200),   Element = Color3.fromRGB(55, 55, 20),   Glow = Color3.fromRGB(230, 230, 0)},
-    Banana      = {Main = Color3.fromRGB(30, 28, 10),   Top = Color3.fromRGB(48, 45, 18),   Accent = Color3.fromRGB(255, 240, 80),  Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(62, 58, 25),   Glow = Color3.fromRGB(240, 210, 30)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: VERDES (8)
-    -- ══════════════════════════════════════
-    Jade        = {Main = Color3.fromRGB(8, 28, 20),    Top = Color3.fromRGB(12, 45, 32),   Accent = Color3.fromRGB(0, 168, 107),   Text = Color3.fromRGB(220, 255, 240),   Element = Color3.fromRGB(18, 60, 42),   Glow = Color3.fromRGB(0, 200, 120)},
-    Lime        = {Main = Color3.fromRGB(15, 25, 5),    Top = Color3.fromRGB(25, 40, 8),    Accent = Color3.fromRGB(140, 255, 0),   Text = Color3.fromRGB(240, 255, 210),   Element = Color3.fromRGB(38, 58, 15),   Glow = Color3.fromRGB(100, 220, 0)},
-    Sage        = {Main = Color3.fromRGB(18, 25, 18),   Top = Color3.fromRGB(28, 38, 28),   Accent = Color3.fromRGB(110, 165, 105), Text = Color3.fromRGB(230, 245, 230),   Element = Color3.fromRGB(40, 55, 40),   Glow = Color3.fromRGB(80, 160, 80)},
-    Moss        = {Main = Color3.fromRGB(15, 22, 10),   Top = Color3.fromRGB(25, 35, 18),   Accent = Color3.fromRGB(90, 150, 60),   Text = Color3.fromRGB(225, 245, 220),   Element = Color3.fromRGB(38, 52, 28),   Glow = Color3.fromRGB(70, 130, 40)},
-    Jungle      = {Main = Color3.fromRGB(8, 20, 8),     Top = Color3.fromRGB(14, 32, 14),   Accent = Color3.fromRGB(20, 180, 60),   Text = Color3.fromRGB(210, 255, 220),   Element = Color3.fromRGB(20, 48, 20),   Glow = Color3.fromRGB(0, 160, 40)},
-    Olive       = {Main = Color3.fromRGB(20, 22, 10),   Top = Color3.fromRGB(32, 35, 15),   Accent = Color3.fromRGB(128, 128, 0),   Text = Color3.fromRGB(240, 240, 210),   Element = Color3.fromRGB(45, 48, 20),   Glow = Color3.fromRGB(100, 110, 0)},
-    Matrix      = {Main = Color3.fromRGB(0, 8, 0),      Top = Color3.fromRGB(0, 15, 0),     Accent = Color3.fromRGB(0, 255, 70),    Text = Color3.fromRGB(180, 255, 180),   Element = Color3.fromRGB(0, 25, 0),     Glow = Color3.fromRGB(0, 200, 50)},
-    Camo        = {Main = Color3.fromRGB(28, 32, 18),   Top = Color3.fromRGB(42, 48, 28),   Accent = Color3.fromRGB(80, 120, 50),   Text = Color3.fromRGB(230, 240, 215),   Element = Color3.fromRGB(55, 65, 38),   Glow = Color3.fromRGB(60, 100, 30)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: AZUIS (12)
-    -- ══════════════════════════════════════
-    Sapphire    = {Main = Color3.fromRGB(5, 10, 40),    Top = Color3.fromRGB(10, 18, 60),   Accent = Color3.fromRGB(15, 82, 186),   Text = Color3.fromRGB(220, 235, 255),   Element = Color3.fromRGB(15, 28, 75),   Glow = Color3.fromRGB(0, 100, 255)},
-    Navy        = {Main = Color3.fromRGB(0, 0, 30),     Top = Color3.fromRGB(0, 0, 50),     Accent = Color3.fromRGB(30, 80, 200),   Text = Color3.fromRGB(220, 230, 255),   Element = Color3.fromRGB(0, 0, 65),     Glow = Color3.fromRGB(20, 60, 180)},
-    Azure       = {Main = Color3.fromRGB(5, 15, 35),    Top = Color3.fromRGB(10, 25, 55),   Accent = Color3.fromRGB(0, 127, 255),   Text = Color3.fromRGB(220, 240, 255),   Element = Color3.fromRGB(15, 35, 70),   Glow = Color3.fromRGB(0, 100, 230)},
-    Cobalt      = {Main = Color3.fromRGB(5, 12, 38),    Top = Color3.fromRGB(10, 20, 58),   Accent = Color3.fromRGB(0, 71, 171),    Text = Color3.fromRGB(215, 230, 255),   Element = Color3.fromRGB(14, 28, 72),   Glow = Color3.fromRGB(0, 80, 200)},
-    Teal        = {Main = Color3.fromRGB(5, 25, 28),    Top = Color3.fromRGB(10, 40, 45),   Accent = Color3.fromRGB(0, 180, 160),   Text = Color3.fromRGB(215, 255, 255),   Element = Color3.fromRGB(15, 55, 60),   Glow = Color3.fromRGB(0, 160, 150)},
-    Turquoise   = {Main = Color3.fromRGB(5, 28, 30),    Top = Color3.fromRGB(10, 44, 48),   Accent = Color3.fromRGB(64, 224, 208),  Text = Color3.fromRGB(215, 255, 255),   Element = Color3.fromRGB(15, 58, 62),   Glow = Color3.fromRGB(0, 200, 190)},
-    Arctic      = {Main = Color3.fromRGB(15, 28, 38),   Top = Color3.fromRGB(25, 44, 60),   Accent = Color3.fromRGB(135, 210, 255), Text = Color3.fromRGB(235, 250, 255),   Element = Color3.fromRGB(38, 60, 80),   Glow = Color3.fromRGB(100, 200, 255)},
-    Ice         = {Main = Color3.fromRGB(18, 30, 42),   Top = Color3.fromRGB(28, 48, 65),   Accent = Color3.fromRGB(200, 240, 255), Text = Color3.fromRGB(245, 252, 255),   Element = Color3.fromRGB(42, 65, 88),   Glow = Color3.fromRGB(160, 230, 255)},
-    Storm       = {Main = Color3.fromRGB(18, 22, 32),   Top = Color3.fromRGB(28, 35, 50),   Accent = Color3.fromRGB(80, 120, 200),  Text = Color3.fromRGB(225, 230, 245),   Element = Color3.fromRGB(40, 50, 72),   Glow = Color3.fromRGB(60, 100, 190)},
-    Slate       = {Main = Color3.fromRGB(20, 25, 32),   Top = Color3.fromRGB(32, 40, 50),   Accent = Color3.fromRGB(100, 140, 180), Text = Color3.fromRGB(220, 232, 245),   Element = Color3.fromRGB(45, 55, 70),   Glow = Color3.fromRGB(80, 120, 170)},
-    Horizon     = {Main = Color3.fromRGB(10, 20, 40),   Top = Color3.fromRGB(18, 32, 62),   Accent = Color3.fromRGB(80, 160, 255),  Text = Color3.fromRGB(225, 240, 255),   Element = Color3.fromRGB(25, 45, 80),   Glow = Color3.fromRGB(50, 140, 255)},
-    Depth       = {Main = Color3.fromRGB(5, 10, 25),    Top = Color3.fromRGB(8, 18, 40),    Accent = Color3.fromRGB(40, 80, 160),   Text = Color3.fromRGB(210, 225, 255),   Element = Color3.fromRGB(12, 25, 55),   Glow = Color3.fromRGB(30, 70, 160)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: ROXOS / VIOLETAS (10)
-    -- ══════════════════════════════════════
-    Nebula      = {Main = Color3.fromRGB(18, 8, 28),    Top = Color3.fromRGB(28, 14, 42),   Accent = Color3.fromRGB(180, 50, 255),  Text = Color3.fromRGB(245, 225, 255),   Element = Color3.fromRGB(40, 20, 58),   Glow = Color3.fromRGB(150, 0, 255)},
-    Galaxy      = {Main = Color3.fromRGB(10, 5, 30),    Top = Color3.fromRGB(18, 10, 48),   Accent = Color3.fromRGB(140, 80, 255),  Text = Color3.fromRGB(235, 225, 255),   Element = Color3.fromRGB(25, 15, 65),   Glow = Color3.fromRGB(100, 50, 255)},
-    Cosmos      = {Main = Color3.fromRGB(5, 8, 22),     Top = Color3.fromRGB(10, 14, 35),   Accent = Color3.fromRGB(100, 60, 220),  Text = Color3.fromRGB(225, 220, 255),   Element = Color3.fromRGB(15, 20, 50),   Glow = Color3.fromRGB(80, 40, 200)},
-    Plum        = {Main = Color3.fromRGB(25, 10, 30),   Top = Color3.fromRGB(40, 18, 48),   Accent = Color3.fromRGB(150, 50, 180),  Text = Color3.fromRGB(248, 232, 255),   Element = Color3.fromRGB(55, 25, 65),   Glow = Color3.fromRGB(180, 60, 220)},
-    Orchid      = {Main = Color3.fromRGB(28, 12, 28),   Top = Color3.fromRGB(44, 20, 44),   Accent = Color3.fromRGB(218, 112, 214), Text = Color3.fromRGB(252, 235, 252),   Element = Color3.fromRGB(58, 28, 58),   Glow = Color3.fromRGB(200, 80, 200)},
-    Ultraviolet = {Main = Color3.fromRGB(12, 0, 28),    Top = Color3.fromRGB(20, 0, 45),    Accent = Color3.fromRGB(148, 0, 255),   Text = Color3.fromRGB(240, 215, 255),   Element = Color3.fromRGB(30, 5, 60),    Glow = Color3.fromRGB(120, 0, 255)},
-    Grape       = {Main = Color3.fromRGB(22, 8, 28),    Top = Color3.fromRGB(35, 14, 44),   Accent = Color3.fromRGB(130, 30, 160),  Text = Color3.fromRGB(245, 228, 252),   Element = Color3.fromRGB(50, 20, 62),   Glow = Color3.fromRGB(170, 40, 210)},
-    Indigo      = {Main = Color3.fromRGB(15, 10, 40),   Top = Color3.fromRGB(24, 16, 62),   Accent = Color3.fromRGB(75, 0, 130),    Text = Color3.fromRGB(225, 218, 255),   Element = Color3.fromRGB(32, 22, 75),   Glow = Color3.fromRGB(100, 0, 180)},
-    Phantom     = {Main = Color3.fromRGB(12, 5, 18),    Top = Color3.fromRGB(20, 8, 30),    Accent = Color3.fromRGB(100, 0, 160),   Text = Color3.fromRGB(235, 220, 255),   Element = Color3.fromRGB(28, 12, 42),   Glow = Color3.fromRGB(130, 0, 200)},
-    Specter     = {Main = Color3.fromRGB(15, 10, 22),   Top = Color3.fromRGB(25, 18, 36),   Accent = Color3.fromRGB(170, 100, 255), Text = Color3.fromRGB(242, 235, 255),   Element = Color3.fromRGB(38, 28, 55),   Glow = Color3.fromRGB(140, 80, 230)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: ROSAS / MAGENTAS (6)
-    -- ══════════════════════════════════════
-    Sakura      = {Main = Color3.fromRGB(35, 18, 25),   Top = Color3.fromRGB(55, 28, 40),   Accent = Color3.fromRGB(255, 182, 193), Text = Color3.fromRGB(255, 242, 248),   Element = Color3.fromRGB(72, 38, 55),   Glow = Color3.fromRGB(255, 150, 175)},
-    Rose        = {Main = Color3.fromRGB(35, 15, 22),   Top = Color3.fromRGB(55, 25, 36),   Accent = Color3.fromRGB(255, 100, 140), Text = Color3.fromRGB(255, 238, 244),   Element = Color3.fromRGB(70, 35, 50),   Glow = Color3.fromRGB(255, 70, 120)},
-    Magenta     = {Main = Color3.fromRGB(25, 5, 25),    Top = Color3.fromRGB(40, 8, 40),    Accent = Color3.fromRGB(255, 0, 255),   Text = Color3.fromRGB(255, 220, 255),   Element = Color3.fromRGB(55, 12, 55),   Glow = Color3.fromRGB(220, 0, 220)},
-    Blush       = {Main = Color3.fromRGB(38, 22, 28),   Top = Color3.fromRGB(58, 35, 44),   Accent = Color3.fromRGB(255, 160, 180), Text = Color3.fromRGB(255, 242, 246),   Element = Color3.fromRGB(75, 48, 58),   Glow = Color3.fromRGB(255, 120, 155)},
-    Hotpink     = {Main = Color3.fromRGB(30, 8, 20),    Top = Color3.fromRGB(48, 14, 32),   Accent = Color3.fromRGB(255, 20, 147),  Text = Color3.fromRGB(255, 225, 242),   Element = Color3.fromRGB(62, 18, 42),   Glow = Color3.fromRGB(255, 0, 120)},
-    Rosegold    = {Main = Color3.fromRGB(32, 22, 20),   Top = Color3.fromRGB(50, 35, 32),   Accent = Color3.fromRGB(220, 150, 130), Text = Color3.fromRGB(255, 245, 242),   Element = Color3.fromRGB(65, 48, 45),   Glow = Color3.fromRGB(200, 120, 100)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: NEUTROS / MONOCROMÁTICOS (10)
-    -- ══════════════════════════════════════
-    Obsidian    = {Main = Color3.fromRGB(8, 8, 10),     Top = Color3.fromRGB(15, 15, 18),   Accent = Color3.fromRGB(80, 80, 100),   Text = Color3.fromRGB(210, 210, 220),   Element = Color3.fromRGB(22, 22, 28),   Glow = Color3.fromRGB(60, 60, 90)},
-    Onyx        = {Main = Color3.fromRGB(5, 5, 5),      Top = Color3.fromRGB(12, 12, 12),   Accent = Color3.fromRGB(60, 60, 60),    Text = Color3.fromRGB(200, 200, 200),   Element = Color3.fromRGB(20, 20, 20),   Glow = Color3.fromRGB(40, 40, 40)},
-    Pearl       = {Main = Color3.fromRGB(235, 235, 235),Top = Color3.fromRGB(250, 250, 250), Accent = Color3.fromRGB(180, 180, 200), Text = Color3.fromRGB(40, 40, 60),      Element = Color3.fromRGB(215, 215, 225),Glow = Color3.fromRGB(160, 160, 190)},
-    Ivory       = {Main = Color3.fromRGB(240, 235, 220),Top = Color3.fromRGB(255, 252, 240), Accent = Color3.fromRGB(200, 175, 120), Text = Color3.fromRGB(50, 45, 30),      Element = Color3.fromRGB(220, 215, 200),Glow = Color3.fromRGB(180, 155, 90)},
-    Silver      = {Main = Color3.fromRGB(25, 28, 30),   Top = Color3.fromRGB(40, 44, 48),   Accent = Color3.fromRGB(192, 192, 192), Text = Color3.fromRGB(235, 240, 245),   Element = Color3.fromRGB(55, 60, 65),   Glow = Color3.fromRGB(160, 160, 165)},
-    Ghost       = {Main = Color3.fromRGB(230, 232, 235),Top = Color3.fromRGB(245, 248, 252), Accent = Color3.fromRGB(150, 160, 175), Text = Color3.fromRGB(40, 45, 55),      Element = Color3.fromRGB(210, 214, 220),Glow = Color3.fromRGB(130, 140, 160)},
-    Titanium    = {Main = Color3.fromRGB(22, 24, 26),   Top = Color3.fromRGB(36, 38, 42),   Accent = Color3.fromRGB(140, 148, 158), Text = Color3.fromRGB(225, 228, 232),   Element = Color3.fromRGB(50, 54, 58),   Glow = Color3.fromRGB(110, 118, 130)},
-    Quicksilver = {Main = Color3.fromRGB(20, 22, 25),   Top = Color3.fromRGB(35, 38, 42),   Accent = Color3.fromRGB(180, 188, 195), Text = Color3.fromRGB(235, 240, 245),   Element = Color3.fromRGB(48, 52, 58),   Glow = Color3.fromRGB(150, 158, 168)},
-    Opal        = {Main = Color3.fromRGB(232, 235, 240),Top = Color3.fromRGB(248, 250, 255), Accent = Color3.fromRGB(160, 200, 220), Text = Color3.fromRGB(40, 50, 65),      Element = Color3.fromRGB(212, 218, 228),Glow = Color3.fromRGB(130, 180, 210)},
-    Sepia       = {Main = Color3.fromRGB(30, 22, 14),   Top = Color3.fromRGB(48, 35, 22),   Accent = Color3.fromRGB(180, 130, 80),  Text = Color3.fromRGB(255, 242, 220),   Element = Color3.fromRGB(62, 48, 32),   Glow = Color3.fromRGB(150, 100, 50)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: NATUREZA / TERRA (10)
-    -- ══════════════════════════════════════
-    Sand        = {Main = Color3.fromRGB(32, 28, 18),   Top = Color3.fromRGB(50, 44, 28),   Accent = Color3.fromRGB(210, 185, 135), Text = Color3.fromRGB(255, 248, 230),   Element = Color3.fromRGB(65, 58, 38),   Glow = Color3.fromRGB(185, 155, 90)},
-    Earth       = {Main = Color3.fromRGB(28, 22, 14),   Top = Color3.fromRGB(44, 35, 22),   Accent = Color3.fromRGB(160, 120, 70),  Text = Color3.fromRGB(245, 235, 215),   Element = Color3.fromRGB(58, 45, 28),   Glow = Color3.fromRGB(130, 90, 45)},
-    Swamp       = {Main = Color3.fromRGB(14, 20, 10),   Top = Color3.fromRGB(22, 32, 16),   Accent = Color3.fromRGB(60, 100, 40),   Text = Color3.fromRGB(215, 235, 210),   Element = Color3.fromRGB(30, 45, 22),   Glow = Color3.fromRGB(40, 80, 20)},
-    Reef        = {Main = Color3.fromRGB(5, 25, 30),    Top = Color3.fromRGB(10, 40, 48),   Accent = Color3.fromRGB(0, 220, 180),   Text = Color3.fromRGB(210, 255, 252),   Element = Color3.fromRGB(15, 55, 65),   Glow = Color3.fromRGB(0, 195, 165)},
-    Coral       = {Main = Color3.fromRGB(35, 20, 18),   Top = Color3.fromRGB(55, 32, 28),   Accent = Color3.fromRGB(255, 127, 80),  Text = Color3.fromRGB(255, 240, 235),   Element = Color3.fromRGB(72, 44, 40),   Glow = Color3.fromRGB(255, 90, 60)},
-    Petal       = {Main = Color3.fromRGB(38, 22, 28),   Top = Color3.fromRGB(58, 36, 44),   Accent = Color3.fromRGB(255, 155, 195), Text = Color3.fromRGB(255, 242, 248),   Element = Color3.fromRGB(75, 48, 60),   Glow = Color3.fromRGB(255, 120, 170)},
-    Autumn      = {Main = Color3.fromRGB(32, 20, 10),   Top = Color3.fromRGB(50, 32, 15),   Accent = Color3.fromRGB(210, 100, 30),  Text = Color3.fromRGB(255, 238, 215),   Element = Color3.fromRGB(65, 42, 20),   Glow = Color3.fromRGB(200, 80, 20)},
-    Spring      = {Main = Color3.fromRGB(20, 30, 15),   Top = Color3.fromRGB(32, 48, 24),   Accent = Color3.fromRGB(120, 220, 80),  Text = Color3.fromRGB(232, 255, 225),   Element = Color3.fromRGB(44, 65, 32),   Glow = Color3.fromRGB(90, 200, 50)},
-    Dawn        = {Main = Color3.fromRGB(35, 22, 18),   Top = Color3.fromRGB(55, 35, 28),   Accent = Color3.fromRGB(255, 180, 100), Text = Color3.fromRGB(255, 245, 232),   Element = Color3.fromRGB(72, 48, 38),   Glow = Color3.fromRGB(255, 145, 65)},
-    Tan         = {Main = Color3.fromRGB(30, 24, 16),   Top = Color3.fromRGB(48, 38, 25),   Accent = Color3.fromRGB(200, 170, 110), Text = Color3.fromRGB(252, 245, 232),   Element = Color3.fromRGB(62, 50, 32),   Glow = Color3.fromRGB(170, 135, 75)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: ESPAÇO / FUTURISTA (7)
-    -- ══════════════════════════════════════
-    Infrared    = {Main = Color3.fromRGB(20, 5, 5),     Top = Color3.fromRGB(35, 8, 8),     Accent = Color3.fromRGB(255, 50, 50),   Text = Color3.fromRGB(255, 230, 230),   Element = Color3.fromRGB(50, 12, 12),   Glow = Color3.fromRGB(255, 0, 0)},
-    Pulsar      = {Main = Color3.fromRGB(5, 10, 25),    Top = Color3.fromRGB(10, 18, 42),   Accent = Color3.fromRGB(60, 200, 255),  Text = Color3.fromRGB(220, 248, 255),   Element = Color3.fromRGB(15, 28, 58),   Glow = Color3.fromRGB(0, 180, 255)},
-    Quasar      = {Main = Color3.fromRGB(10, 5, 25),    Top = Color3.fromRGB(18, 10, 42),   Accent = Color3.fromRGB(120, 50, 255),  Text = Color3.fromRGB(235, 220, 255),   Element = Color3.fromRGB(25, 15, 58),   Glow = Color3.fromRGB(90, 30, 255)},
-    Aurora      = {Main = Color3.fromRGB(5, 20, 15),    Top = Color3.fromRGB(8, 32, 25),    Accent = Color3.fromRGB(50, 255, 160),  Text = Color3.fromRGB(210, 255, 240),   Element = Color3.fromRGB(12, 45, 35),   Glow = Color3.fromRGB(20, 230, 140)},
-    Plasma      = {Main = Color3.fromRGB(12, 5, 25),    Top = Color3.fromRGB(22, 10, 42),   Accent = Color3.fromRGB(200, 0, 255),   Text = Color3.fromRGB(242, 215, 255),   Element = Color3.fromRGB(32, 15, 58),   Glow = Color3.fromRGB(180, 0, 255)},
-    Thunder     = {Main = Color3.fromRGB(20, 20, 10),   Top = Color3.fromRGB(32, 32, 16),   Accent = Color3.fromRGB(255, 240, 50),  Text = Color3.fromRGB(255, 255, 220),   Element = Color3.fromRGB(45, 45, 22),   Glow = Color3.fromRGB(255, 220, 0)},
-    Photon      = {Main = Color3.fromRGB(5, 5, 15),     Top = Color3.fromRGB(10, 10, 25),   Accent = Color3.fromRGB(255, 255, 200), Text = Color3.fromRGB(255, 255, 240),   Element = Color3.fromRGB(15, 15, 38),   Glow = Color3.fromRGB(255, 255, 150)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: ESTÉTICOS / TEMÁTICOS (13)
-    -- ══════════════════════════════════════
-    Vaporwave   = {Main = Color3.fromRGB(20, 10, 35),   Top = Color3.fromRGB(32, 16, 55),   Accent = Color3.fromRGB(255, 100, 255), Text = Color3.fromRGB(255, 230, 255),   Element = Color3.fromRGB(48, 24, 75),   Glow = Color3.fromRGB(100, 220, 255)},
-    Retro       = {Main = Color3.fromRGB(25, 20, 8),    Top = Color3.fromRGB(38, 32, 12),   Accent = Color3.fromRGB(255, 190, 0),   Text = Color3.fromRGB(255, 248, 220),   Element = Color3.fromRGB(52, 44, 18),   Glow = Color3.fromRGB(220, 140, 0)},
-    Glitch      = {Main = Color3.fromRGB(5, 0, 5),      Top = Color3.fromRGB(10, 0, 10),    Accent = Color3.fromRGB(0, 255, 180),   Text = Color3.fromRGB(200, 255, 240),   Element = Color3.fromRGB(20, 0, 20),    Glow = Color3.fromRGB(255, 0, 255)},
-    Pixel       = {Main = Color3.fromRGB(15, 15, 25),   Top = Color3.fromRGB(25, 25, 40),   Accent = Color3.fromRGB(80, 200, 255),  Text = Color3.fromRGB(225, 240, 255),   Element = Color3.fromRGB(38, 38, 58),   Glow = Color3.fromRGB(50, 180, 255)},
-    Stealth     = {Main = Color3.fromRGB(8, 8, 10),     Top = Color3.fromRGB(14, 14, 18),   Accent = Color3.fromRGB(50, 55, 65),    Text = Color3.fromRGB(180, 185, 200),   Element = Color3.fromRGB(20, 22, 28),   Glow = Color3.fromRGB(40, 45, 60)},
-    Eclipse     = {Main = Color3.fromRGB(5, 5, 8),      Top = Color3.fromRGB(10, 10, 16),   Accent = Color3.fromRGB(255, 215, 0),   Text = Color3.fromRGB(255, 250, 235),   Element = Color3.fromRGB(18, 18, 28),   Glow = Color3.fromRGB(230, 190, 0)},
-    Shadow      = {Main = Color3.fromRGB(10, 10, 15),   Top = Color3.fromRGB(18, 18, 26),   Accent = Color3.fromRGB(80, 80, 120),   Text = Color3.fromRGB(210, 210, 230),   Element = Color3.fromRGB(28, 28, 40),   Glow = Color3.fromRGB(60, 60, 100)},
-    Holographic = {Main = Color3.fromRGB(12, 18, 22),   Top = Color3.fromRGB(20, 30, 38),   Accent = Color3.fromRGB(160, 255, 240), Text = Color3.fromRGB(240, 255, 252),   Element = Color3.fromRGB(30, 45, 56),   Glow = Color3.fromRGB(100, 230, 255)},
-    Crystal     = {Main = Color3.fromRGB(18, 25, 35),   Top = Color3.fromRGB(28, 40, 56),   Accent = Color3.fromRGB(180, 230, 255), Text = Color3.fromRGB(240, 250, 255),   Element = Color3.fromRGB(40, 58, 80),   Glow = Color3.fromRGB(150, 215, 255)},
-    Laser       = {Main = Color3.fromRGB(5, 15, 10),    Top = Color3.fromRGB(8, 25, 16),    Accent = Color3.fromRGB(0, 255, 100),   Text = Color3.fromRGB(210, 255, 230),   Element = Color3.fromRGB(12, 38, 24),   Glow = Color3.fromRGB(0, 230, 80)},
-    HackerGreen = {Main = Color3.fromRGB(0, 5, 0),      Top = Color3.fromRGB(0, 10, 0),     Accent = Color3.fromRGB(0, 200, 0),     Text = Color3.fromRGB(180, 255, 180),   Element = Color3.fromRGB(0, 20, 0),     Glow = Color3.fromRGB(0, 255, 0)},
-    Terminal    = {Main = Color3.fromRGB(0, 0, 0),      Top = Color3.fromRGB(10, 10, 10),   Accent = Color3.fromRGB(0, 255, 80),    Text = Color3.fromRGB(180, 255, 200),   Element = Color3.fromRGB(18, 18, 18),   Glow = Color3.fromRGB(0, 200, 60)},
-    Monochrome  = {Main = Color3.fromRGB(15, 15, 15),   Top = Color3.fromRGB(30, 30, 30),   Accent = Color3.fromRGB(200, 200, 200), Text = Color3.fromRGB(255, 255, 255),   Element = Color3.fromRGB(45, 45, 45),   Glow = Color3.fromRGB(150, 150, 150)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: CANDY / DOCES (6)
-    -- ══════════════════════════════════════
-    Candy       = {Main = Color3.fromRGB(38, 18, 30),   Top = Color3.fromRGB(58, 28, 48),   Accent = Color3.fromRGB(255, 80, 200),  Text = Color3.fromRGB(255, 235, 252),   Element = Color3.fromRGB(75, 38, 65),   Glow = Color3.fromRGB(255, 50, 180)},
-    Cotton      = {Main = Color3.fromRGB(40, 28, 35),   Top = Color3.fromRGB(62, 44, 55),   Accent = Color3.fromRGB(255, 170, 220), Text = Color3.fromRGB(255, 245, 252),   Element = Color3.fromRGB(80, 58, 72),   Glow = Color3.fromRGB(255, 140, 210)},
-    Strawberry  = {Main = Color3.fromRGB(32, 12, 15),   Top = Color3.fromRGB(50, 18, 24),   Accent = Color3.fromRGB(255, 80, 100),  Text = Color3.fromRGB(255, 235, 238),   Element = Color3.fromRGB(65, 25, 32),   Glow = Color3.fromRGB(255, 50, 80)},
-    Blueberry   = {Main = Color3.fromRGB(18, 12, 32),   Top = Color3.fromRGB(28, 18, 50),   Accent = Color3.fromRGB(100, 130, 255), Text = Color3.fromRGB(230, 232, 255),   Element = Color3.fromRGB(40, 28, 70),   Glow = Color3.fromRGB(80, 110, 255)},
-    Watermelon  = {Main = Color3.fromRGB(28, 18, 18),   Top = Color3.fromRGB(45, 28, 28),   Accent = Color3.fromRGB(255, 80, 80),   Text = Color3.fromRGB(255, 235, 235),   Element = Color3.fromRGB(60, 38, 38),   Glow = Color3.fromRGB(0, 180, 80)},
-    Grape2      = {Main = Color3.fromRGB(28, 10, 35),   Top = Color3.fromRGB(44, 16, 55),   Accent = Color3.fromRGB(180, 80, 220),  Text = Color3.fromRGB(248, 230, 255),   Element = Color3.fromRGB(60, 22, 75),   Glow = Color3.fromRGB(160, 50, 210)},
-
-    -- ══════════════════════════════════════
-    --    NOVOS: GRADIENTES / ESPECIAIS (7)
-    -- ══════════════════════════════════════
-    Nocturn     = {Main = Color3.fromRGB(8, 5, 18),     Top = Color3.fromRGB(15, 10, 30),   Accent = Color3.fromRGB(90, 60, 200),   Text = Color3.fromRGB(228, 222, 255),   Element = Color3.fromRGB(22, 15, 45),   Glow = Color3.fromRGB(70, 40, 180)},
-    Radiant     = {Main = Color3.fromRGB(35, 28, 10),   Top = Color3.fromRGB(55, 44, 16),   Accent = Color3.fromRGB(255, 220, 50),  Text = Color3.fromRGB(255, 252, 230),   Element = Color3.fromRGB(72, 58, 22),   Glow = Color3.fromRGB(255, 200, 0)},
-    Dawnbreak   = {Main = Color3.fromRGB(30, 15, 20),   Top = Color3.fromRGB(48, 24, 32),   Accent = Color3.fromRGB(255, 140, 120), Text = Color3.fromRGB(255, 242, 238),   Element = Color3.fromRGB(62, 34, 44),   Glow = Color3.fromRGB(255, 100, 80)},
-    Spectral    = {Main = Color3.fromRGB(10, 10, 20),   Top = Color3.fromRGB(18, 18, 35),   Accent = Color3.fromRGB(100, 255, 220), Text = Color3.fromRGB(225, 255, 250),   Element = Color3.fromRGB(26, 26, 52),   Glow = Color3.fromRGB(60, 230, 200)},
-    Pulse       = {Main = Color3.fromRGB(8, 5, 20),     Top = Color3.fromRGB(14, 10, 35),   Accent = Color3.fromRGB(255, 50, 150),  Text = Color3.fromRGB(255, 225, 242),   Element = Color3.fromRGB(20, 15, 50),   Glow = Color3.fromRGB(220, 0, 130)},
-    Fusion      = {Main = Color3.fromRGB(15, 10, 25),   Top = Color3.fromRGB(25, 18, 40),   Accent = Color3.fromRGB(255, 100, 50),  Text = Color3.fromRGB(255, 240, 230),   Element = Color3.fromRGB(38, 28, 58),   Glow = Color3.fromRGB(255, 60, 30)},
-    Midnight2   = {Main = Color3.fromRGB(5, 5, 15),     Top = Color3.fromRGB(10, 10, 25),   Accent = Color3.fromRGB(60, 80, 180),   Text = Color3.fromRGB(220, 225, 255),   Element = Color3.fromRGB(15, 15, 40),   Glow = Color3.fromRGB(40, 60, 160)},
+    -- ORIGINAIS (28)
+    Default     = {Main=Color3.fromRGB(20,20,20),   Top=Color3.fromRGB(30,30,30),   Accent=Color3.fromRGB(0,160,255),   Text=Color3.fromRGB(255,255,255),   Element=Color3.fromRGB(35,35,35),   Glow=Color3.fromRGB(0,110,220)},
+    DarkBlue    = {Main=Color3.fromRGB(15,20,30),   Top=Color3.fromRGB(20,25,40),   Accent=Color3.fromRGB(50,100,255),  Text=Color3.fromRGB(240,240,255),   Element=Color3.fromRGB(25,30,45),   Glow=Color3.fromRGB(40,80,200)},
+    DarkRed     = {Main=Color3.fromRGB(30,15,15),   Top=Color3.fromRGB(40,20,20),   Accent=Color3.fromRGB(255,60,60),   Text=Color3.fromRGB(255,240,240),   Element=Color3.fromRGB(45,25,25),   Glow=Color3.fromRGB(200,40,40)},
+    Ocean       = {Main=Color3.fromRGB(10,30,35),   Top=Color3.fromRGB(15,40,45),   Accent=Color3.fromRGB(0,200,200),   Text=Color3.fromRGB(220,255,255),   Element=Color3.fromRGB(20,50,55),   Glow=Color3.fromRGB(0,150,150)},
+    Amethyst    = {Main=Color3.fromRGB(30,20,35),   Top=Color3.fromRGB(40,25,45),   Accent=Color3.fromRGB(180,80,255),  Text=Color3.fromRGB(250,230,255),   Element=Color3.fromRGB(45,30,50),   Glow=Color3.fromRGB(140,60,200)},
+    Emerald     = {Main=Color3.fromRGB(20,35,20),   Top=Color3.fromRGB(25,45,25),   Accent=Color3.fromRGB(50,200,80),   Text=Color3.fromRGB(230,255,230),   Element=Color3.fromRGB(30,50,30),   Glow=Color3.fromRGB(40,160,60)},
+    Sunset      = {Main=Color3.fromRGB(35,25,20),   Top=Color3.fromRGB(45,30,25),   Accent=Color3.fromRGB(255,140,50),  Text=Color3.fromRGB(255,240,220),   Element=Color3.fromRGB(50,35,30),   Glow=Color3.fromRGB(200,100,40)},
+    Carbon      = {Main=Color3.fromRGB(10,10,10),   Top=Color3.fromRGB(20,20,20),   Accent=Color3.fromRGB(120,120,120), Text=Color3.fromRGB(200,200,200),   Element=Color3.fromRGB(30,30,30),   Glow=Color3.fromRGB(80,80,80)},
+    Midnight    = {Main=Color3.fromRGB(10,10,20),   Top=Color3.fromRGB(15,15,30),   Accent=Color3.fromRGB(100,100,255), Text=Color3.fromRGB(240,240,255),   Element=Color3.fromRGB(25,25,45),   Glow=Color3.fromRGB(80,80,220)},
+    Dracula     = {Main=Color3.fromRGB(40,42,54),   Top=Color3.fromRGB(68,71,90),   Accent=Color3.fromRGB(189,147,249), Text=Color3.fromRGB(248,248,242),   Element=Color3.fromRGB(98,114,164), Glow=Color3.fromRGB(255,121,198)},
+    Cyberpunk   = {Main=Color3.fromRGB(10,10,15),   Top=Color3.fromRGB(20,20,25),   Accent=Color3.fromRGB(255,230,0),   Text=Color3.fromRGB(255,255,255),   Element=Color3.fromRGB(30,30,35),   Glow=Color3.fromRGB(0,255,255)},
+    Void        = {Main=Color3.fromRGB(5,5,5),      Top=Color3.fromRGB(15,15,15),   Accent=Color3.fromRGB(255,255,255), Text=Color3.fromRGB(255,255,255),   Element=Color3.fromRGB(25,25,25),   Glow=Color3.fromRGB(150,150,150)},
+    Bubblegum   = {Main=Color3.fromRGB(35,25,35),   Top=Color3.fromRGB(45,30,45),   Accent=Color3.fromRGB(255,100,180), Text=Color3.fromRGB(255,240,255),   Element=Color3.fromRGB(55,40,55),   Glow=Color3.fromRGB(100,200,255)},
+    Mint        = {Main=Color3.fromRGB(20,30,25),   Top=Color3.fromRGB(30,45,35),   Accent=Color3.fromRGB(0,255,170),   Text=Color3.fromRGB(230,255,240),   Element=Color3.fromRGB(40,60,50),   Glow=Color3.fromRGB(0,200,140)},
+    Gold        = {Main=Color3.fromRGB(30,25,10),   Top=Color3.fromRGB(45,40,20),   Accent=Color3.fromRGB(255,215,0),   Text=Color3.fromRGB(255,255,220),   Element=Color3.fromRGB(55,50,30),   Glow=Color3.fromRGB(220,180,0)},
+    Crimson     = {Main=Color3.fromRGB(25,10,10),   Top=Color3.fromRGB(40,15,15),   Accent=Color3.fromRGB(220,20,60),   Text=Color3.fromRGB(255,230,230),   Element=Color3.fromRGB(50,25,25),   Glow=Color3.fromRGB(255,0,50)},
+    Frost       = {Main=Color3.fromRGB(20,30,40),   Top=Color3.fromRGB(30,45,60),   Accent=Color3.fromRGB(100,200,255), Text=Color3.fromRGB(240,250,255),   Element=Color3.fromRGB(40,60,80),   Glow=Color3.fromRGB(150,220,255)},
+    Toxic       = {Main=Color3.fromRGB(15,25,10),   Top=Color3.fromRGB(25,35,15),   Accent=Color3.fromRGB(180,255,50),  Text=Color3.fromRGB(240,255,220),   Element=Color3.fromRGB(35,50,25),   Glow=Color3.fromRGB(100,200,0)},
+    Royal       = {Main=Color3.fromRGB(10,10,35),   Top=Color3.fromRGB(20,20,55),   Accent=Color3.fromRGB(255,180,50),  Text=Color3.fromRGB(255,240,200),   Element=Color3.fromRGB(30,30,70),   Glow=Color3.fromRGB(255,215,0)},
+    Rust        = {Main=Color3.fromRGB(30,20,15),   Top=Color3.fromRGB(45,30,25),   Accent=Color3.fromRGB(200,80,30),   Text=Color3.fromRGB(255,230,210),   Element=Color3.fromRGB(60,40,30),   Glow=Color3.fromRGB(255,100,50)},
+    Lavender    = {Main=Color3.fromRGB(25,20,30),   Top=Color3.fromRGB(35,30,45),   Accent=Color3.fromRGB(200,160,255), Text=Color3.fromRGB(250,240,255),   Element=Color3.fromRGB(50,45,60),   Glow=Color3.fromRGB(160,120,220)},
+    Steel       = {Main=Color3.fromRGB(25,30,35),   Top=Color3.fromRGB(40,45,50),   Accent=Color3.fromRGB(100,150,200), Text=Color3.fromRGB(220,230,240),   Element=Color3.fromRGB(50,55,60),   Glow=Color3.fromRGB(120,160,180)},
+    Forest      = {Main=Color3.fromRGB(15,25,15),   Top=Color3.fromRGB(25,40,25),   Accent=Color3.fromRGB(34,139,34),   Text=Color3.fromRGB(230,255,230),   Element=Color3.fromRGB(35,50,35),   Glow=Color3.fromRGB(50,205,50)},
+    Cherry      = {Main=Color3.fromRGB(25,15,20),   Top=Color3.fromRGB(40,25,30),   Accent=Color3.fromRGB(255,50,100),  Text=Color3.fromRGB(255,230,240),   Element=Color3.fromRGB(55,35,45),   Glow=Color3.fromRGB(200,80,120)},
+    Abyss       = {Main=Color3.fromRGB(5,15,20),    Top=Color3.fromRGB(10,25,30),   Accent=Color3.fromRGB(0,128,128),   Text=Color3.fromRGB(220,240,240),   Element=Color3.fromRGB(20,40,50),   Glow=Color3.fromRGB(0,200,200)},
+    Coffee      = {Main=Color3.fromRGB(30,25,20),   Top=Color3.fromRGB(45,35,30),   Accent=Color3.fromRGB(210,180,140), Text=Color3.fromRGB(255,245,230),   Element=Color3.fromRGB(60,50,40),   Glow=Color3.fromRGB(160,82,45)},
+    Synthwave   = {Main=Color3.fromRGB(20,10,30),   Top=Color3.fromRGB(30,15,45),   Accent=Color3.fromRGB(255,0,255),   Text=Color3.fromRGB(255,255,255),   Element=Color3.fromRGB(50,25,70),   Glow=Color3.fromRGB(0,255,255)},
+    Solar       = {Main=Color3.fromRGB(240,240,240),Top=Color3.fromRGB(255,255,255), Accent=Color3.fromRGB(255,165,0),  Text=Color3.fromRGB(50,50,50),      Element=Color3.fromRGB(220,220,220),Glow=Color3.fromRGB(255,140,0)},
+    -- VERMELHOS / QUENTES
+    Inferno     = {Main=Color3.fromRGB(20,5,0),     Top=Color3.fromRGB(35,10,5),    Accent=Color3.fromRGB(255,80,0),    Text=Color3.fromRGB(255,240,230),   Element=Color3.fromRGB(50,15,10),   Glow=Color3.fromRGB(255,50,0)},
+    Magma       = {Main=Color3.fromRGB(25,10,5),    Top=Color3.fromRGB(40,18,10),   Accent=Color3.fromRGB(255,120,30),  Text=Color3.fromRGB(255,235,220),   Element=Color3.fromRGB(55,25,15),   Glow=Color3.fromRGB(255,80,20)},
+    Lava        = {Main=Color3.fromRGB(30,8,0),     Top=Color3.fromRGB(50,12,0),    Accent=Color3.fromRGB(255,60,0),    Text=Color3.fromRGB(255,220,200),   Element=Color3.fromRGB(65,20,5),    Glow=Color3.fromRGB(230,30,0)},
+    Volcano     = {Main=Color3.fromRGB(22,12,5),    Top=Color3.fromRGB(38,18,8),    Accent=Color3.fromRGB(255,100,10),  Text=Color3.fromRGB(255,230,210),   Element=Color3.fromRGB(52,28,12),   Glow=Color3.fromRGB(255,60,0)},
+    Blood       = {Main=Color3.fromRGB(20,0,0),     Top=Color3.fromRGB(35,5,5),     Accent=Color3.fromRGB(180,0,0),     Text=Color3.fromRGB(255,220,220),   Element=Color3.fromRGB(50,10,10),   Glow=Color3.fromRGB(200,0,0)},
+    Garnet      = {Main=Color3.fromRGB(28,8,12),    Top=Color3.fromRGB(44,12,18),   Accent=Color3.fromRGB(165,0,50),    Text=Color3.fromRGB(255,230,235),   Element=Color3.fromRGB(55,18,25),   Glow=Color3.fromRGB(200,20,60)},
+    Scarlet     = {Main=Color3.fromRGB(22,5,5),     Top=Color3.fromRGB(38,10,10),   Accent=Color3.fromRGB(255,36,0),    Text=Color3.fromRGB(255,235,230),   Element=Color3.fromRGB(52,18,18),   Glow=Color3.fromRGB(255,20,0)},
+    Burgundy    = {Main=Color3.fromRGB(30,10,20),   Top=Color3.fromRGB(50,18,32),   Accent=Color3.fromRGB(165,42,42),   Text=Color3.fromRGB(255,230,235),   Element=Color3.fromRGB(65,25,40),   Glow=Color3.fromRGB(200,50,80)},
+    Maroon      = {Main=Color3.fromRGB(30,10,10),   Top=Color3.fromRGB(50,18,18),   Accent=Color3.fromRGB(160,32,32),   Text=Color3.fromRGB(255,230,230),   Element=Color3.fromRGB(65,25,25),   Glow=Color3.fromRGB(200,50,50)},
+    Flamingo    = {Main=Color3.fromRGB(35,20,25),   Top=Color3.fromRGB(50,28,35),   Accent=Color3.fromRGB(255,110,150), Text=Color3.fromRGB(255,240,245),   Element=Color3.fromRGB(65,38,48),   Glow=Color3.fromRGB(255,80,130)},
+    -- LARANJAS / ÂMBAR
+    Amber       = {Main=Color3.fromRGB(30,22,5),    Top=Color3.fromRGB(48,35,8),    Accent=Color3.fromRGB(255,191,0),   Text=Color3.fromRGB(255,248,220),   Element=Color3.fromRGB(62,45,12),   Glow=Color3.fromRGB(255,160,0)},
+    Copper      = {Main=Color3.fromRGB(28,18,10),   Top=Color3.fromRGB(45,28,15),   Accent=Color3.fromRGB(184,115,51),  Text=Color3.fromRGB(255,240,225),   Element=Color3.fromRGB(60,38,22),   Glow=Color3.fromRGB(210,105,30)},
+    Bronze      = {Main=Color3.fromRGB(25,18,10),   Top=Color3.fromRGB(42,30,15),   Accent=Color3.fromRGB(205,127,50),  Text=Color3.fromRGB(255,240,220),   Element=Color3.fromRGB(58,40,22),   Glow=Color3.fromRGB(180,100,30)},
+    Caramel     = {Main=Color3.fromRGB(32,22,10),   Top=Color3.fromRGB(50,35,18),   Accent=Color3.fromRGB(235,155,75),  Text=Color3.fromRGB(255,245,230),   Element=Color3.fromRGB(65,45,25),   Glow=Color3.fromRGB(200,120,40)},
+    Peach       = {Main=Color3.fromRGB(35,25,20),   Top=Color3.fromRGB(55,40,32),   Accent=Color3.fromRGB(255,180,130), Text=Color3.fromRGB(255,245,240),   Element=Color3.fromRGB(70,55,45),   Glow=Color3.fromRGB(255,140,90)},
+    Dusk        = {Main=Color3.fromRGB(30,20,25),   Top=Color3.fromRGB(48,32,38),   Accent=Color3.fromRGB(255,130,80),  Text=Color3.fromRGB(255,240,230),   Element=Color3.fromRGB(62,42,50),   Glow=Color3.fromRGB(220,90,60)},
+    Harvest     = {Main=Color3.fromRGB(28,22,8),    Top=Color3.fromRGB(45,36,14),   Accent=Color3.fromRGB(230,140,30),  Text=Color3.fromRGB(255,245,220),   Element=Color3.fromRGB(60,48,20),   Glow=Color3.fromRGB(200,110,20)},
+    -- AMARELOS
+    Topaz       = {Main=Color3.fromRGB(20,22,28),   Top=Color3.fromRGB(30,35,42),   Accent=Color3.fromRGB(240,190,50),  Text=Color3.fromRGB(255,250,220),   Element=Color3.fromRGB(42,48,60),   Glow=Color3.fromRGB(255,210,0)},
+    Neon        = {Main=Color3.fromRGB(8,8,8),      Top=Color3.fromRGB(15,15,15),   Accent=Color3.fromRGB(0,255,0),     Text=Color3.fromRGB(200,255,200),   Element=Color3.fromRGB(20,30,20),   Glow=Color3.fromRGB(0,200,0)},
+    Lemon       = {Main=Color3.fromRGB(28,28,8),    Top=Color3.fromRGB(42,42,15),   Accent=Color3.fromRGB(255,255,0),   Text=Color3.fromRGB(255,255,200),   Element=Color3.fromRGB(55,55,20),   Glow=Color3.fromRGB(230,230,0)},
+    Banana      = {Main=Color3.fromRGB(30,28,10),   Top=Color3.fromRGB(48,45,18),   Accent=Color3.fromRGB(255,240,80),  Text=Color3.fromRGB(255,255,220),   Element=Color3.fromRGB(62,58,25),   Glow=Color3.fromRGB(240,210,30)},
+    -- VERDES
+    Jade        = {Main=Color3.fromRGB(8,28,20),    Top=Color3.fromRGB(12,45,32),   Accent=Color3.fromRGB(0,168,107),   Text=Color3.fromRGB(220,255,240),   Element=Color3.fromRGB(18,60,42),   Glow=Color3.fromRGB(0,200,120)},
+    Lime        = {Main=Color3.fromRGB(15,25,5),    Top=Color3.fromRGB(25,40,8),    Accent=Color3.fromRGB(140,255,0),   Text=Color3.fromRGB(240,255,210),   Element=Color3.fromRGB(38,58,15),   Glow=Color3.fromRGB(100,220,0)},
+    Sage        = {Main=Color3.fromRGB(18,25,18),   Top=Color3.fromRGB(28,38,28),   Accent=Color3.fromRGB(110,165,105), Text=Color3.fromRGB(230,245,230),   Element=Color3.fromRGB(40,55,40),   Glow=Color3.fromRGB(80,160,80)},
+    Moss        = {Main=Color3.fromRGB(15,22,10),   Top=Color3.fromRGB(25,35,18),   Accent=Color3.fromRGB(90,150,60),   Text=Color3.fromRGB(225,245,220),   Element=Color3.fromRGB(38,52,28),   Glow=Color3.fromRGB(70,130,40)},
+    Jungle      = {Main=Color3.fromRGB(8,20,8),     Top=Color3.fromRGB(14,32,14),   Accent=Color3.fromRGB(20,180,60),   Text=Color3.fromRGB(210,255,220),   Element=Color3.fromRGB(20,48,20),   Glow=Color3.fromRGB(0,160,40)},
+    Olive       = {Main=Color3.fromRGB(20,22,10),   Top=Color3.fromRGB(32,35,15),   Accent=Color3.fromRGB(128,128,0),   Text=Color3.fromRGB(240,240,210),   Element=Color3.fromRGB(45,48,20),   Glow=Color3.fromRGB(100,110,0)},
+    Matrix      = {Main=Color3.fromRGB(0,8,0),      Top=Color3.fromRGB(0,15,0),     Accent=Color3.fromRGB(0,255,70),    Text=Color3.fromRGB(180,255,180),   Element=Color3.fromRGB(0,25,0),     Glow=Color3.fromRGB(0,200,50)},
+    Camo        = {Main=Color3.fromRGB(28,32,18),   Top=Color3.fromRGB(42,48,28),   Accent=Color3.fromRGB(80,120,50),   Text=Color3.fromRGB(230,240,215),   Element=Color3.fromRGB(55,65,38),   Glow=Color3.fromRGB(60,100,30)},
+    -- AZUIS
+    Sapphire    = {Main=Color3.fromRGB(5,10,40),    Top=Color3.fromRGB(10,18,60),   Accent=Color3.fromRGB(15,82,186),   Text=Color3.fromRGB(220,235,255),   Element=Color3.fromRGB(15,28,75),   Glow=Color3.fromRGB(0,100,255)},
+    Navy        = {Main=Color3.fromRGB(0,0,30),     Top=Color3.fromRGB(0,0,50),     Accent=Color3.fromRGB(30,80,200),   Text=Color3.fromRGB(220,230,255),   Element=Color3.fromRGB(0,0,65),     Glow=Color3.fromRGB(20,60,180)},
+    Azure       = {Main=Color3.fromRGB(5,15,35),    Top=Color3.fromRGB(10,25,55),   Accent=Color3.fromRGB(0,127,255),   Text=Color3.fromRGB(220,240,255),   Element=Color3.fromRGB(15,35,70),   Glow=Color3.fromRGB(0,100,230)},
+    Cobalt      = {Main=Color3.fromRGB(5,12,38),    Top=Color3.fromRGB(10,20,58),   Accent=Color3.fromRGB(0,71,171),    Text=Color3.fromRGB(215,230,255),   Element=Color3.fromRGB(14,28,72),   Glow=Color3.fromRGB(0,80,200)},
+    Teal        = {Main=Color3.fromRGB(5,25,28),    Top=Color3.fromRGB(10,40,45),   Accent=Color3.fromRGB(0,180,160),   Text=Color3.fromRGB(215,255,255),   Element=Color3.fromRGB(15,55,60),   Glow=Color3.fromRGB(0,160,150)},
+    Turquoise   = {Main=Color3.fromRGB(5,28,30),    Top=Color3.fromRGB(10,44,48),   Accent=Color3.fromRGB(64,224,208),  Text=Color3.fromRGB(215,255,255),   Element=Color3.fromRGB(15,58,62),   Glow=Color3.fromRGB(0,200,190)},
+    Arctic      = {Main=Color3.fromRGB(15,28,38),   Top=Color3.fromRGB(25,44,60),   Accent=Color3.fromRGB(135,210,255), Text=Color3.fromRGB(235,250,255),   Element=Color3.fromRGB(38,60,80),   Glow=Color3.fromRGB(100,200,255)},
+    Ice         = {Main=Color3.fromRGB(18,30,42),   Top=Color3.fromRGB(28,48,65),   Accent=Color3.fromRGB(200,240,255), Text=Color3.fromRGB(245,252,255),   Element=Color3.fromRGB(42,65,88),   Glow=Color3.fromRGB(160,230,255)},
+    Storm       = {Main=Color3.fromRGB(18,22,32),   Top=Color3.fromRGB(28,35,50),   Accent=Color3.fromRGB(80,120,200),  Text=Color3.fromRGB(225,230,245),   Element=Color3.fromRGB(40,50,72),   Glow=Color3.fromRGB(60,100,190)},
+    Slate       = {Main=Color3.fromRGB(20,25,32),   Top=Color3.fromRGB(32,40,50),   Accent=Color3.fromRGB(100,140,180), Text=Color3.fromRGB(220,232,245),   Element=Color3.fromRGB(45,55,70),   Glow=Color3.fromRGB(80,120,170)},
+    Horizon     = {Main=Color3.fromRGB(10,20,40),   Top=Color3.fromRGB(18,32,62),   Accent=Color3.fromRGB(80,160,255),  Text=Color3.fromRGB(225,240,255),   Element=Color3.fromRGB(25,45,80),   Glow=Color3.fromRGB(50,140,255)},
+    Depth       = {Main=Color3.fromRGB(5,10,25),    Top=Color3.fromRGB(8,18,40),    Accent=Color3.fromRGB(40,80,160),   Text=Color3.fromRGB(210,225,255),   Element=Color3.fromRGB(12,25,55),   Glow=Color3.fromRGB(30,70,160)},
+    -- ROXOS
+    Nebula      = {Main=Color3.fromRGB(18,8,28),    Top=Color3.fromRGB(28,14,42),   Accent=Color3.fromRGB(180,50,255),  Text=Color3.fromRGB(245,225,255),   Element=Color3.fromRGB(40,20,58),   Glow=Color3.fromRGB(150,0,255)},
+    Galaxy      = {Main=Color3.fromRGB(10,5,30),    Top=Color3.fromRGB(18,10,48),   Accent=Color3.fromRGB(140,80,255),  Text=Color3.fromRGB(235,225,255),   Element=Color3.fromRGB(25,15,65),   Glow=Color3.fromRGB(100,50,255)},
+    Cosmos      = {Main=Color3.fromRGB(5,8,22),     Top=Color3.fromRGB(10,14,35),   Accent=Color3.fromRGB(100,60,220),  Text=Color3.fromRGB(225,220,255),   Element=Color3.fromRGB(15,20,50),   Glow=Color3.fromRGB(80,40,200)},
+    Plum        = {Main=Color3.fromRGB(25,10,30),   Top=Color3.fromRGB(40,18,48),   Accent=Color3.fromRGB(150,50,180),  Text=Color3.fromRGB(248,232,255),   Element=Color3.fromRGB(55,25,65),   Glow=Color3.fromRGB(180,60,220)},
+    Orchid      = {Main=Color3.fromRGB(28,12,28),   Top=Color3.fromRGB(44,20,44),   Accent=Color3.fromRGB(218,112,214), Text=Color3.fromRGB(252,235,252),   Element=Color3.fromRGB(58,28,58),   Glow=Color3.fromRGB(200,80,200)},
+    Ultraviolet = {Main=Color3.fromRGB(12,0,28),    Top=Color3.fromRGB(20,0,45),    Accent=Color3.fromRGB(148,0,255),   Text=Color3.fromRGB(240,215,255),   Element=Color3.fromRGB(30,5,60),    Glow=Color3.fromRGB(120,0,255)},
+    Grape       = {Main=Color3.fromRGB(22,8,28),    Top=Color3.fromRGB(35,14,44),   Accent=Color3.fromRGB(130,30,160),  Text=Color3.fromRGB(245,228,252),   Element=Color3.fromRGB(50,20,62),   Glow=Color3.fromRGB(170,40,210)},
+    Indigo      = {Main=Color3.fromRGB(15,10,40),   Top=Color3.fromRGB(24,16,62),   Accent=Color3.fromRGB(75,0,130),    Text=Color3.fromRGB(225,218,255),   Element=Color3.fromRGB(32,22,75),   Glow=Color3.fromRGB(100,0,180)},
+    Phantom     = {Main=Color3.fromRGB(12,5,18),    Top=Color3.fromRGB(20,8,30),    Accent=Color3.fromRGB(100,0,160),   Text=Color3.fromRGB(235,220,255),   Element=Color3.fromRGB(28,12,42),   Glow=Color3.fromRGB(130,0,200)},
+    Specter     = {Main=Color3.fromRGB(15,10,22),   Top=Color3.fromRGB(25,18,36),   Accent=Color3.fromRGB(170,100,255), Text=Color3.fromRGB(242,235,255),   Element=Color3.fromRGB(38,28,55),   Glow=Color3.fromRGB(140,80,230)},
+    -- ROSAS
+    Sakura      = {Main=Color3.fromRGB(35,18,25),   Top=Color3.fromRGB(55,28,40),   Accent=Color3.fromRGB(255,182,193), Text=Color3.fromRGB(255,242,248),   Element=Color3.fromRGB(72,38,55),   Glow=Color3.fromRGB(255,150,175)},
+    Rose        = {Main=Color3.fromRGB(35,15,22),   Top=Color3.fromRGB(55,25,36),   Accent=Color3.fromRGB(255,100,140), Text=Color3.fromRGB(255,238,244),   Element=Color3.fromRGB(70,35,50),   Glow=Color3.fromRGB(255,70,120)},
+    Magenta     = {Main=Color3.fromRGB(25,5,25),    Top=Color3.fromRGB(40,8,40),    Accent=Color3.fromRGB(255,0,255),   Text=Color3.fromRGB(255,220,255),   Element=Color3.fromRGB(55,12,55),   Glow=Color3.fromRGB(220,0,220)},
+    Blush       = {Main=Color3.fromRGB(38,22,28),   Top=Color3.fromRGB(58,35,44),   Accent=Color3.fromRGB(255,160,180), Text=Color3.fromRGB(255,242,246),   Element=Color3.fromRGB(75,48,58),   Glow=Color3.fromRGB(255,120,155)},
+    Hotpink     = {Main=Color3.fromRGB(30,8,20),    Top=Color3.fromRGB(48,14,32),   Accent=Color3.fromRGB(255,20,147),  Text=Color3.fromRGB(255,225,242),   Element=Color3.fromRGB(62,18,42),   Glow=Color3.fromRGB(255,0,120)},
+    Rosegold    = {Main=Color3.fromRGB(32,22,20),   Top=Color3.fromRGB(50,35,32),   Accent=Color3.fromRGB(220,150,130), Text=Color3.fromRGB(255,245,242),   Element=Color3.fromRGB(65,48,45),   Glow=Color3.fromRGB(200,120,100)},
+    -- NEUTROS
+    Obsidian    = {Main=Color3.fromRGB(8,8,10),     Top=Color3.fromRGB(15,15,18),   Accent=Color3.fromRGB(80,80,100),   Text=Color3.fromRGB(210,210,220),   Element=Color3.fromRGB(22,22,28),   Glow=Color3.fromRGB(60,60,90)},
+    Onyx        = {Main=Color3.fromRGB(5,5,5),      Top=Color3.fromRGB(12,12,12),   Accent=Color3.fromRGB(60,60,60),    Text=Color3.fromRGB(200,200,200),   Element=Color3.fromRGB(20,20,20),   Glow=Color3.fromRGB(40,40,40)},
+    Pearl       = {Main=Color3.fromRGB(235,235,235),Top=Color3.fromRGB(250,250,250), Accent=Color3.fromRGB(180,180,200),Text=Color3.fromRGB(40,40,60),      Element=Color3.fromRGB(215,215,225),Glow=Color3.fromRGB(160,160,190)},
+    Ivory       = {Main=Color3.fromRGB(240,235,220),Top=Color3.fromRGB(255,252,240), Accent=Color3.fromRGB(200,175,120),Text=Color3.fromRGB(50,45,30),      Element=Color3.fromRGB(220,215,200),Glow=Color3.fromRGB(180,155,90)},
+    Silver      = {Main=Color3.fromRGB(25,28,30),   Top=Color3.fromRGB(40,44,48),   Accent=Color3.fromRGB(192,192,192), Text=Color3.fromRGB(235,240,245),   Element=Color3.fromRGB(55,60,65),   Glow=Color3.fromRGB(160,160,165)},
+    Ghost       = {Main=Color3.fromRGB(230,232,235),Top=Color3.fromRGB(245,248,252), Accent=Color3.fromRGB(150,160,175),Text=Color3.fromRGB(40,45,55),      Element=Color3.fromRGB(210,214,220),Glow=Color3.fromRGB(130,140,160)},
+    Titanium    = {Main=Color3.fromRGB(22,24,26),   Top=Color3.fromRGB(36,38,42),   Accent=Color3.fromRGB(140,148,158), Text=Color3.fromRGB(225,228,232),   Element=Color3.fromRGB(50,54,58),   Glow=Color3.fromRGB(110,118,130)},
+    Quicksilver = {Main=Color3.fromRGB(20,22,25),   Top=Color3.fromRGB(35,38,42),   Accent=Color3.fromRGB(180,188,195), Text=Color3.fromRGB(235,240,245),   Element=Color3.fromRGB(48,52,58),   Glow=Color3.fromRGB(150,158,168)},
+    Opal        = {Main=Color3.fromRGB(232,235,240),Top=Color3.fromRGB(248,250,255), Accent=Color3.fromRGB(160,200,220),Text=Color3.fromRGB(40,50,65),      Element=Color3.fromRGB(212,218,228),Glow=Color3.fromRGB(130,180,210)},
+    Sepia       = {Main=Color3.fromRGB(30,22,14),   Top=Color3.fromRGB(48,35,22),   Accent=Color3.fromRGB(180,130,80),  Text=Color3.fromRGB(255,242,220),   Element=Color3.fromRGB(62,48,32),   Glow=Color3.fromRGB(150,100,50)},
+    -- NATUREZA
+    Sand        = {Main=Color3.fromRGB(32,28,18),   Top=Color3.fromRGB(50,44,28),   Accent=Color3.fromRGB(210,185,135), Text=Color3.fromRGB(255,248,230),   Element=Color3.fromRGB(65,58,38),   Glow=Color3.fromRGB(185,155,90)},
+    Earth       = {Main=Color3.fromRGB(28,22,14),   Top=Color3.fromRGB(44,35,22),   Accent=Color3.fromRGB(160,120,70),  Text=Color3.fromRGB(245,235,215),   Element=Color3.fromRGB(58,45,28),   Glow=Color3.fromRGB(130,90,45)},
+    Swamp       = {Main=Color3.fromRGB(14,20,10),   Top=Color3.fromRGB(22,32,16),   Accent=Color3.fromRGB(60,100,40),   Text=Color3.fromRGB(215,235,210),   Element=Color3.fromRGB(30,45,22),   Glow=Color3.fromRGB(40,80,20)},
+    Reef        = {Main=Color3.fromRGB(5,25,30),    Top=Color3.fromRGB(10,40,48),   Accent=Color3.fromRGB(0,220,180),   Text=Color3.fromRGB(210,255,252),   Element=Color3.fromRGB(15,55,65),   Glow=Color3.fromRGB(0,195,165)},
+    Coral       = {Main=Color3.fromRGB(35,20,18),   Top=Color3.fromRGB(55,32,28),   Accent=Color3.fromRGB(255,127,80),  Text=Color3.fromRGB(255,240,235),   Element=Color3.fromRGB(72,44,40),   Glow=Color3.fromRGB(255,90,60)},
+    Petal       = {Main=Color3.fromRGB(38,22,28),   Top=Color3.fromRGB(58,36,44),   Accent=Color3.fromRGB(255,155,195), Text=Color3.fromRGB(255,242,248),   Element=Color3.fromRGB(75,48,60),   Glow=Color3.fromRGB(255,120,170)},
+    Autumn      = {Main=Color3.fromRGB(32,20,10),   Top=Color3.fromRGB(50,32,15),   Accent=Color3.fromRGB(210,100,30),  Text=Color3.fromRGB(255,238,215),   Element=Color3.fromRGB(65,42,20),   Glow=Color3.fromRGB(200,80,20)},
+    Spring      = {Main=Color3.fromRGB(20,30,15),   Top=Color3.fromRGB(32,48,24),   Accent=Color3.fromRGB(120,220,80),  Text=Color3.fromRGB(232,255,225),   Element=Color3.fromRGB(44,65,32),   Glow=Color3.fromRGB(90,200,50)},
+    Dawn        = {Main=Color3.fromRGB(35,22,18),   Top=Color3.fromRGB(55,35,28),   Accent=Color3.fromRGB(255,180,100), Text=Color3.fromRGB(255,245,232),   Element=Color3.fromRGB(72,48,38),   Glow=Color3.fromRGB(255,145,65)},
+    Tan         = {Main=Color3.fromRGB(30,24,16),   Top=Color3.fromRGB(48,38,25),   Accent=Color3.fromRGB(200,170,110), Text=Color3.fromRGB(252,245,232),   Element=Color3.fromRGB(62,50,32),   Glow=Color3.fromRGB(170,135,75)},
+    -- ESPAÇO
+    Infrared    = {Main=Color3.fromRGB(20,5,5),     Top=Color3.fromRGB(35,8,8),     Accent=Color3.fromRGB(255,50,50),   Text=Color3.fromRGB(255,230,230),   Element=Color3.fromRGB(50,12,12),   Glow=Color3.fromRGB(255,0,0)},
+    Pulsar      = {Main=Color3.fromRGB(5,10,25),    Top=Color3.fromRGB(10,18,42),   Accent=Color3.fromRGB(60,200,255),  Text=Color3.fromRGB(220,248,255),   Element=Color3.fromRGB(15,28,58),   Glow=Color3.fromRGB(0,180,255)},
+    Quasar      = {Main=Color3.fromRGB(10,5,25),    Top=Color3.fromRGB(18,10,42),   Accent=Color3.fromRGB(120,50,255),  Text=Color3.fromRGB(235,220,255),   Element=Color3.fromRGB(25,15,58),   Glow=Color3.fromRGB(90,30,255)},
+    Aurora      = {Main=Color3.fromRGB(5,20,15),    Top=Color3.fromRGB(8,32,25),    Accent=Color3.fromRGB(50,255,160),  Text=Color3.fromRGB(210,255,240),   Element=Color3.fromRGB(12,45,35),   Glow=Color3.fromRGB(20,230,140)},
+    Plasma      = {Main=Color3.fromRGB(12,5,25),    Top=Color3.fromRGB(22,10,42),   Accent=Color3.fromRGB(200,0,255),   Text=Color3.fromRGB(242,215,255),   Element=Color3.fromRGB(32,15,58),   Glow=Color3.fromRGB(180,0,255)},
+    Thunder     = {Main=Color3.fromRGB(20,20,10),   Top=Color3.fromRGB(32,32,16),   Accent=Color3.fromRGB(255,240,50),  Text=Color3.fromRGB(255,255,220),   Element=Color3.fromRGB(45,45,22),   Glow=Color3.fromRGB(255,220,0)},
+    Photon      = {Main=Color3.fromRGB(5,5,15),     Top=Color3.fromRGB(10,10,25),   Accent=Color3.fromRGB(255,255,200), Text=Color3.fromRGB(255,255,240),   Element=Color3.fromRGB(15,15,38),   Glow=Color3.fromRGB(255,255,150)},
+    -- ESTÉTICOS
+    Vaporwave   = {Main=Color3.fromRGB(20,10,35),   Top=Color3.fromRGB(32,16,55),   Accent=Color3.fromRGB(255,100,255), Text=Color3.fromRGB(255,230,255),   Element=Color3.fromRGB(48,24,75),   Glow=Color3.fromRGB(100,220,255)},
+    Retro       = {Main=Color3.fromRGB(25,20,8),    Top=Color3.fromRGB(38,32,12),   Accent=Color3.fromRGB(255,190,0),   Text=Color3.fromRGB(255,248,220),   Element=Color3.fromRGB(52,44,18),   Glow=Color3.fromRGB(220,140,0)},
+    Glitch      = {Main=Color3.fromRGB(5,0,5),      Top=Color3.fromRGB(10,0,10),    Accent=Color3.fromRGB(0,255,180),   Text=Color3.fromRGB(200,255,240),   Element=Color3.fromRGB(20,0,20),    Glow=Color3.fromRGB(255,0,255)},
+    Pixel       = {Main=Color3.fromRGB(15,15,25),   Top=Color3.fromRGB(25,25,40),   Accent=Color3.fromRGB(80,200,255),  Text=Color3.fromRGB(225,240,255),   Element=Color3.fromRGB(38,38,58),   Glow=Color3.fromRGB(50,180,255)},
+    Stealth     = {Main=Color3.fromRGB(8,8,10),     Top=Color3.fromRGB(14,14,18),   Accent=Color3.fromRGB(50,55,65),    Text=Color3.fromRGB(180,185,200),   Element=Color3.fromRGB(20,22,28),   Glow=Color3.fromRGB(40,45,60)},
+    Eclipse     = {Main=Color3.fromRGB(5,5,8),      Top=Color3.fromRGB(10,10,16),   Accent=Color3.fromRGB(255,215,0),   Text=Color3.fromRGB(255,250,235),   Element=Color3.fromRGB(18,18,28),   Glow=Color3.fromRGB(230,190,0)},
+    Shadow      = {Main=Color3.fromRGB(10,10,15),   Top=Color3.fromRGB(18,18,26),   Accent=Color3.fromRGB(80,80,120),   Text=Color3.fromRGB(210,210,230),   Element=Color3.fromRGB(28,28,40),   Glow=Color3.fromRGB(60,60,100)},
+    Holographic = {Main=Color3.fromRGB(12,18,22),   Top=Color3.fromRGB(20,30,38),   Accent=Color3.fromRGB(160,255,240), Text=Color3.fromRGB(240,255,252),   Element=Color3.fromRGB(30,45,56),   Glow=Color3.fromRGB(100,230,255)},
+    Crystal     = {Main=Color3.fromRGB(18,25,35),   Top=Color3.fromRGB(28,40,56),   Accent=Color3.fromRGB(180,230,255), Text=Color3.fromRGB(240,250,255),   Element=Color3.fromRGB(40,58,80),   Glow=Color3.fromRGB(150,215,255)},
+    Laser       = {Main=Color3.fromRGB(5,15,10),    Top=Color3.fromRGB(8,25,16),    Accent=Color3.fromRGB(0,255,100),   Text=Color3.fromRGB(210,255,230),   Element=Color3.fromRGB(12,38,24),   Glow=Color3.fromRGB(0,230,80)},
+    HackerGreen = {Main=Color3.fromRGB(0,5,0),      Top=Color3.fromRGB(0,10,0),     Accent=Color3.fromRGB(0,200,0),     Text=Color3.fromRGB(180,255,180),   Element=Color3.fromRGB(0,20,0),     Glow=Color3.fromRGB(0,255,0)},
+    Terminal    = {Main=Color3.fromRGB(0,0,0),      Top=Color3.fromRGB(10,10,10),   Accent=Color3.fromRGB(0,255,80),    Text=Color3.fromRGB(180,255,200),   Element=Color3.fromRGB(18,18,18),   Glow=Color3.fromRGB(0,200,60)},
+    Monochrome  = {Main=Color3.fromRGB(15,15,15),   Top=Color3.fromRGB(30,30,30),   Accent=Color3.fromRGB(200,200,200), Text=Color3.fromRGB(255,255,255),   Element=Color3.fromRGB(45,45,45),   Glow=Color3.fromRGB(150,150,150)},
+    -- CANDY
+    Candy       = {Main=Color3.fromRGB(38,18,30),   Top=Color3.fromRGB(58,28,48),   Accent=Color3.fromRGB(255,80,200),  Text=Color3.fromRGB(255,235,252),   Element=Color3.fromRGB(75,38,65),   Glow=Color3.fromRGB(255,50,180)},
+    Cotton      = {Main=Color3.fromRGB(40,28,35),   Top=Color3.fromRGB(62,44,55),   Accent=Color3.fromRGB(255,170,220), Text=Color3.fromRGB(255,245,252),   Element=Color3.fromRGB(80,58,72),   Glow=Color3.fromRGB(255,140,210)},
+    Strawberry  = {Main=Color3.fromRGB(32,12,15),   Top=Color3.fromRGB(50,18,24),   Accent=Color3.fromRGB(255,80,100),  Text=Color3.fromRGB(255,235,238),   Element=Color3.fromRGB(65,25,32),   Glow=Color3.fromRGB(255,50,80)},
+    Blueberry   = {Main=Color3.fromRGB(18,12,32),   Top=Color3.fromRGB(28,18,50),   Accent=Color3.fromRGB(100,130,255), Text=Color3.fromRGB(230,232,255),   Element=Color3.fromRGB(40,28,70),   Glow=Color3.fromRGB(80,110,255)},
+    Watermelon  = {Main=Color3.fromRGB(28,18,18),   Top=Color3.fromRGB(45,28,28),   Accent=Color3.fromRGB(255,80,80),   Text=Color3.fromRGB(255,235,235),   Element=Color3.fromRGB(60,38,38),   Glow=Color3.fromRGB(0,180,80)},
+    Grape2      = {Main=Color3.fromRGB(28,10,35),   Top=Color3.fromRGB(44,16,55),   Accent=Color3.fromRGB(180,80,220),  Text=Color3.fromRGB(248,230,255),   Element=Color3.fromRGB(60,22,75),   Glow=Color3.fromRGB(160,50,210)},
+    -- ESPECIAIS
+    Nocturn     = {Main=Color3.fromRGB(8,5,18),     Top=Color3.fromRGB(15,10,30),   Accent=Color3.fromRGB(90,60,200),   Text=Color3.fromRGB(228,222,255),   Element=Color3.fromRGB(22,15,45),   Glow=Color3.fromRGB(70,40,180)},
+    Radiant     = {Main=Color3.fromRGB(35,28,10),   Top=Color3.fromRGB(55,44,16),   Accent=Color3.fromRGB(255,220,50),  Text=Color3.fromRGB(255,252,230),   Element=Color3.fromRGB(72,58,22),   Glow=Color3.fromRGB(255,200,0)},
+    Dawnbreak   = {Main=Color3.fromRGB(30,15,20),   Top=Color3.fromRGB(48,24,32),   Accent=Color3.fromRGB(255,140,120), Text=Color3.fromRGB(255,242,238),   Element=Color3.fromRGB(62,34,44),   Glow=Color3.fromRGB(255,100,80)},
+    Spectral    = {Main=Color3.fromRGB(10,10,20),   Top=Color3.fromRGB(18,18,35),   Accent=Color3.fromRGB(100,255,220), Text=Color3.fromRGB(225,255,250),   Element=Color3.fromRGB(26,26,52),   Glow=Color3.fromRGB(60,230,200)},
+    Pulse       = {Main=Color3.fromRGB(8,5,20),     Top=Color3.fromRGB(14,10,35),   Accent=Color3.fromRGB(255,50,150),  Text=Color3.fromRGB(255,225,242),   Element=Color3.fromRGB(20,15,50),   Glow=Color3.fromRGB(220,0,130)},
+    Fusion      = {Main=Color3.fromRGB(15,10,25),   Top=Color3.fromRGB(25,18,40),   Accent=Color3.fromRGB(255,100,50),  Text=Color3.fromRGB(255,240,230),   Element=Color3.fromRGB(38,28,58),   Glow=Color3.fromRGB(255,60,30)},
+    Midnight2   = {Main=Color3.fromRGB(5,5,15),     Top=Color3.fromRGB(10,10,25),   Accent=Color3.fromRGB(60,80,180),   Text=Color3.fromRGB(220,225,255),   Element=Color3.fromRGB(15,15,40),   Glow=Color3.fromRGB(40,60,160)},
 }
 
 Library.CurrentTheme = Library.Themes.Default
 
---// Utilitários //
+-- ┌──────────────────────────────────────┐
+-- │           UTILITÁRIOS                │
+-- └──────────────────────────────────────┘
+
 local function MakeDraggable(topbarobject, object)
-    local Dragging = nil
-    local DragInput = nil
-    local DragStart = nil
-    local StartPosition = nil
-    topbarobject.Active = true 
+    local Dragging, DragInput, DragStart, StartPosition = nil, nil, nil, nil
+    topbarobject.Active = true
     local function Update(input)
         local Delta = input.Position - DragStart
         local pos = UDim2.new(StartPosition.X.Scale, StartPosition.X.Offset + Delta.X, StartPosition.Y.Scale, StartPosition.Y.Offset + Delta.Y)
-        local Tween = TweenService:Create(object, TweenInfo.new(0.15), {Position = pos})
-        Tween:Play()
+        TweenService:Create(object, TweenInfo.new(0.15), {Position = pos}):Play()
     end
     topbarobject.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -327,6 +308,31 @@ local function CreateTween(obj, props, time)
     return tween
 end
 
+-- [NOVO] Ripple de clique material-design
+local function MakeRipple(frame, relX, relY, color)
+    local ok, _ = pcall(function()
+        local Ripple = Instance.new("Frame")
+        Ripple.Name = "Ripple"
+        Ripple.BackgroundColor3 = color or Color3.fromRGB(255,255,255)
+        Ripple.BackgroundTransparency = 0.7
+        Ripple.AnchorPoint = Vector2.new(0.5, 0.5)
+        Ripple.Position = UDim2.new(0, relX, 0, relY)
+        Ripple.Size = UDim2.new(0, 0, 0, 0)
+        Ripple.ZIndex = 20
+        Ripple.Parent = frame
+        local RC = Instance.new("UICorner")
+        RC.CornerRadius = UDim.new(1, 0)
+        RC.Parent = Ripple
+        local maxSize = math.max(frame.AbsoluteSize.X, frame.AbsoluteSize.Y) * 2.8
+        local t = TweenService:Create(Ripple, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, maxSize, 0, maxSize),
+            BackgroundTransparency = 1
+        })
+        t:Play()
+        t.Completed:Connect(function() Ripple:Destroy() end)
+    end)
+end
+
 local function ProtectGui(gui)
     if syn and syn.protect_gui then
         syn.protect_gui(gui)
@@ -338,25 +344,23 @@ local function ProtectGui(gui)
     end
 end
 
--- // Save System //
+-- ┌──────────────────────────────────────┐
+-- │        SAVE / LOAD SYSTEM            │
+-- └──────────────────────────────────────┘
+
 local function SaveConfig()
     if writefile then
-        local data = {
-            Settings = Library.Settings,
-            Flags = Library.Flags
-        }
-        local json = HttpService:JSONEncode(data)
-        writefile("NeonUI_Config.json", json)
+        local data = {Settings = Library.Settings, Flags = Library.Flags}
+        writefile("NeonUI_Config.json", HttpService:JSONEncode(data))
     end
 end
 
 local function LoadConfig()
     if isfile and isfile("NeonUI_Config.json") then
-        local content = readfile("NeonUI_Config.json")
-        local success, decoded = pcall(function() return HttpService:JSONDecode(content) end)
+        local success, decoded = pcall(function() return HttpService:JSONDecode(readfile("NeonUI_Config.json")) end)
         if success then
-            if decoded.Settings then 
-                Library.Settings = decoded.Settings 
+            if decoded.Settings then
+                Library.Settings = decoded.Settings
                 if Library.Settings.Theme and Library.Themes[Library.Settings.Theme] then
                     Library.CurrentTheme = Library.Themes[Library.Settings.Theme]
                     Library:RefreshTheme()
@@ -376,26 +380,24 @@ local function LoadConfig()
     return false
 end
 
--- // Key Save System //
 local function SaveKey(key)
-    if writefile then
-        writefile("NeonUI_Key.txt", key)
-    end
+    if writefile then writefile("NeonUI_Key.txt", key) end
 end
 
 local function LoadKey()
-    if isfile and isfile("NeonUI_Key.txt") then
-        return readfile("NeonUI_Key.txt")
-    end
+    if isfile and isfile("NeonUI_Key.txt") then return readfile("NeonUI_Key.txt") end
     return nil
 end
 
---// UI Construction //
+-- ┌──────────────────────────────────────┐
+-- │         UI CONSTRUCTION              │
+-- └──────────────────────────────────────┘
+
 function Library:CreateWindow(Config)
     local Title = Config.Name or "Library"
     local KeySystemConfig = {
         Enabled = Config.KeySystem or false,
-        Key = Config.Key or "", 
+        Key     = Config.Key or "",
         KeyName = Config.KeyName or Library:GetText("KeyTitle"),
         KeySite = Config.KeySite or "https://discord.gg/",
         SaveKey = Config.SaveKey or false
@@ -406,139 +408,283 @@ function Library:CreateWindow(Config)
     TitanUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ProtectGui(TitanUI)
 
-    -- Notificação
+    -- ── Notificações ──────────────────────────────────────────
     local NotifContainer = Instance.new("Frame")
     NotifContainer.Name = "NotifContainer"
     NotifContainer.Parent = TitanUI
     NotifContainer.AnchorPoint = Vector2.new(1, 1)
     NotifContainer.Position = UDim2.new(0.98, 0, 0.98, 0)
-    NotifContainer.Size = UDim2.new(0, 300, 0, 500)
+    NotifContainer.Size = UDim2.new(0, 320, 0, 500)
     NotifContainer.BackgroundTransparency = 1
-    local NotifListLayout = Instance.new("UIListLayout")
-    NotifListLayout.Parent = NotifContainer
-    NotifListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    NotifListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-    NotifListLayout.Padding = UDim.new(0, 5)
+    local NotifList = Instance.new("UIListLayout")
+    NotifList.Parent = NotifContainer
+    NotifList.SortOrder = Enum.SortOrder.LayoutOrder
+    NotifList.VerticalAlignment = Enum.VerticalAlignment.Bottom
+    NotifList.Padding = UDim.new(0, 6)
+
+    -- [NOVO] Cores e ícones por tipo de notificação
+    local NotifTypes = {
+        success = {Color = Color3.fromRGB(50,200,80),  Icon = "✓"},
+        error   = {Color = Color3.fromRGB(255,60,60),  Icon = "✗"},
+        warning = {Color = Color3.fromRGB(255,180,0),  Icon = "⚠"},
+        info    = {Color = Color3.fromRGB(0,160,255),  Icon = "ℹ"},
+        default = {Color = Library.CurrentTheme.Accent, Icon = "●"},
+    }
 
     function Library:Notification(options)
-        local Title = options.Title or "Notification"
-        local Content = options.Content or ""
-        local Duration = options.Duration or 3
+        local NTitle    = options.Title or "Notification"
+        local Content   = options.Content or ""
+        local Duration  = options.Duration or 3.5
+        local NType     = options.Type or "default"
+        local typeData  = NotifTypes[NType] or NotifTypes.default
+        local accentCol = typeData.Color
+        local iconChar  = typeData.Icon
+
         local NotifFrame = Instance.new("Frame")
         NotifFrame.Parent = NotifContainer
-        NotifFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        NotifFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
         NotifFrame.Size = UDim2.new(1, 0, 0, 0)
         NotifFrame.ClipsDescendants = true
         local NC = Instance.new("UICorner")
-        NC.CornerRadius = UDim.new(0, 6)
+        NC.CornerRadius = UDim.new(0, 8)
         NC.Parent = NotifFrame
         local NS = Instance.new("UIStroke")
-        NS.Color = Color3.fromRGB(60,60,60)
+        NS.Color = accentCol
+        NS.Thickness = 1
+        NS.Transparency = 0.4
         NS.Parent = NotifFrame
+
+        -- [NOVO] Barra colorida lateral (tipo badge)
+        local Stripe = Instance.new("Frame")
+        Stripe.Parent = NotifFrame
+        Stripe.BackgroundColor3 = accentCol
+        Stripe.BorderSizePixel = 0
+        Stripe.Position = UDim2.new(0, 0, 0, 0)
+        Stripe.Size = UDim2.new(0, 4, 1, 0)
+        local StripeC = Instance.new("UICorner")
+        StripeC.CornerRadius = UDim.new(0, 8)
+        StripeC.Parent = Stripe
+
+        -- [NOVO] Ícone do tipo
+        local IconLbl = Instance.new("TextLabel")
+        IconLbl.Parent = NotifFrame
+        IconLbl.BackgroundTransparency = 1
+        IconLbl.Position = UDim2.new(0, 12, 0, 5)
+        IconLbl.Size = UDim2.new(0, 20, 0, 20)
+        IconLbl.Font = Enum.Font.GothamBold
+        IconLbl.Text = iconChar
+        IconLbl.TextColor3 = accentCol
+        IconLbl.TextSize = 16
+
         local NT = Instance.new("TextLabel")
         NT.Parent = NotifFrame
         NT.BackgroundTransparency = 1
-        NT.Position = UDim2.new(0, 10, 0, 5)
-        NT.Size = UDim2.new(1, -20, 0, 20)
+        NT.Position = UDim2.new(0, 36, 0, 5)
+        NT.Size = UDim2.new(1, -46, 0, 20)
         NT.Font = Enum.Font.GothamBold
-        NT.Text = Title
+        NT.Text = NTitle
         NT.TextColor3 = Color3.fromRGB(255, 255, 255)
-        NT.TextSize = 14
+        NT.TextSize = 13
         NT.TextXAlignment = Enum.TextXAlignment.Left
+
         local ND = Instance.new("TextLabel")
         ND.Parent = NotifFrame
         ND.BackgroundTransparency = 1
-        ND.Position = UDim2.new(0, 10, 0, 25)
-        ND.Size = UDim2.new(1, -20, 0, 35)
+        ND.Position = UDim2.new(0, 12, 0, 26)
+        ND.Size = UDim2.new(1, -22, 0, 32)
         ND.Font = Enum.Font.Gotham
         ND.Text = Content
-        ND.TextColor3 = Color3.fromRGB(200, 200, 200)
+        ND.TextColor3 = Color3.fromRGB(185, 185, 195)
         ND.TextSize = 12
         ND.TextWrapped = true
         ND.TextXAlignment = Enum.TextXAlignment.Left
-        CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 70)}, 0.3)
+
+        -- [NOVO] Barra de progresso da duração
+        local ProgBg = Instance.new("Frame")
+        ProgBg.Parent = NotifFrame
+        ProgBg.BackgroundColor3 = Color3.fromRGB(40,40,48)
+        ProgBg.BorderSizePixel = 0
+        ProgBg.Position = UDim2.new(0, 0, 1, -3)
+        ProgBg.Size = UDim2.new(1, 0, 0, 3)
+        local ProgFill = Instance.new("Frame")
+        ProgFill.Parent = ProgBg
+        ProgFill.BackgroundColor3 = accentCol
+        ProgFill.BorderSizePixel = 0
+        ProgFill.Size = UDim2.new(1, 0, 1, 0)
+
+        -- Slide in
+        CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 72)}, 0.35)
+        task.wait(0.35)
+        -- Anima progress bar
+        CreateTween(ProgFill, {Size = UDim2.new(0, 0, 1, 0)}, Duration)
+
         task.delay(Duration, function()
             local out = CreateTween(NotifFrame, {Size = UDim2.new(1, 0, 0, 0), BackgroundTransparency = 1}, 0.3)
-            CreateTween(NT, {TextTransparency = 1}, 0.2)
-            CreateTween(ND, {TextTransparency = 1}, 0.2)
-            CreateTween(NS, {Transparency = 1}, 0.2)
+            CreateTween(NT,       {TextTransparency = 1}, 0.2)
+            CreateTween(ND,       {TextTransparency = 1}, 0.2)
+            CreateTween(NS,       {Transparency = 1}, 0.2)
+            CreateTween(IconLbl,  {TextTransparency = 1}, 0.2)
             out.Completed:Connect(function() NotifFrame:Destroy() end)
         end)
     end
 
-    -- Icone Flutuante
+    -- ── [NOVO] Toast Notification (pill no topo) ───────────────
+    function Library:Toast(text, duration)
+        duration = duration or 2.5
+        local ToastFrame = Instance.new("Frame")
+        ToastFrame.Name = "Toast"
+        ToastFrame.Parent = TitanUI
+        ToastFrame.AnchorPoint = Vector2.new(0.5, 0)
+        ToastFrame.Position = UDim2.new(0.5, 0, 0, -50)
+        ToastFrame.Size = UDim2.new(0, 280, 0, 38)
+        ToastFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 28)
+        ToastFrame.ZIndex = 200
+        local TC = Instance.new("UICorner")
+        TC.CornerRadius = UDim.new(1, 0)
+        TC.Parent = ToastFrame
+        local TS = Instance.new("UIStroke")
+        TS.Color = Library.CurrentTheme.Accent
+        TS.Thickness = 1.5
+        TS.Transparency = 0.3
+        TS.Parent = ToastFrame
+        local TLbl = Instance.new("TextLabel")
+        TLbl.Parent = ToastFrame
+        TLbl.BackgroundTransparency = 1
+        TLbl.Size = UDim2.new(1, -20, 1, 0)
+        TLbl.Position = UDim2.new(0, 10, 0, 0)
+        TLbl.Font = Enum.Font.GothamMedium
+        TLbl.Text = text
+        TLbl.TextColor3 = Color3.fromRGB(245, 245, 245)
+        TLbl.TextSize = 13
+        TLbl.ZIndex = 201
+        CreateTween(ToastFrame, {Position = UDim2.new(0.5, 0, 0, 14)}, 0.4)
+        task.delay(duration, function()
+            local out = CreateTween(ToastFrame, {Position = UDim2.new(0.5, 0, 0, -50)}, 0.35)
+            out.Completed:Connect(function() ToastFrame:Destroy() end)
+        end)
+    end
+
+    -- ── [NOVO] Tooltip Global ─────────────────────────────────
+    local TooltipFrame = Instance.new("Frame")
+    TooltipFrame.Name = "Tooltip"
+    TooltipFrame.Parent = TitanUI
+    TooltipFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+    TooltipFrame.Size = UDim2.new(0, 180, 0, 30)
+    TooltipFrame.Visible = false
+    TooltipFrame.ZIndex = 300
+    local TTCA = Instance.new("UICorner")
+    TTCA.CornerRadius = UDim.new(0, 6)
+    TTCA.Parent = TooltipFrame
+    local TTSA = Instance.new("UIStroke")
+    TTSA.Color = Library.CurrentTheme.Accent
+    TTSA.Transparency = 0.5
+    TTSA.Thickness = 1
+    TTSA.Parent = TooltipFrame
+    local TooltipLbl = Instance.new("TextLabel")
+    TooltipLbl.Parent = TooltipFrame
+    TooltipLbl.BackgroundTransparency = 1
+    TooltipLbl.Size = UDim2.new(1, -12, 1, 0)
+    TooltipLbl.Position = UDim2.new(0, 6, 0, 0)
+    TooltipLbl.Font = Enum.Font.Gotham
+    TooltipLbl.TextColor3 = Color3.fromRGB(200, 200, 210)
+    TooltipLbl.TextSize = 12
+    TooltipLbl.TextXAlignment = Enum.TextXAlignment.Left
+    TooltipLbl.ZIndex = 301
+    TooltipLbl.TextWrapped = true
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement and TooltipFrame.Visible then
+            TooltipFrame.Position = UDim2.new(0, input.Position.X + 14, 0, input.Position.Y + 12)
+        end
+    end)
+
+    local function ShowTooltip(element, text)
+        if not Library.Settings.Tooltips then return end
+        element.MouseEnter:Connect(function()
+            TooltipLbl.Text = text
+            TooltipFrame.Visible = true
+        end)
+        element.MouseLeave:Connect(function()
+            TooltipFrame.Visible = false
+        end)
+    end
+
+    -- ── Ícone flutuante ────────────────────────────────────────
     local OpenBtnFrame = Instance.new("ImageButton")
     OpenBtnFrame.Name = "OpenButton"
     OpenBtnFrame.Parent = TitanUI
     OpenBtnFrame.BackgroundColor3 = Library.CurrentTheme.Top
     OpenBtnFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
     OpenBtnFrame.Size = UDim2.new(0, 50, 0, 50)
-    OpenBtnFrame.Visible = false 
+    OpenBtnFrame.Visible = false
     OpenBtnFrame.Active = true
-    local OBCorner = Instance.new("UICorner")
-    OBCorner.CornerRadius = UDim.new(0, 12)
-    OBCorner.Parent = OpenBtnFrame
+    local OBC = Instance.new("UICorner")
+    OBC.CornerRadius = UDim.new(0, 14)
+    OBC.Parent = OpenBtnFrame
     local OBStroke = Instance.new("UIStroke")
-    OBStroke.Color = Color3.fromRGB(60,60,60)
+    OBStroke.Color = Library.CurrentTheme.Glow
+    OBStroke.Thickness = 2
     OBStroke.Parent = OpenBtnFrame
     local OBIcon = Instance.new("ImageLabel")
     OBIcon.Parent = OpenBtnFrame
     OBIcon.BackgroundTransparency = 1
     OBIcon.Size = UDim2.new(0, 30, 0, 30)
     OBIcon.Position = UDim2.new(0.5, -15, 0.5, -15)
-    OBIcon.Image = "rbxassetid://6031091004" 
-    MakeDraggable(OpenBtnFrame, OpenBtnFrame) 
+    OBIcon.Image = "rbxassetid://6031091004"
+    MakeDraggable(OpenBtnFrame, OpenBtnFrame)
 
-    -- Janela Principal
+    -- ── Janela Principal ───────────────────────────────────────
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = TitanUI
     MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainFrame.Size = UDim2.new(0, 550, 0, 350)
+    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- começa em 0 para animação spring
     MainFrame.BackgroundColor3 = Library.CurrentTheme.Main
     MainFrame.ClipsDescendants = true
     MainFrame.Visible = not KeySystemConfig.Enabled
-    if KeySystemConfig.Enabled then MainFrame.Size = UDim2.new(0,0,0,0) end
-    
-    -- Visual Decor: Glow
+
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 8)
+    MainCorner.CornerRadius = UDim.new(0, 10)
     MainCorner.Parent = MainFrame
+
+    -- [NOVO] Stroke com glow animado
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Library.CurrentTheme.Glow or Color3.fromRGB(50, 50, 50)
+    MainStroke.Color = Library.CurrentTheme.Glow or Color3.fromRGB(50,50,50)
     MainStroke.Thickness = 2
-    MainStroke.Transparency = 0.5
+    MainStroke.Transparency = 0.3
     MainStroke.Parent = MainFrame
 
-    -- Visual Decor: Pattern Background
+    -- [NOVO] Background grid pattern mais suave
     local Pattern = Instance.new("ImageLabel")
     Pattern.Name = "Pattern"
     Pattern.Parent = MainFrame
     Pattern.BackgroundTransparency = 1
     Pattern.Size = UDim2.new(1,0,1,0)
     Pattern.Image = "rbxassetid://2151741365"
-    Pattern.ImageTransparency = 0.95
-    Pattern.TileSize = UDim2.new(0,25,0,25)
+    Pattern.ImageTransparency = 0.97
+    Pattern.TileSize = UDim2.new(0,20,0,20)
     Pattern.ScaleType = Enum.ScaleType.Tile
     Pattern.ZIndex = 0
 
+    -- ── Topbar ────────────────────────────────────────────────
     local Topbar = Instance.new("Frame")
     Topbar.Name = "Topbar"
     Topbar.Parent = MainFrame
     Topbar.BackgroundColor3 = Library.CurrentTheme.Top
     Topbar.Size = UDim2.new(1, 0, 0, 40)
-    
-    -- Visual Decor: Topbar Gradient
+
     local TopCorner = Instance.new("UICorner")
-    TopCorner.CornerRadius = UDim.new(0, 8)
+    TopCorner.CornerRadius = UDim.new(0, 10)
     TopCorner.Parent = Topbar
+
+    -- [NOVO] Gradiente do topbar usa a cor Accent
     local TopGradient = Instance.new("UIGradient")
     TopGradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200,200,200)) 
+        ColorSequenceKeypoint.new(0, Library.CurrentTheme.Top),
+        ColorSequenceKeypoint.new(1, Library.CurrentTheme.Accent:lerp(Library.CurrentTheme.Top, 0.7))
     }
-    TopGradient.Rotation = 45
+    TopGradient.Rotation = 90
     TopGradient.Parent = Topbar
 
     local FixB = Instance.new("Frame")
@@ -548,6 +694,28 @@ function Library:CreateWindow(Config)
     FixB.BackgroundColor3 = Library.CurrentTheme.Top
     FixB.Position = UDim2.new(0,0,1,-5)
     FixB.Size = UDim2.new(1,0,0,5)
+
+    -- [NOVO] Linha accent embaixo do topbar
+    local TopAccentLine = Instance.new("Frame")
+    TopAccentLine.Parent = Topbar
+    TopAccentLine.BackgroundColor3 = Library.CurrentTheme.Accent
+    TopAccentLine.BorderSizePixel = 0
+    TopAccentLine.Position = UDim2.new(0,0,1,-1)
+    TopAccentLine.Size = UDim2.new(1,0,0,2)
+    local TALG = Instance.new("UIGradient")
+    TALG.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+        ColorSequenceKeypoint.new(0.5, Library.CurrentTheme.Accent),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255))
+    }
+    TALG.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0,1),
+        NumberSequenceKeypoint.new(0.2,0),
+        NumberSequenceKeypoint.new(0.8,0),
+        NumberSequenceKeypoint.new(1,1)
+    }
+    TALG.Parent = TopAccentLine
+
     local TitleLbl = Instance.new("TextLabel")
     TitleLbl.Parent = Topbar
     TitleLbl.BackgroundTransparency = 1
@@ -558,101 +726,177 @@ function Library:CreateWindow(Config)
     TitleLbl.TextColor3 = Library.CurrentTheme.Text
     TitleLbl.TextSize = 14
     TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- [NOVO] Botão Minimizar
+    local IsMinimized = false
+    local MinBtn = Instance.new("ImageButton")
+    MinBtn.Parent = Topbar
+    MinBtn.BackgroundTransparency = 1
+    MinBtn.Position = UDim2.new(1, -70, 0, 5)
+    MinBtn.Size = UDim2.new(0, 30, 0, 30)
+    MinBtn.Image = "rbxassetid://6031090990"
+    MinBtn.ImageColor3 = Color3.fromRGB(180, 180, 180)
+    MinBtn.Rotation = 90
+
+    MinBtn.MouseButton1Click:Connect(function()
+        IsMinimized = not IsMinimized
+        if IsMinimized then
+            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 40)}, 0.35)
+            CreateTween(MinBtn, {Rotation = -90}, 0.3)
+        else
+            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.35)
+            CreateTween(MinBtn, {Rotation = 90}, 0.3)
+        end
+    end)
+
+    MinBtn.MouseEnter:Connect(function()
+        CreateTween(MinBtn, {ImageColor3 = Library.CurrentTheme.Accent}, 0.15)
+    end)
+    MinBtn.MouseLeave:Connect(function()
+        CreateTween(MinBtn, {ImageColor3 = Color3.fromRGB(180,180,180)}, 0.15)
+    end)
+
     local CloseBtn = Instance.new("ImageButton")
     CloseBtn.Parent = Topbar
     CloseBtn.BackgroundTransparency = 1
     CloseBtn.Position = UDim2.new(1, -35, 0, 5)
     CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-    CloseBtn.Image = "rbxassetid://6031094678" 
-    CloseBtn.ImageColor3 = Color3.fromRGB(200, 200, 200)
+    CloseBtn.Image = "rbxassetid://6031094678"
+    CloseBtn.ImageColor3 = Color3.fromRGB(180, 180, 180)
+
+    CloseBtn.MouseEnter:Connect(function()
+        CreateTween(CloseBtn, {ImageColor3 = Color3.fromRGB(255,80,80)}, 0.15)
+    end)
+    CloseBtn.MouseLeave:Connect(function()
+        CreateTween(CloseBtn, {ImageColor3 = Color3.fromRGB(180,180,180)}, 0.15)
+    end)
 
     Library.IsOpen = true
     function Library:Toggle()
         Library.IsOpen = not Library.IsOpen
         if Library.IsOpen then
+            IsMinimized = false
             OpenBtnFrame.Visible = false
             MainFrame.Visible = true
-            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+            -- [NOVO] Animação spring ao abrir
+            CreateTween(MainFrame, {Size = UDim2.new(0, 570, 0, 365)}, 0.25)
+            task.wait(0.25)
+            CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.2)
         else
-            local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.4)
+            local close = CreateTween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.35)
             close.Completed:Connect(function()
                 if not Library.IsOpen then MainFrame.Visible = false OpenBtnFrame.Visible = true end
             end)
         end
     end
+
     CloseBtn.MouseButton1Click:Connect(function() Library:Toggle() end)
     OpenBtnFrame.MouseButton1Click:Connect(function() Library:Toggle() end)
     MakeDraggable(Topbar, MainFrame)
 
-    -- // SEARCH BAR //
+    -- ── Search Bar ─────────────────────────────────────────────
     local SearchBar = Instance.new("TextBox")
     SearchBar.Name = "SearchBar"
     SearchBar.Parent = MainFrame
-    SearchBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    SearchBar.BackgroundColor3 = Library.CurrentTheme.Top
     SearchBar.BorderSizePixel = 0
     SearchBar.Position = UDim2.new(0, 10, 0, 50)
     SearchBar.Size = UDim2.new(0, 130, 0, 30)
     SearchBar.Font = Enum.Font.Gotham
     SearchBar.PlaceholderText = Library:GetText("SearchPlace")
     SearchBar.Text = ""
-    SearchBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SearchBar.TextColor3 = Library.CurrentTheme.Text
     SearchBar.TextSize = 13
     local SBC = Instance.new("UICorner")
-    SBC.CornerRadius = UDim.new(0, 6)
+    SBC.CornerRadius = UDim.new(0, 8)
     SBC.Parent = SearchBar
+    local SBST = Instance.new("UIStroke")
+    SBST.Color = Library.CurrentTheme.Accent
+    SBST.Transparency = 0.8
+    SBST.Parent = SearchBar
+    SearchBar.Focused:Connect(function()
+        CreateTween(SBST, {Transparency = 0.2}, 0.2)
+    end)
+    SearchBar.FocusLost:Connect(function()
+        CreateTween(SBST, {Transparency = 0.8}, 0.2)
+    end)
     local SBI = Instance.new("ImageLabel")
     SBI.Parent = SearchBar
     SBI.BackgroundTransparency = 1
-    SBI.Position = UDim2.new(1, -25, 0, 5)
-    SBI.Size = UDim2.new(0, 20, 0, 20)
-    SBI.Image = "rbxassetid://6031154871" 
-    SBI.ImageColor3 = Color3.fromRGB(150, 150, 150)
+    SBI.Position = UDim2.new(1,-25,0,5)
+    SBI.Size = UDim2.new(0,20,0,20)
+    SBI.Image = "rbxassetid://6031154871"
+    SBI.ImageColor3 = Color3.fromRGB(130,130,150)
 
+    -- ── Tab Container ──────────────────────────────────────────
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Parent = MainFrame
     TabContainer.BackgroundTransparency = 1
-    TabContainer.Position = UDim2.new(0, 10, 0, 90) -- Movido para baixo
-    TabContainer.Size = UDim2.new(0, 130, 1, -100)
+    TabContainer.Position = UDim2.new(0,10,0,90)
+    TabContainer.Size = UDim2.new(0,130,1,-100)
     TabContainer.ScrollBarThickness = 2
+    TabContainer.ScrollBarImageColor3 = Library.CurrentTheme.Accent
     local TabList = Instance.new("UIListLayout")
     TabList.Parent = TabContainer
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
-    TabList.Padding = UDim.new(0, 5)
-    
+    TabList.Padding = UDim.new(0,5)
+
+    -- [NOVO] Indicador de tab ativo (barra lateral animada)
+    local TabIndicator = Instance.new("Frame")
+    TabIndicator.Name = "TabIndicator"
+    TabIndicator.Parent = MainFrame
+    TabIndicator.BackgroundColor3 = Library.CurrentTheme.Accent
+    TabIndicator.BorderSizePixel = 0
+    TabIndicator.Position = UDim2.new(0, 7, 0, 90)
+    TabIndicator.Size = UDim2.new(0, 3, 0, 30)
+    TabIndicator.ZIndex = 10
+    local TIC = Instance.new("UICorner")
+    TIC.CornerRadius = UDim.new(0, 3)
+    TIC.Parent = TabIndicator
+
+    local function MoveTabIndicator(tabBtn)
+        local relY = tabBtn.AbsolutePosition.Y - TabContainer.AbsolutePosition.Y + TabContainer.CanvasPosition.Y + 90
+        CreateTween(TabIndicator, {
+            Position = UDim2.new(0, 7, 0, relY),
+            Size = UDim2.new(0, 3, 0, tabBtn.AbsoluteSize.Y)
+        }, 0.25)
+    end
+
     local Divider = Instance.new("Frame")
     Divider.Parent = MainFrame
-    Divider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Divider.BackgroundColor3 = Library.CurrentTheme.Accent
+    Divider.BackgroundTransparency = 0.85
     Divider.BorderSizePixel = 0
-    Divider.Position = UDim2.new(0, 150, 0, 50)
-    Divider.Size = UDim2.new(0, 1, 1, -60)
+    Divider.Position = UDim2.new(0,150,0,50)
+    Divider.Size = UDim2.new(0,1,1,-60)
+
     local PageContainer = Instance.new("Frame")
     PageContainer.Parent = MainFrame
     PageContainer.BackgroundTransparency = 1
-    PageContainer.Position = UDim2.new(0, 160, 0, 50)
-    PageContainer.Size = UDim2.new(1, -170, 1, -60)
+    PageContainer.Position = UDim2.new(0,160,0,50)
+    PageContainer.Size = UDim2.new(1,-170,1,-60)
     PageContainer.ClipsDescendants = true
-    
+
     local PagesFolder = Instance.new("Frame")
     PagesFolder.Name = "Pages"
     PagesFolder.Parent = PageContainer
     PagesFolder.BackgroundTransparency = 1
     PagesFolder.Size = UDim2.new(1,0,1,0)
 
-    -- // SEARCH LOGIC //
+    -- ── Search Logic ───────────────────────────────────────────
     local function SwitchToTab(PageName)
         for _,v in pairs(TabContainer:GetChildren()) do
             if v:IsA("TextButton") then
-                if v.Text == PageName then
-                     CreateTween(v, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
+                if v.Text:gsub("%s+%[.+%]","") == PageName or v.Name == PageName then
+                    CreateTween(v, {BackgroundTransparency = 0.85, TextColor3 = Library.CurrentTheme.Text}, 0.2)
+                    MoveTabIndicator(v)
                 else
-                     CreateTween(v, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(150,150,150)}, 0.2)
+                    CreateTween(v, {BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(140,140,155)}, 0.2)
                 end
             end
         end
-        for _,v in pairs(PagesFolder:GetChildren()) do 
-            if v:IsA("ScrollingFrame") then 
-                v.Visible = (v.Name == PageName)
-            end 
+        for _,v in pairs(PagesFolder:GetChildren()) do
+            if v:IsA("ScrollingFrame") then v.Visible = (v.Name == PageName) end
         end
     end
 
@@ -667,26 +911,32 @@ function Library:CreateWindow(Config)
                     local yPos = item.Instance.AbsolutePosition.Y - Page.AbsolutePosition.Y + Page.CanvasPosition.Y
                     CreateTween(Page, {CanvasPosition = Vector2.new(0, yPos)}, 0.4)
                 end
-                break 
+                break
             end
         end
     end)
 
+    -- ── RefreshTheme ───────────────────────────────────────────
     function Library:RefreshTheme()
         local T = Library.CurrentTheme
-        CreateTween(MainFrame, {BackgroundColor3 = T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
-        CreateTween(Topbar, {BackgroundColor3 = T.Top}, 0.3)
-        CreateTween(FixB, {BackgroundColor3 = T.Top}, 0.3)
-        CreateTween(SearchBar, {BackgroundColor3 = T.Top}, 0.3)
-        
-        TopGradient.Color = ColorSequence.new{
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
-            ColorSequenceKeypoint.new(1, T.Accent) 
-        }
-        CreateTween(MainStroke, {Color = T.Glow or T.Accent}, 0.3)
+        CreateTween(MainFrame, {BackgroundColor3=T.Main, BackgroundTransparency = Library.Settings.Transparency and 0.5 or 0}, 0.3)
+        CreateTween(Topbar,    {BackgroundColor3=T.Top}, 0.3)
+        CreateTween(FixB,      {BackgroundColor3=T.Top}, 0.3)
+        CreateTween(SearchBar, {BackgroundColor3=T.Top}, 0.3)
+        CreateTween(TabIndicator, {BackgroundColor3=T.Accent}, 0.3)
+        CreateTween(TopAccentLine, {BackgroundColor3=T.Accent}, 0.3)
+        CreateTween(SBST, {Color=T.Accent}, 0.3)
+        CreateTween(TTSA, {Color=T.Accent}, 0.3)
+        CreateTween(MainStroke, {Color=T.Glow or T.Accent}, 0.3)
 
+        TopGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, T.Top),
+            ColorSequenceKeypoint.new(1, T.Accent:lerp(T.Top, 0.7))
+        }
         TitleLbl.TextColor3 = T.Text
         OpenBtnFrame.BackgroundColor3 = T.Top
+        OBStroke.Color = T.Glow or T.Accent
+
         for _, obj in pairs(TabContainer:GetChildren()) do
             if obj:IsA("TextButton") then
                 if obj.BackgroundTransparency < 0.9 then obj.TextColor3 = T.Text end
@@ -701,18 +951,10 @@ function Library:CreateWindow(Config)
                         if txt then txt.TextColor3 = T.Text end
                         local btn = elem:FindFirstChildOfClass("TextButton")
                         if btn and btn.Text ~= "" then btn.TextColor3 = T.Text end
-                        
-                        if elem:FindFirstChild("Scroll") then
-                            for _, subElem in pairs(elem.Scroll:GetChildren()) do
-                                if subElem:IsA("TextButton") then
-                                     subElem.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                                end
-                            end
-                        end
-
                     elseif elem:IsA("TextLabel") and elem.Name == "SectionLabel" then
                         elem.TextColor3 = T.Accent
-                        elem:FindFirstChild("Line").BackgroundColor3 = T.Accent
+                        local line = elem:FindFirstChild("Line")
+                        if line then line.BackgroundColor3 = T.Accent end
                     end
                 end
             end
@@ -727,20 +969,33 @@ function Library:CreateWindow(Config)
         end
     end
 
-    -- // SISTEMA DE SENHA + AUTO LOGIN //
+    -- [NOVO] Glow pulsante na borda (breathing effect)
+    local PulseConnection
+    PulseConnection = RunService.RenderStepped:Connect(function()
+        if Library.Settings.PulseGlow then
+            local alpha = (math.sin(tick() * 2.2) + 1) / 2
+            MainStroke.Transparency = 0.2 + alpha * 0.55
+        else
+            MainStroke.Transparency = 0.5
+        end
+    end)
+
+    -- ── Key System + Auto-Login ────────────────────────────────
     if KeySystemConfig.Enabled then
         local KeyFrame = Instance.new("Frame")
         KeyFrame.Parent = TitanUI
-        KeyFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        KeyFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
         KeyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
         KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
         KeyFrame.Size = UDim2.new(0, 400, 0, 250)
         KeyFrame.ClipsDescendants = true
         local KC = Instance.new("UICorner")
-        KC.CornerRadius = UDim.new(0, 10)
+        KC.CornerRadius = UDim.new(0, 12)
         KC.Parent = KeyFrame
         local KS = Instance.new("UIStroke")
-        KS.Color = Color3.fromRGB(60,60,60)
+        KS.Color = Library.CurrentTheme.Accent
+        KS.Thickness = 1.5
+        KS.Transparency = 0.3
         KS.Parent = KeyFrame
         local KTitle = Instance.new("TextLabel")
         KTitle.Parent = KeyFrame
@@ -753,7 +1008,7 @@ function Library:CreateWindow(Config)
         KTitle.TextSize = 20
         local KInput = Instance.new("TextBox")
         KInput.Parent = KeyFrame
-        KInput.BackgroundColor3 = Color3.fromRGB(35,35,35)
+        KInput.BackgroundColor3 = Color3.fromRGB(30,30,38)
         KInput.Position = UDim2.new(0.1,0,0.4,0)
         KInput.Size = UDim2.new(0.8,0,0,40)
         KInput.Font = Enum.Font.Gotham
@@ -761,114 +1016,167 @@ function Library:CreateWindow(Config)
         KInput.Text = ""
         KInput.TextColor3 = Color3.fromRGB(255,255,255)
         KInput.TextSize = 14
-        local KIC = Instance.new("UICorner")
-        KIC.Parent = KInput
+        local KIC = Instance.new("UICorner") KIC.Parent = KInput
+        local KIST = Instance.new("UIStroke")
+        KIST.Color = Library.CurrentTheme.Accent
+        KIST.Transparency = 0.7
+        KIST.Parent = KInput
+        KInput.Focused:Connect(function() CreateTween(KIST,{Transparency=0.1},0.2) end)
+        KInput.FocusLost:Connect(function() CreateTween(KIST,{Transparency=0.7},0.2) end)
         local KBtn = Instance.new("TextButton")
         KBtn.Parent = KeyFrame
-        KBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+        KBtn.BackgroundColor3 = Library.CurrentTheme.Accent
         KBtn.Position = UDim2.new(0.1,0,0.65,0)
         KBtn.Size = UDim2.new(0.35,0,0,35)
         KBtn.Font = Enum.Font.GothamBold
         KBtn.Text = Library:GetText("CheckKey")
         KBtn.TextColor3 = Color3.fromRGB(255,255,255)
         KBtn.TextSize = 14
-        local KBC = Instance.new("UICorner")
-        KBC.Parent = KBtn
+        local KBC = Instance.new("UICorner") KBC.Parent = KBtn
         local KLink = Instance.new("TextButton")
         KLink.Parent = KeyFrame
-        KLink.BackgroundColor3 = Color3.fromRGB(45,45,45)
+        KLink.BackgroundColor3 = Color3.fromRGB(40,40,50)
         KLink.Position = UDim2.new(0.55,0,0.65,0)
         KLink.Size = UDim2.new(0.35,0,0,35)
         KLink.Font = Enum.Font.GothamBold
         KLink.Text = Library:GetText("GetKey")
         KLink.TextColor3 = Color3.fromRGB(255,255,255)
         KLink.TextSize = 14
-        local KLC = Instance.new("UICorner")
-        KLC.Parent = KLink
+        local KLC = Instance.new("UICorner") KLC.Parent = KLink
         MakeDraggable(KeyFrame, KeyFrame)
-        KLink.MouseButton1Click:Connect(function() if setclipboard then setclipboard(KeySystemConfig.KeySite) Library:Notification({Title = "Link", Content = Library:GetText("LinkCopied")}) end end)
-        
-        -- // LÓGICA DE AUTO-LOGIN //
+        KLink.MouseButton1Click:Connect(function()
+            if setclipboard then
+                setclipboard(KeySystemConfig.KeySite)
+                Library:Notification({Title="Link", Content=Library:GetText("LinkCopied"), Type="info"})
+            end
+        end)
         if KeySystemConfig.SaveKey then
             local Saved = LoadKey()
-            if Saved then 
-                KInput.Text = Saved 
+            if Saved then
+                KInput.Text = Saved
                 local InputClean = string.gsub(tostring(Saved), "%s+", "")
                 local RealKeyClean = string.gsub(tostring(KeySystemConfig.Key), "%s+", "")
-                
                 if InputClean == RealKeyClean then
-                    -- Key correta, pular tela
                     KeyFrame.Visible = false
                     MainFrame.Visible = true
-                    if LoadConfig() then
-                         Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
-                    end
-                    Library:Notification({Title = "Key System", Content = Library:GetText("AutoLogin")})
-                    CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+                    if LoadConfig() then Library:Notification({Title="Config",Content=Library:GetText("LoadMsg"),Type="success"}) end
+                    Library:Toast(Library:GetText("AutoLogin"))
+                    CreateTween(MainFrame, {Size=UDim2.new(0,570,0,365)}, 0.25)
+                    task.wait(0.25)
+                    CreateTween(MainFrame, {Size=UDim2.new(0,550,0,350)}, 0.2)
                 end
             end
         end
-
         KBtn.MouseButton1Click:Connect(function()
-            local InputRaw = KInput.Text
-            local RealKeyRaw = KeySystemConfig.Key 
-            
-            local InputClean = string.gsub(tostring(InputRaw), "%s+", "")
-            local RealKeyClean = string.gsub(tostring(RealKeyRaw), "%s+", "")
-            
+            local InputClean = string.gsub(tostring(KInput.Text), "%s+", "")
+            local RealKeyClean = string.gsub(tostring(KeySystemConfig.Key), "%s+", "")
             if InputClean == RealKeyClean then
-                if KeySystemConfig.SaveKey then
-                    SaveKey(InputClean)
-                end
-
-                Library:Notification({Title = Library:GetText("KeySuccess"), Content = Library:GetText("KeyVerified")})
-                
-                if LoadConfig() then
-                     Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
-                end
-
-                CreateTween(KeyFrame, {Size = UDim2.new(0,0,0,0)}, 0.4).Completed:Connect(function()
-                    KeyFrame.Visible = false 
+                if KeySystemConfig.SaveKey then SaveKey(InputClean) end
+                Library:Notification({Title=Library:GetText("KeySuccess"), Content=Library:GetText("KeyVerified"), Type="success"})
+                if LoadConfig() then Library:Notification({Title="Config",Content=Library:GetText("LoadMsg"),Type="info"}) end
+                CreateTween(KeyFrame, {Size=UDim2.new(0,0,0,0)}, 0.35).Completed:Connect(function()
+                    KeyFrame.Visible = false
                     MainFrame.Visible = true
-                    CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+                    CreateTween(MainFrame, {Size=UDim2.new(0,570,0,365)}, 0.25)
+                    task.wait(0.25)
+                    CreateTween(MainFrame, {Size=UDim2.new(0,550,0,350)}, 0.2)
                 end)
             else
-                Library:Notification({Title = Library:GetText("KeyError"), Content = Library:GetText("KeyIncorrect")})
+                Library:Notification({Title=Library:GetText("KeyError"), Content=Library:GetText("KeyIncorrect"), Type="error"})
+                -- [NOVO] Shake na caixa de key
+                local origPos = KInput.Position
+                for i = 1, 4 do
+                    CreateTween(KInput, {Position = origPos + UDim2.new(0, i%2==0 and 6 or -6, 0, 0)}, 0.05)
+                    task.wait(0.06)
+                end
+                CreateTween(KInput, {Position = origPos}, 0.05)
             end
         end)
     else
         if LoadConfig() then
-            Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
+            Library:Notification({Title="Config", Content=Library:GetText("LoadMsg"), Type="info"})
         end
-        CreateTween(MainFrame, {Size = UDim2.new(0, 550, 0, 350)}, 0.4)
+        -- [NOVO] Animação spring ao abrir sem key
+        CreateTween(MainFrame, {Size=UDim2.new(0,570,0,365)}, 0.3)
+        task.wait(0.3)
+        CreateTween(MainFrame, {Size=UDim2.new(0,550,0,350)}, 0.2)
     end
 
+    -- ──────────────────────────────────────────────────────────
     local Window = {}
     local FirstTab = true
 
-    function Window:Tab(name)
+    -- [NOVO] Cores de badge por tipo
+    local BadgeColors = {
+        NEW  = Color3.fromRGB(50,200,80),
+        HOT  = Color3.fromRGB(255,80,30),
+        BETA = Color3.fromRGB(80,120,255),
+        UP   = Color3.fromRGB(0,160,255),
+        OLD  = Color3.fromRGB(120,120,120),
+    }
+
+    function Window:Tab(name, badge)
         local Tab = {}
+
         local TabBtn = Instance.new("TextButton")
         TabBtn.Parent = TabContainer
-        TabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        TabBtn.BackgroundColor3 = Library.CurrentTheme.Accent
         TabBtn.BackgroundTransparency = 1
         TabBtn.Size = UDim2.new(1, 0, 0, 30)
         TabBtn.Font = Enum.Font.GothamMedium
         TabBtn.Text = name
-        TabBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
-        TabBtn.TextSize = 14
+        TabBtn.TextColor3 = Color3.fromRGB(140,140,155)
+        TabBtn.TextSize = 13
+        TabBtn.Name = name
+        TabBtn.ClipsDescendants = true
         local TC = Instance.new("UICorner")
+        TC.CornerRadius = UDim.new(0, 6)
         TC.Parent = TabBtn
-        
+
+        -- [NOVO] Badge na tab
+        if badge then
+            local BadgeFrame = Instance.new("Frame")
+            BadgeFrame.Parent = TabBtn
+            BadgeFrame.AnchorPoint = Vector2.new(1, 0.5)
+            BadgeFrame.Position = UDim2.new(1, -4, 0.5, 0)
+            BadgeFrame.Size = UDim2.new(0, 28, 0, 14)
+            BadgeFrame.BackgroundColor3 = BadgeColors[badge] or Library.CurrentTheme.Accent
+            BadgeFrame.ZIndex = 5
+            local BFC = Instance.new("UICorner")
+            BFC.CornerRadius = UDim.new(0, 4)
+            BFC.Parent = BadgeFrame
+            local BFL = Instance.new("TextLabel")
+            BFL.Parent = BadgeFrame
+            BFL.BackgroundTransparency = 1
+            BFL.Size = UDim2.new(1,0,1,0)
+            BFL.Font = Enum.Font.GothamBold
+            BFL.Text = badge
+            BFL.TextColor3 = Color3.fromRGB(255,255,255)
+            BFL.TextSize = 8
+            BFL.ZIndex = 6
+        end
+
+        -- Hover na tab
+        TabBtn.MouseEnter:Connect(function()
+            if TabBtn.BackgroundTransparency > 0.5 then
+                CreateTween(TabBtn, {BackgroundTransparency = 0.93}, 0.15)
+            end
+        end)
+        TabBtn.MouseLeave:Connect(function()
+            if TabBtn.BackgroundTransparency > 0.5 then
+                CreateTween(TabBtn, {BackgroundTransparency = 1}, 0.15)
+            end
+        end)
+
         local Page = Instance.new("ScrollingFrame")
         Page.Name = name
         Page.Parent = PagesFolder
         Page.BackgroundTransparency = 1
-        Page.Size = UDim2.new(1, 0, 1, 0)
+        Page.Size = UDim2.new(1,0,1,0)
         Page.ScrollBarThickness = 2
+        Page.ScrollBarImageColor3 = Library.CurrentTheme.Accent
         Page.Visible = false
-        Page.CanvasSize = UDim2.new(0,0,0,0) 
-        
+        Page.CanvasSize = UDim2.new(0,0,0,0)
         local PL = Instance.new("UIListLayout")
         PL.Parent = Page
         PL.SortOrder = Enum.SortOrder.LayoutOrder
@@ -880,104 +1188,157 @@ function Library:CreateWindow(Config)
         PP.PaddingRight = UDim.new(0,5)
 
         PL:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            Page.CanvasSize = UDim2.new(0, 0, 0, PL.AbsoluteContentSize.Y + 20)
+            Page.CanvasSize = UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+20)
         end)
 
         TabBtn.MouseButton1Click:Connect(function()
-             SwitchToTab(name)
+            -- Ripple no tab btn
+            local mouse = UserInputService:GetMouseLocation()
+            MakeRipple(TabBtn, mouse.X - TabBtn.AbsolutePosition.X, mouse.Y - TabBtn.AbsolutePosition.Y, Library.CurrentTheme.Accent)
+            SwitchToTab(name)
         end)
-        
+
         if FirstTab then
             FirstTab = false
-            CreateTween(TabBtn, {BackgroundTransparency = 0.9, TextColor3 = Library.CurrentTheme.Text}, 0.2)
+            CreateTween(TabBtn, {BackgroundTransparency = 0.85, TextColor3 = Library.CurrentTheme.Text}, 0.2)
             Page.Visible = true
+            task.defer(function() MoveTabIndicator(TabBtn) end)
         end
 
-        function Tab:Button(text, callback)
+        -- ────────────────── ELEMENTOS ──────────────────────────
+
+        -- [ATUALIZADO] Button com ripple + hover + tooltip
+        function Tab:Button(text, callback, tooltip)
             local Btn = Instance.new("Frame")
             Btn.Name = "ElementFrame"
             Btn.Parent = Page
             Btn.BackgroundColor3 = Library.CurrentTheme.Element
             Btn.Size = UDim2.new(1,0,0,36)
-            local BC = Instance.new("UICorner")
-            BC.Parent = Btn
+            Btn.ClipsDescendants = true
+            local BC = Instance.new("UICorner") BC.Parent = Btn
             local BT = Instance.new("TextButton")
             BT.Parent = Btn
             BT.BackgroundTransparency = 1
             BT.Size = UDim2.new(1,0,1,0)
-            BT.Font = Enum.Font.Gotham
+            BT.Font = Enum.Font.GothamMedium
             BT.Text = text
             BT.TextColor3 = Library.CurrentTheme.Text
             BT.TextSize = 14
+            BT.ZIndex = 2
+
+            -- [NOVO] Ícone de seta à direita
+            local Arrow = Instance.new("TextLabel")
+            Arrow.Parent = Btn
+            Arrow.BackgroundTransparency = 1
+            Arrow.Position = UDim2.new(1,-28,0,0)
+            Arrow.Size = UDim2.new(0,22,1,0)
+            Arrow.Font = Enum.Font.GothamBold
+            Arrow.Text = "›"
+            Arrow.TextColor3 = Library.CurrentTheme.Accent
+            Arrow.TextSize = 18
+            Arrow.TextTransparency = 0.5
+            Arrow.ZIndex = 2
+
+            -- Hover
+            BT.MouseEnter:Connect(function()
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element:lerp(Library.CurrentTheme.Accent, 0.12)}, 0.15)
+                CreateTween(Arrow, {TextTransparency = 0}, 0.15)
+            end)
+            BT.MouseLeave:Connect(function()
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.15)
+                CreateTween(Arrow, {TextTransparency = 0.5}, 0.15)
+            end)
+
             BT.MouseButton1Click:Connect(function()
-                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Accent}, 0.1)
+                local mouse = UserInputService:GetMouseLocation()
+                MakeRipple(Btn, mouse.X - Btn.AbsolutePosition.X, mouse.Y - Btn.AbsolutePosition.Y, Library.CurrentTheme.Accent)
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Accent}, 0.08)
                 task.wait(0.1)
-                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.1)
+                CreateTween(Btn, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.2)
                 pcall(callback)
             end)
-            
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = Btn})
-            return BT 
+
+            if tooltip then ShowTooltip(Btn, tooltip) end
+            table.insert(Library.SearchIndex, {Name=text, Tab=name, Instance=Btn})
+            return BT
         end
 
-        function Tab:Toggle(text, default, callback)
+        -- [ATUALIZADO] Toggle com hover + tooltip
+        function Tab:Toggle(text, default, callback, tooltip)
             local Toggled = default or false
-            Library.Flags[text] = Toggled 
-
+            Library.Flags[text] = Toggled
             local TFr = Instance.new("Frame")
             TFr.Name = "ElementFrame"
             TFr.Parent = Page
             TFr.BackgroundColor3 = Library.CurrentTheme.Element
             TFr.Size = UDim2.new(1,0,0,36)
-            local TC = Instance.new("UICorner")
-            TC.Parent = TFr
-            local TL = Instance.new("TextLabel")
-            TL.Parent = TFr
-            TL.BackgroundTransparency = 1
-            TL.Position = UDim2.new(0,10,0,0)
-            TL.Size = UDim2.new(0.7,0,1,0)
-            TL.Font = Enum.Font.Gotham
-            TL.Text = text
-            TL.TextColor3 = Library.CurrentTheme.Text
-            TL.TextSize = 14
-            TL.TextXAlignment = Enum.TextXAlignment.Left
+            TFr.ClipsDescendants = true
+            local TC2 = Instance.new("UICorner") TC2.Parent = TFr
+            local TL2 = Instance.new("TextLabel")
+            TL2.Parent = TFr
+            TL2.BackgroundTransparency = 1
+            TL2.Position = UDim2.new(0,10,0,0)
+            TL2.Size = UDim2.new(0.7,0,1,0)
+            TL2.Font = Enum.Font.GothamMedium
+            TL2.Text = text
+            TL2.TextColor3 = Library.CurrentTheme.Text
+            TL2.TextSize = 14
+            TL2.TextXAlignment = Enum.TextXAlignment.Left
             local SB = Instance.new("Frame")
             SB.Parent = TFr
-            SB.BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)
-            SB.Position = UDim2.new(1,-50,0.5,-10)
-            SB.Size = UDim2.new(0,40,0,20)
-            local SC = Instance.new("UICorner")
-            SC.CornerRadius = UDim.new(1,0)
-            SC.Parent = SB
+            SB.BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(50,50,60)
+            SB.Position = UDim2.new(1,-52,0.5,-11)
+            SB.Size = UDim2.new(0,42,0,22)
+            local SC2 = Instance.new("UICorner")
+            SC2.CornerRadius = UDim.new(1,0)
+            SC2.Parent = SB
             local Dot = Instance.new("Frame")
             Dot.Parent = SB
             Dot.BackgroundColor3 = Color3.fromRGB(255,255,255)
-            Dot.Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)
-            Dot.Size = UDim2.new(0,16,0,16)
-            local DC = Instance.new("UICorner")
-            DC.CornerRadius = UDim.new(1,0)
-            DC.Parent = Dot
-            local Btn = Instance.new("TextButton")
-            Btn.Parent = TFr
-            Btn.BackgroundTransparency = 1
-            Btn.Size = UDim2.new(1,0,1,0)
-            Btn.Text = ""
-            
+            Dot.Position = Toggled and UDim2.new(1,-20,0.5,-9) or UDim2.new(0,2,0.5,-9)
+            Dot.Size = UDim2.new(0,18,0,18)
+            local DC2 = Instance.new("UICorner")
+            DC2.CornerRadius = UDim.new(1,0)
+            DC2.Parent = Dot
+            local Btn2 = Instance.new("TextButton")
+            Btn2.Parent = TFr
+            Btn2.BackgroundTransparency = 1
+            Btn2.Size = UDim2.new(1,0,1,0)
+            Btn2.Text = ""
+            Btn2.ZIndex = 2
+
+            Btn2.MouseEnter:Connect(function()
+                CreateTween(TFr, {BackgroundColor3 = Library.CurrentTheme.Element:lerp(Library.CurrentTheme.Accent, 0.08)}, 0.15)
+            end)
+            Btn2.MouseLeave:Connect(function()
+                CreateTween(TFr, {BackgroundColor3 = Library.CurrentTheme.Element}, 0.15)
+            end)
+
             local function Update(val)
                 Toggled = val
-                Library.Flags[text] = Toggled 
-                CreateTween(SB, {BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(60,60,60)}, 0.2)
-                CreateTween(Dot, {Position = Toggled and UDim2.new(1,-18,0.5,-8) or UDim2.new(0,2,0.5,-8)}, 0.2)
+                Library.Flags[text] = Toggled
+                CreateTween(SB, {BackgroundColor3 = Toggled and Library.CurrentTheme.Accent or Color3.fromRGB(50,50,60)}, 0.2)
+                CreateTween(Dot, {Position = Toggled and UDim2.new(1,-20,0.5,-9) or UDim2.new(0,2,0.5,-9)}, 0.22)
+                -- [NOVO] Escala do dot ao clicar
+                CreateTween(Dot, {Size = UDim2.new(0,14,0,14)}, 0.08)
+                task.wait(0.08)
+                CreateTween(Dot, {Size = UDim2.new(0,18,0,18)}, 0.12)
                 pcall(callback, Toggled)
             end
 
-            Btn.MouseButton1Click:Connect(function() Update(not Toggled) end)
-            Library.Elements[text] = { Set = function(self, v) Update(v) end }
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = TFr})
-            return TFr, TL 
+            Btn2.MouseButton1Click:Connect(function()
+                local mouse = UserInputService:GetMouseLocation()
+                MakeRipple(TFr, mouse.X-TFr.AbsolutePosition.X, mouse.Y-TFr.AbsolutePosition.Y, Library.CurrentTheme.Accent)
+                Update(not Toggled)
+            end)
+            Library.Elements[text] = {Set = function(self,v) Update(v) end}
+            if tooltip then ShowTooltip(TFr, tooltip) end
+            table.insert(Library.SearchIndex, {Name=text, Tab=name, Instance=TFr})
+            return TFr, TL2
         end
 
-        function Tab:Slider(text, min, max, default, callback)
+        -- [ATUALIZADO] Slider com hover + tooltip
+        function Tab:Slider(text, min, max, default, callback, tooltip)
             local val = default or min
             Library.Flags[text] = val
             local sliding = false
@@ -986,351 +1347,397 @@ function Library:CreateWindow(Config)
             SFr.Parent = Page
             SFr.BackgroundColor3 = Library.CurrentTheme.Element
             SFr.Size = UDim2.new(1,0,0,50)
-            local SC = Instance.new("UICorner")
-            SC.Parent = SFr
-            local SL = Instance.new("TextLabel")
-            SL.Parent = SFr
-            SL.BackgroundTransparency = 1
-            SL.Position = UDim2.new(0,10,0,5)
-            SL.Size = UDim2.new(1,-20,0,20)
-            SL.Font = Enum.Font.Gotham
-            SL.Text = text
-            SL.TextColor3 = Library.CurrentTheme.Text
-            SL.TextSize = 14
-            SL.TextXAlignment = Enum.TextXAlignment.Left
-            local VL = Instance.new("TextLabel")
-            VL.Name = "ValLbl"
-            VL.Parent = SFr
-            VL.BackgroundTransparency = 1
-            VL.Position = UDim2.new(1,-60,0,5)
-            VL.Size = UDim2.new(0,50,0,20)
-            VL.Font = Enum.Font.Gotham
-            VL.Text = tostring(val)
-            VL.TextColor3 = Color3.fromRGB(200,200,200)
-            VL.TextSize = 14
-            VL.TextXAlignment = Enum.TextXAlignment.Right
+            local SC3 = Instance.new("UICorner") SC3.Parent = SFr
+            local SL2 = Instance.new("TextLabel")
+            SL2.Parent = SFr
+            SL2.BackgroundTransparency = 1
+            SL2.Position = UDim2.new(0,10,0,5)
+            SL2.Size = UDim2.new(0.6,-10,0,20)
+            SL2.Font = Enum.Font.GothamMedium
+            SL2.Text = text
+            SL2.TextColor3 = Library.CurrentTheme.Text
+            SL2.TextSize = 14
+            SL2.TextXAlignment = Enum.TextXAlignment.Left
+
+            -- [NOVO] Valor em destaque com cor accent
+            local VL2 = Instance.new("TextLabel")
+            VL2.Name = "ValLbl"
+            VL2.Parent = SFr
+            VL2.BackgroundTransparency = 1
+            VL2.Position = UDim2.new(1,-65,0,5)
+            VL2.Size = UDim2.new(0,55,0,20)
+            VL2.Font = Enum.Font.GothamBold
+            VL2.Text = tostring(val)
+            VL2.TextColor3 = Library.CurrentTheme.Accent
+            VL2.TextSize = 13
+            VL2.TextXAlignment = Enum.TextXAlignment.Right
+
             local Bar = Instance.new("Frame")
             Bar.Parent = SFr
-            Bar.BackgroundColor3 = Color3.fromRGB(60,60,60)
-            Bar.Position = UDim2.new(0,10,0,35)
-            Bar.Size = UDim2.new(1,-20,0,6)
-            local BC = Instance.new("UICorner")
-            BC.Parent = Bar
-            local Fill = Instance.new("Frame")
-            Fill.Parent = Bar
-            Fill.BackgroundColor3 = Library.CurrentTheme.Accent
-            Fill.Size = UDim2.new((val-min)/(max-min), 0, 1, 0)
-            local FC = Instance.new("UICorner")
-            FC.Parent = Fill
-            local Btn = Instance.new("TextButton")
-            Btn.Parent = Bar
-            Btn.BackgroundTransparency = 1
-            Btn.Size = UDim2.new(1,0,1,0)
-            Btn.Text = ""
+            Bar.BackgroundColor3 = Color3.fromRGB(45,45,55)
+            Bar.Position = UDim2.new(0,10,0,36)
+            Bar.Size = UDim2.new(1,-20,0,7)
+            local BCA = Instance.new("UICorner")
+            BCA.CornerRadius = UDim.new(1,0)
+            BCA.Parent = Bar
+            local Fill2 = Instance.new("Frame")
+            Fill2.Parent = Bar
+            Fill2.BackgroundColor3 = Library.CurrentTheme.Accent
+            Fill2.Size = UDim2.new((val-min)/(max-min),0,1,0)
+            local FC2 = Instance.new("UICorner")
+            FC2.CornerRadius = UDim.new(1,0)
+            FC2.Parent = Fill2
+
+            -- [NOVO] Thumb (bolinha no slider)
+            local Thumb = Instance.new("Frame")
+            Thumb.Parent = Bar
+            Thumb.BackgroundColor3 = Color3.fromRGB(255,255,255)
+            Thumb.AnchorPoint = Vector2.new(0.5,0.5)
+            Thumb.Position = UDim2.new((val-min)/(max-min),0,0.5,0)
+            Thumb.Size = UDim2.new(0,14,0,14)
+            Thumb.ZIndex = 3
+            local ThC = Instance.new("UICorner")
+            ThC.CornerRadius = UDim.new(1,0)
+            ThC.Parent = Thumb
+            local ThSt = Instance.new("UIStroke")
+            ThSt.Color = Library.CurrentTheme.Accent
+            ThSt.Thickness = 2
+            ThSt.Parent = Thumb
+
+            local Btn3 = Instance.new("TextButton")
+            Btn3.Parent = Bar
+            Btn3.BackgroundTransparency = 1
+            Btn3.Size = UDim2.new(1,0,0,30)
+            Btn3.Position = UDim2.new(0,0,0.5,-15)
+            Btn3.Text = ""
+            Btn3.ZIndex = 4
+
             local function SetVal(newVal)
                 val = newVal
                 Library.Flags[text] = val
-                VL.Text = tostring(val)
-                local s = (val - min) / (max - min)
-                CreateTween(Fill, {Size = UDim2.new(s,0,1,0)}, 0.1)
+                VL2.Text = tostring(val)
+                local s = (val-min)/(max-min)
+                CreateTween(Fill2, {Size=UDim2.new(s,0,1,0)}, 0.08)
+                CreateTween(Thumb, {Position=UDim2.new(s,0,0.5,0)}, 0.08)
                 pcall(callback, val)
             end
-            local function Update(input)
+            local function UpdateFromMouse(input)
                 local s = math.clamp((input.Position.X - Bar.AbsolutePosition.X)/Bar.AbsoluteSize.X, 0, 1)
-                local newVal = math.floor(min + ((max-min)*s))
-                SetVal(newVal)
+                SetVal(math.floor(min + (max-min)*s))
             end
-            Btn.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then sliding = true Update(i) end end)
-            Btn.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then sliding = false end end)
-            UserInputService.InputChanged:Connect(function(i) if sliding and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then Update(i) end end)
-            Library.Elements[text] = { Set = function(self, v) SetVal(v) end }
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = SFr})
+            Btn3.InputBegan:Connect(function(i)
+                if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+                    sliding = true
+                    UpdateFromMouse(i)
+                    CreateTween(Thumb, {Size=UDim2.new(0,18,0,18)}, 0.1)
+                end
+            end)
+            Btn3.InputEnded:Connect(function(i)
+                if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+                    sliding = false
+                    CreateTween(Thumb, {Size=UDim2.new(0,14,0,14)}, 0.1)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(i)
+                if sliding and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then
+                    UpdateFromMouse(i)
+                end
+            end)
+            Library.Elements[text] = {Set = function(self,v) SetVal(v) end}
+            if tooltip then ShowTooltip(SFr, tooltip) end
+            table.insert(Library.SearchIndex, {Name=text, Tab=name, Instance=SFr})
         end
 
-        function Tab:Dropdown(text, list, callback)
+        -- [ATUALIZADO] Dropdown com hover nos itens
+        function Tab:Dropdown(text, list, callback, tooltip)
             local dropped = false
-            Library.Flags[text] = "" -- Init
+            Library.Flags[text] = ""
             local DFr = Instance.new("Frame")
             DFr.Name = "ElementFrame"
             DFr.Parent = Page
             DFr.BackgroundColor3 = Library.CurrentTheme.Element
             DFr.Size = UDim2.new(1,0,0,36)
             DFr.ClipsDescendants = true
-            local DC = Instance.new("UICorner")
-            DC.Parent = DFr
-            local DL = Instance.new("TextLabel")
-            DL.Parent = DFr
-            DL.BackgroundTransparency = 1
-            DL.Position = UDim2.new(0,10,0,0)
-            DL.Size = UDim2.new(1,-40,0,36)
-            DL.Font = Enum.Font.Gotham
-            DL.Text = text
-            DL.TextColor3 = Library.CurrentTheme.Text
-            DL.TextSize = 14
-            DL.TextXAlignment = Enum.TextXAlignment.Left
-            local Arrow = Instance.new("ImageLabel")
-            Arrow.Parent = DFr
-            Arrow.BackgroundTransparency = 1
-            Arrow.Position = UDim2.new(1,-30,0,8)
-            Arrow.Size = UDim2.new(0,20,0,20)
-            Arrow.Image = "rbxassetid://6031090990"
-            local Scroll = Instance.new("ScrollingFrame")
-            Scroll.Name = "Scroll"
-            Scroll.Parent = DFr
-            Scroll.BackgroundTransparency = 1
-            Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,1000)
-            Scroll.ScrollBarThickness = 2
-            local SL = Instance.new("UIListLayout")
-            SL.Parent = Scroll
-            SL.Padding = UDim.new(0,2)
-            local Btn = Instance.new("TextButton")
-            Btn.Parent = DFr
-            Btn.BackgroundTransparency = 1
-            Btn.Size = UDim2.new(1,0,0,36)
-            Btn.Text = ""
-            
+            local DC3 = Instance.new("UICorner") DC3.Parent = DFr
+            local DL2 = Instance.new("TextLabel")
+            DL2.Parent = DFr
+            DL2.BackgroundTransparency = 1
+            DL2.Position = UDim2.new(0,10,0,0)
+            DL2.Size = UDim2.new(1,-40,0,36)
+            DL2.Font = Enum.Font.GothamMedium
+            DL2.Text = text
+            DL2.TextColor3 = Library.CurrentTheme.Text
+            DL2.TextSize = 14
+            DL2.TextXAlignment = Enum.TextXAlignment.Left
+            local Arrow2 = Instance.new("ImageLabel")
+            Arrow2.Parent = DFr
+            Arrow2.BackgroundTransparency = 1
+            Arrow2.Position = UDim2.new(1,-30,0,8)
+            Arrow2.Size = UDim2.new(0,20,0,20)
+            Arrow2.Image = "rbxassetid://6031090990"
+            Arrow2.ImageColor3 = Library.CurrentTheme.Accent
+            local Scroll2 = Instance.new("ScrollingFrame")
+            Scroll2.Name = "Scroll"
+            Scroll2.Parent = DFr
+            Scroll2.BackgroundTransparency = 1
+            Scroll2.Position = UDim2.new(0,0,0,36)
+            Scroll2.Size = UDim2.new(1,0,0,1000)
+            Scroll2.ScrollBarThickness = 2
+            Scroll2.ScrollBarImageColor3 = Library.CurrentTheme.Accent
+            local SL3 = Instance.new("UIListLayout")
+            SL3.Parent = Scroll2
+            SL3.Padding = UDim.new(0,2)
+            local Btn4 = Instance.new("TextButton")
+            Btn4.Parent = DFr
+            Btn4.BackgroundTransparency = 1
+            Btn4.Size = UDim2.new(1,0,0,36)
+            Btn4.Text = ""
+            Btn4.ZIndex = 2
+
             local function SelectItem(item)
-                DL.Text = text .. " ("..item..")"
+                DL2.Text = text.." ("..item..")"
                 Library.Flags[text] = item
                 dropped = false
-                CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
-                CreateTween(Arrow, {Rotation = 0}, 0.2)
+                CreateTween(DFr, {Size=UDim2.new(1,0,0,36)}, 0.2)
+                CreateTween(Arrow2, {Rotation=0}, 0.2)
                 pcall(callback, item)
             end
 
-            -- REFRESH FUNCTIONALITY
             local function RefreshItems(newlist)
-                for _,v in pairs(Scroll:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+                for _,v in pairs(Scroll2:GetChildren()) do if v:IsA("TextButton") or v:IsA("Frame") then v:Destroy() end end
                 for _,item in pairs(newlist) do
-                    local IB = Instance.new("TextButton")
-                    IB.Parent = Scroll
-                    IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                    IB.Size = UDim2.new(1,0,0,25)
-                    IB.Font = Enum.Font.Gotham
-                    IB.Text = item
-                    IB.TextColor3 = Color3.fromRGB(200,200,200)
-                    IB.TextSize = 13
-                    IB.MouseButton1Click:Connect(function() SelectItem(item) end)
+                    -- [NOVO] Item container com hover
+                    local ItemFrame = Instance.new("Frame")
+                    ItemFrame.Parent = Scroll2
+                    ItemFrame.BackgroundColor3 = Color3.fromRGB(28,28,36)
+                    ItemFrame.Size = UDim2.new(1,0,0,28)
+                    local IFC = Instance.new("UICorner")
+                    IFC.CornerRadius = UDim.new(0,5)
+                    IFC.Parent = ItemFrame
+                    local IB2 = Instance.new("TextButton")
+                    IB2.Parent = ItemFrame
+                    IB2.BackgroundTransparency = 1
+                    IB2.Size = UDim2.new(1,0,1,0)
+                    IB2.Font = Enum.Font.GothamMedium
+                    IB2.Text = item
+                    IB2.TextColor3 = Color3.fromRGB(190,190,200)
+                    IB2.TextSize = 13
+                    IB2.MouseEnter:Connect(function()
+                        CreateTween(ItemFrame, {BackgroundColor3=Library.CurrentTheme.Element:lerp(Library.CurrentTheme.Accent,0.2)}, 0.12)
+                        IB2.TextColor3 = Color3.fromRGB(255,255,255)
+                    end)
+                    IB2.MouseLeave:Connect(function()
+                        CreateTween(ItemFrame, {BackgroundColor3=Color3.fromRGB(28,28,36)}, 0.12)
+                        IB2.TextColor3 = Color3.fromRGB(190,190,200)
+                    end)
+                    IB2.MouseButton1Click:Connect(function()
+                        local mouse = UserInputService:GetMouseLocation()
+                        MakeRipple(ItemFrame, mouse.X-ItemFrame.AbsolutePosition.X, mouse.Y-ItemFrame.AbsolutePosition.Y, Library.CurrentTheme.Accent)
+                        SelectItem(item)
+                    end)
                 end
             end
-            
+
             RefreshItems(list)
 
-            Btn.MouseButton1Click:Connect(function()
+            Btn4.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,1040)}, 0.2)
-                    CreateTween(Arrow, {Rotation = 180}, 0.2)
+                    CreateTween(DFr, {Size=UDim2.new(1,0,0,1040)}, 0.22)
+                    CreateTween(Arrow2, {Rotation=180}, 0.2)
                 else
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
-                    CreateTween(Arrow, {Rotation = 0}, 0.2)
+                    CreateTween(DFr, {Size=UDim2.new(1,0,0,36)}, 0.2)
+                    CreateTween(Arrow2, {Rotation=0}, 0.2)
                 end
             end)
-            
+
             local ReturnObj = {
-                Set = function(self, val)
-                    DL.Text = text .. " ("..val..")"
+                Set = function(self,val)
+                    DL2.Text = text.." ("..val..")"
                     Library.Flags[text] = val
                 end,
-                Refresh = function(self, newlist)
-                    RefreshItems(newlist)
-                end
+                Refresh = function(self,newlist) RefreshItems(newlist) end
             }
             Library.Elements[text] = ReturnObj
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = DFr})
-            
-            return ReturnObj 
+            if tooltip then ShowTooltip(DFr, tooltip) end
+            table.insert(Library.SearchIndex, {Name=text, Tab=name, Instance=DFr})
+            return ReturnObj
         end
 
-        function Tab:MultiDropdown(text, list, default, callback)
+        -- MultiDropdown
+        function Tab:MultiDropdown(text, list, default, callback, tooltip)
             local dropped = false
             local Selected = default or {}
-            Library.Flags[text] = Selected 
-            
-            local DFr = Instance.new("Frame")
-            DFr.Name = "ElementFrame"
-            DFr.Parent = Page
-            DFr.BackgroundColor3 = Library.CurrentTheme.Element
-            DFr.Size = UDim2.new(1,0,0,36)
-            DFr.ClipsDescendants = true
-            local DC = Instance.new("UICorner")
-            DC.Parent = DFr
-            local DL = Instance.new("TextLabel")
-            DL.Parent = DFr
-            DL.BackgroundTransparency = 1
-            DL.Position = UDim2.new(0,10,0,0)
-            DL.Size = UDim2.new(1,-40,0,36)
-            DL.Font = Enum.Font.Gotham
-            DL.Text = text
-            DL.TextColor3 = Library.CurrentTheme.Text
-            DL.TextSize = 14
-            DL.TextXAlignment = Enum.TextXAlignment.Left
-            local Arrow = Instance.new("ImageLabel")
-            Arrow.Parent = DFr
-            Arrow.BackgroundTransparency = 1
-            Arrow.Position = UDim2.new(1,-30,0,8)
-            Arrow.Size = UDim2.new(0,20,0,20)
-            Arrow.Image = "rbxassetid://6031090990"
-            
-            local Scroll = Instance.new("ScrollingFrame")
-            Scroll.Name = "Scroll"
-            Scroll.Parent = DFr
-            Scroll.BackgroundTransparency = 1
-            Scroll.Position = UDim2.new(0,0,0,36)
-            Scroll.Size = UDim2.new(1,0,0,100)
-            Scroll.ScrollBarThickness = 2
-            local SL = Instance.new("UIListLayout")
-            SL.Parent = Scroll
-            SL.Padding = UDim.new(0,2)
-            
-            local Btn = Instance.new("TextButton")
-            Btn.Parent = DFr
-            Btn.BackgroundTransparency = 1
-            Btn.Size = UDim2.new(1,0,0,36)
-            Btn.Text = ""
+            Library.Flags[text] = Selected
+            local DFr2 = Instance.new("Frame")
+            DFr2.Name = "ElementFrame"
+            DFr2.Parent = Page
+            DFr2.BackgroundColor3 = Library.CurrentTheme.Element
+            DFr2.Size = UDim2.new(1,0,0,36)
+            DFr2.ClipsDescendants = true
+            local DC4 = Instance.new("UICorner") DC4.Parent = DFr2
+            local DL3 = Instance.new("TextLabel")
+            DL3.Parent = DFr2
+            DL3.BackgroundTransparency = 1
+            DL3.Position = UDim2.new(0,10,0,0)
+            DL3.Size = UDim2.new(1,-40,0,36)
+            DL3.Font = Enum.Font.GothamMedium
+            DL3.Text = text
+            DL3.TextColor3 = Library.CurrentTheme.Text
+            DL3.TextSize = 14
+            DL3.TextXAlignment = Enum.TextXAlignment.Left
+            local Arrow3 = Instance.new("ImageLabel")
+            Arrow3.Parent = DFr2
+            Arrow3.BackgroundTransparency = 1
+            Arrow3.Position = UDim2.new(1,-30,0,8)
+            Arrow3.Size = UDim2.new(0,20,0,20)
+            Arrow3.Image = "rbxassetid://6031090990"
+            Arrow3.ImageColor3 = Library.CurrentTheme.Accent
+            local Scroll3 = Instance.new("ScrollingFrame")
+            Scroll3.Name = "Scroll"
+            Scroll3.Parent = DFr2
+            Scroll3.BackgroundTransparency = 1
+            Scroll3.Position = UDim2.new(0,0,0,36)
+            Scroll3.Size = UDim2.new(1,0,0,100)
+            Scroll3.ScrollBarThickness = 2
+            Scroll3.ScrollBarImageColor3 = Library.CurrentTheme.Accent
+            local SL4 = Instance.new("UIListLayout")
+            SL4.Parent = Scroll3
+            SL4.Padding = UDim.new(0,2)
+            local Btn5 = Instance.new("TextButton")
+            Btn5.Parent = DFr2
+            Btn5.BackgroundTransparency = 1
+            Btn5.Size = UDim2.new(1,0,0,36)
+            Btn5.Text = ""
+            Btn5.ZIndex = 2
 
             local function UpdateText()
                 local count = 0
-                for _ in pairs(Selected) do count = count + 1 end
-                if count == 0 then
-                    DL.Text = text .. " (".. Library:GetText("NoBind") ..")"
-                else
-                     DL.Text = text .. " (".. Library:GetText("MultiSelect") .. count .. ")"
-                end
+                for _ in pairs(Selected) do count+=1 end
+                DL3.Text = count==0 and text.." ("..Library:GetText("NoBind")..")" or text.." ("..Library:GetText("MultiSelect")..count..")"
             end
-
             local function IsSelected(item)
-                for _, v in pairs(Selected) do
-                    if v == item then return true end
-                end
+                for _,v in pairs(Selected) do if v==item then return true end end
                 return false
             end
-            
             local function RefreshList()
-                for _, obj in pairs(Scroll:GetChildren()) do
-                    if obj:IsA("TextButton") then
-                        if IsSelected(obj.Text) then
-                             obj.TextColor3 = Library.CurrentTheme.Accent
-                        else
-                             obj.TextColor3 = Color3.fromRGB(200,200,200)
+                for _,obj in pairs(Scroll3:GetChildren()) do
+                    if obj:IsA("Frame") then
+                        local btn = obj:FindFirstChildOfClass("TextButton")
+                        if btn then
+                            btn.TextColor3 = IsSelected(btn.Text) and Library.CurrentTheme.Accent or Color3.fromRGB(190,190,200)
                         end
                     end
                 end
             end
-
             local function ToggleItem(item)
                 local found = false
-                for i, v in pairs(Selected) do
-                    if v == item then
-                        table.remove(Selected, i)
-                        found = true
-                        break
-                    end
+                for i,v in pairs(Selected) do
+                    if v==item then table.remove(Selected,i) found=true break end
                 end
-                if not found then table.insert(Selected, item) end
-                
+                if not found then table.insert(Selected,item) end
                 Library.Flags[text] = Selected
-                UpdateText()
-                RefreshList()
+                UpdateText() RefreshList()
                 pcall(callback, Selected)
             end
-
             local function BuildItems(newlist)
-                for _,v in pairs(Scroll:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+                for _,v in pairs(Scroll3:GetChildren()) do if v:IsA("Frame") then v:Destroy() end end
                 for _,item in pairs(newlist) do
-                    local IB = Instance.new("TextButton")
-                    IB.Parent = Scroll
-                    IB.BackgroundColor3 = Color3.fromRGB(35,35,35)
-                    IB.Size = UDim2.new(1,0,0,25)
-                    IB.Font = Enum.Font.Gotham
-                    IB.Text = item
-                    IB.TextColor3 = Color3.fromRGB(200,200,200)
-                    IB.TextSize = 13
-                    IB.MouseButton1Click:Connect(function() ToggleItem(item) end)
+                    local ItemFrame2 = Instance.new("Frame")
+                    ItemFrame2.Parent = Scroll3
+                    ItemFrame2.BackgroundColor3 = Color3.fromRGB(28,28,36)
+                    ItemFrame2.Size = UDim2.new(1,0,0,28)
+                    local IFC2 = Instance.new("UICorner")
+                    IFC2.CornerRadius = UDim.new(0,5)
+                    IFC2.Parent = ItemFrame2
+                    local IB3 = Instance.new("TextButton")
+                    IB3.Parent = ItemFrame2
+                    IB3.BackgroundTransparency = 1
+                    IB3.Size = UDim2.new(1,0,1,0)
+                    IB3.Font = Enum.Font.GothamMedium
+                    IB3.Text = item
+                    IB3.TextColor3 = Color3.fromRGB(190,190,200)
+                    IB3.TextSize = 13
+                    IB3.MouseEnter:Connect(function()
+                        CreateTween(ItemFrame2,{BackgroundColor3=Library.CurrentTheme.Element:lerp(Library.CurrentTheme.Accent,0.2)},0.12)
+                    end)
+                    IB3.MouseLeave:Connect(function()
+                        CreateTween(ItemFrame2,{BackgroundColor3=Color3.fromRGB(28,28,36)},0.12)
+                    end)
+                    IB3.MouseButton1Click:Connect(function() ToggleItem(item) end)
                 end
-                RefreshList() -- Apply colors if default selection exists
+                RefreshList()
             end
-
             BuildItems(list)
-
-            Btn.MouseButton1Click:Connect(function()
+            Btn5.MouseButton1Click:Connect(function()
                 dropped = not dropped
                 if dropped then
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,140)}, 0.2)
-                    CreateTween(Arrow, {Rotation = 180}, 0.2)
+                    CreateTween(DFr2,{Size=UDim2.new(1,0,0,140)},0.2)
+                    CreateTween(Arrow3,{Rotation=180},0.2)
                 else
-                    CreateTween(DFr, {Size = UDim2.new(1,0,0,36)}, 0.2)
-                    CreateTween(Arrow, {Rotation = 0}, 0.2)
+                    CreateTween(DFr2,{Size=UDim2.new(1,0,0,36)},0.2)
+                    CreateTween(Arrow3,{Rotation=0},0.2)
                 end
             end)
-            
-            local ReturnObj = {
-                Set = function(self, val)
-                    if type(val) == "table" then
-                        Selected = val
-                        Library.Flags[text] = Selected
-                        UpdateText()
-                        RefreshList()
-                    end
+            local ReturnObj2 = {
+                Set = function(self,val)
+                    if type(val)=="table" then Selected=val Library.Flags[text]=Selected UpdateText() RefreshList() end
                 end,
-                Refresh = function(self, newlist)
-                     BuildItems(newlist)
-                end
+                Refresh = function(self,newlist) BuildItems(newlist) end
             }
-            Library.Elements[text] = ReturnObj
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = DFr})
-
+            Library.Elements[text] = ReturnObj2
+            if tooltip then ShowTooltip(DFr2,tooltip) end
+            table.insert(Library.SearchIndex, {Name=text,Tab=name,Instance=DFr2})
             UpdateText()
-            return ReturnObj 
+            return ReturnObj2
         end
 
-        function Tab:Textbox(text, ph, callback)
+        -- Textbox
+        function Tab:Textbox(text, ph, callback, tooltip)
             Library.Flags[text] = ""
-            local TFr = Instance.new("Frame")
-            TFr.Name = "ElementFrame"
-            TFr.Parent = Page
-            TFr.BackgroundColor3 = Library.CurrentTheme.Element
-            TFr.Size = UDim2.new(1,0,0,50)
-            local TC = Instance.new("UICorner")
-            TC.Parent = TFr
-            local TL = Instance.new("TextLabel")
-            TL.Parent = TFr
-            TL.BackgroundTransparency = 1
-            TL.Position = UDim2.new(0,10,0,5)
-            TL.Size = UDim2.new(1,-20,0,20)
-            TL.Font = Enum.Font.Gotham
-            TL.Text = text
-            TL.TextColor3 = Library.CurrentTheme.Text
-            TL.TextSize = 14
-            TL.TextXAlignment = Enum.TextXAlignment.Left
+            local TFr2 = Instance.new("Frame")
+            TFr2.Name = "ElementFrame"
+            TFr2.Parent = Page
+            TFr2.BackgroundColor3 = Library.CurrentTheme.Element
+            TFr2.Size = UDim2.new(1,0,0,50)
+            local TC3 = Instance.new("UICorner") TC3.Parent = TFr2
+            local TL3 = Instance.new("TextLabel")
+            TL3.Parent = TFr2
+            TL3.BackgroundTransparency = 1
+            TL3.Position = UDim2.new(0,10,0,5)
+            TL3.Size = UDim2.new(1,-20,0,20)
+            TL3.Font = Enum.Font.GothamMedium
+            TL3.Text = text
+            TL3.TextColor3 = Library.CurrentTheme.Text
+            TL3.TextSize = 14
+            TL3.TextXAlignment = Enum.TextXAlignment.Left
             local TB = Instance.new("TextBox")
-            TB.Parent = TFr
-            TB.BackgroundColor3 = Color3.fromRGB(30,30,30)
-            TB.Position = UDim2.new(0,10,0,25)
+            TB.Parent = TFr2
+            TB.BackgroundColor3 = Color3.fromRGB(28,28,36)
+            TB.Position = UDim2.new(0,10,0,26)
             TB.Size = UDim2.new(1,-20,0,20)
             TB.Font = Enum.Font.Gotham
             TB.PlaceholderText = ph or "..."
             TB.Text = ""
-            TB.TextColor3 = Color3.fromRGB(200,200,200)
+            TB.TextColor3 = Color3.fromRGB(200,200,210)
             TB.TextSize = 12
-            local TBC = Instance.new("UICorner")
-            TBC.Parent = TB
-            
+            local TBC2 = Instance.new("UICorner") TBC2.Parent = TB
+            local TBS = Instance.new("UIStroke")
+            TBS.Color = Library.CurrentTheme.Accent
+            TBS.Transparency = 0.8
+            TBS.Parent = TB
+            TB.Focused:Connect(function() CreateTween(TBS,{Transparency=0.2},0.15) end)
             TB.FocusLost:Connect(function()
+                CreateTween(TBS,{Transparency=0.8},0.15)
                 Library.Flags[text] = TB.Text
-                pcall(callback, TB.Text) 
+                pcall(callback, TB.Text)
             end)
-            
-            Library.Elements[text] = {
-                Set = function(self, val)
-                    TB.Text = val
-                    Library.Flags[text] = val
-                end
-            }
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = TFr})
+            Library.Elements[text] = {Set=function(self,val) TB.Text=val Library.Flags[text]=val end}
+            if tooltip then ShowTooltip(TFr2,tooltip) end
+            table.insert(Library.SearchIndex,{Name=text,Tab=name,Instance=TFr2})
         end
 
+        -- Label
         function Tab:Label(text)
             local L = Instance.new("TextLabel")
             L.Parent = Page
@@ -1338,11 +1745,12 @@ function Library:CreateWindow(Config)
             L.Size = UDim2.new(1,0,0,25)
             L.Font = Enum.Font.Gotham
             L.Text = text
-            L.TextColor3 = Color3.fromRGB(150,150,150)
-            L.TextSize = 14
+            L.TextColor3 = Color3.fromRGB(130,130,150)
+            L.TextSize = 13
             L.TextXAlignment = Enum.TextXAlignment.Center
         end
 
+        -- Paragraph / Section Header
         function Tab:Paragraph(text)
             local Section = Instance.new("TextLabel")
             Section.Name = "SectionLabel"
@@ -1350,270 +1758,384 @@ function Library:CreateWindow(Config)
             Section.BackgroundTransparency = 1
             Section.Size = UDim2.new(1,0,0,30)
             Section.Font = Enum.Font.GothamBold
-            Section.Text = text
+            Section.Text = "  "..text
             Section.TextColor3 = Library.CurrentTheme.Accent
-            Section.TextSize = 15
+            Section.TextSize = 14
             Section.TextXAlignment = Enum.TextXAlignment.Left
             local Line = Instance.new("Frame")
             Line.Name = "Line"
             Line.Parent = Section
             Line.BackgroundColor3 = Library.CurrentTheme.Accent
+            Line.BackgroundTransparency = 0.7
             Line.BorderSizePixel = 0
             Line.Position = UDim2.new(0,0,1,0)
             Line.Size = UDim2.new(1,0,0,1)
         end
 
+        -- Image
         function Tab:Image(id, size)
             local ImgFrame = Instance.new("Frame")
             ImgFrame.Name = "ElementFrame"
             ImgFrame.Parent = Page
-            ImgFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
             ImgFrame.BackgroundTransparency = 1
-            ImgFrame.Size = UDim2.new(1, 0, 0, size or 100)
+            ImgFrame.Size = UDim2.new(1,0,0,size or 100)
             local Img = Instance.new("ImageLabel")
             Img.Parent = ImgFrame
-            Img.BackgroundColor3 = Color3.fromRGB(0,0,0)
             Img.BackgroundTransparency = 1
-            Img.Position = UDim2.new(0.5, -((size or 100)/2), 0, 0)
-            Img.Size = UDim2.new(0, size or 100, 0, size or 100)
-            Img.Image = "rbxassetid://" .. tostring(id)
+            Img.Position = UDim2.new(0.5,-((size or 100)/2),0,0)
+            Img.Size = UDim2.new(0,size or 100,0,size or 100)
+            Img.Image = "rbxassetid://"..tostring(id)
         end
 
-        function Tab:Keybind(text, default, callback)
+        -- Keybind
+        function Tab:Keybind(text, default, callback, tooltip)
             local Key = default or Enum.KeyCode.RightControl
             local Binding = false
             Library.Flags[text] = Key.Name
-
-            local KFr = Instance.new("Frame")
-            KFr.Name = "ElementFrame"
-            KFr.Parent = Page
-            KFr.BackgroundColor3 = Library.CurrentTheme.Element
-            KFr.Size = UDim2.new(1,0,0,36)
-            local KC = Instance.new("UICorner")
-            KC.Parent = KFr
-            local KL = Instance.new("TextLabel")
-            KL.Parent = KFr
-            KL.BackgroundTransparency = 1
-            KL.Position = UDim2.new(0,10,0,0)
-            KL.Size = UDim2.new(0.6,0,1,0)
-            KL.Font = Enum.Font.Gotham
-            KL.Text = text
-            KL.TextColor3 = Library.CurrentTheme.Text
-            KL.TextSize = 14
-            KL.TextXAlignment = Enum.TextXAlignment.Left
-            local KBtn = Instance.new("TextButton")
-            KBtn.Parent = KFr
-            KBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
-            KBtn.Position = UDim2.new(1,-90,0.5,-10)
-            KBtn.Size = UDim2.new(0,80,0,20)
-            KBtn.Font = Enum.Font.GothamBold
-            KBtn.Text = Key.Name
-            KBtn.TextColor3 = Color3.fromRGB(200,200,200)
-            KBtn.TextSize = 12
-            local KBC = Instance.new("UICorner")
-            KBC.Parent = KBtn
-
-            KBtn.MouseButton1Click:Connect(function()
+            local KFr2 = Instance.new("Frame")
+            KFr2.Name = "ElementFrame"
+            KFr2.Parent = Page
+            KFr2.BackgroundColor3 = Library.CurrentTheme.Element
+            KFr2.Size = UDim2.new(1,0,0,36)
+            local KC2 = Instance.new("UICorner") KC2.Parent = KFr2
+            local KL2 = Instance.new("TextLabel")
+            KL2.Parent = KFr2
+            KL2.BackgroundTransparency = 1
+            KL2.Position = UDim2.new(0,10,0,0)
+            KL2.Size = UDim2.new(0.6,0,1,0)
+            KL2.Font = Enum.Font.GothamMedium
+            KL2.Text = text
+            KL2.TextColor3 = Library.CurrentTheme.Text
+            KL2.TextSize = 14
+            KL2.TextXAlignment = Enum.TextXAlignment.Left
+            local KBtn2 = Instance.new("TextButton")
+            KBtn2.Parent = KFr2
+            KBtn2.BackgroundColor3 = Color3.fromRGB(28,28,36)
+            KBtn2.Position = UDim2.new(1,-95,0.5,-12)
+            KBtn2.Size = UDim2.new(0,85,0,24)
+            KBtn2.Font = Enum.Font.GothamBold
+            KBtn2.Text = Key.Name
+            KBtn2.TextColor3 = Library.CurrentTheme.Accent
+            KBtn2.TextSize = 12
+            local KBC2 = Instance.new("UICorner") KBC2.Parent = KBtn2
+            local KBS = Instance.new("UIStroke")
+            KBS.Color = Library.CurrentTheme.Accent
+            KBS.Transparency = 0.6
+            KBS.Parent = KBtn2
+            KBtn2.MouseButton1Click:Connect(function()
                 Binding = true
-                KBtn.Text = Library:GetText("Binding")
+                KBtn2.Text = Library:GetText("Binding")
+                KBtn2.TextColor3 = Color3.fromRGB(255,220,50)
+                CreateTween(KBS,{Transparency=0.1},0.15)
             end)
-
             UserInputService.InputBegan:Connect(function(input)
-                if Binding and input.UserInputType == Enum.UserInputType.Keyboard then
+                if Binding and input.UserInputType==Enum.UserInputType.Keyboard then
                     Key = input.KeyCode
                     Binding = false
-                    KBtn.Text = Key.Name
+                    KBtn2.Text = Key.Name
+                    KBtn2.TextColor3 = Library.CurrentTheme.Accent
+                    CreateTween(KBS,{Transparency=0.6},0.15)
                     Library.Flags[text] = Key.Name
                     pcall(callback, Key)
-                elseif input.KeyCode == Key and not Binding then
+                elseif input.KeyCode==Key and not Binding then
                     pcall(callback, Key)
                 end
             end)
-
-            Library.Elements[text] = {
-                Set = function(self, val)
-                    if Enum.KeyCode[val] then
-                        Key = Enum.KeyCode[val]
-                        KBtn.Text = Key.Name
-                    end
-                end
-            }
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = KFr})
+            Library.Elements[text] = {Set=function(self,val)
+                if Enum.KeyCode[val] then Key=Enum.KeyCode[val] KBtn2.Text=Key.Name end
+            end}
+            if tooltip then ShowTooltip(KFr2,tooltip) end
+            table.insert(Library.SearchIndex,{Name=text,Tab=name,Instance=KFr2})
         end
 
+        -- ColorPicker
         function Tab:ColorPicker(text, default, callback)
-            local Color = default or Color3.fromRGB(255, 255, 255)
+            local Color = default or Color3.fromRGB(255,255,255)
             local Opened = false
-            Library.Flags[text] = {R=Color.R, G=Color.G, B=Color.B}
-
-            local CFr = Instance.new("Frame")
-            CFr.Name = "ElementFrame"
-            CFr.Parent = Page
-            CFr.BackgroundColor3 = Library.CurrentTheme.Element
-            CFr.Size = UDim2.new(1,0,0,36)
-            CFr.ClipsDescendants = true
-            local CC = Instance.new("UICorner")
-            CC.Parent = CFr
-            local CL = Instance.new("TextLabel")
-            CL.Parent = CFr
-            CL.BackgroundTransparency = 1
-            CL.Position = UDim2.new(0,10,0,0)
-            CL.Size = UDim2.new(0.6,0,0,36)
-            CL.Font = Enum.Font.Gotham
-            CL.Text = text
-            CL.TextColor3 = Library.CurrentTheme.Text
-            CL.TextSize = 14
-            CL.TextXAlignment = Enum.TextXAlignment.Left
-            
+            Library.Flags[text] = {R=Color.R,G=Color.G,B=Color.B}
+            local CFr2 = Instance.new("Frame")
+            CFr2.Name = "ElementFrame"
+            CFr2.Parent = Page
+            CFr2.BackgroundColor3 = Library.CurrentTheme.Element
+            CFr2.Size = UDim2.new(1,0,0,36)
+            CFr2.ClipsDescendants = true
+            local CC2 = Instance.new("UICorner") CC2.Parent = CFr2
+            local CL2 = Instance.new("TextLabel")
+            CL2.Parent = CFr2
+            CL2.BackgroundTransparency = 1
+            CL2.Position = UDim2.new(0,10,0,0)
+            CL2.Size = UDim2.new(0.6,0,0,36)
+            CL2.Font = Enum.Font.GothamMedium
+            CL2.Text = text
+            CL2.TextColor3 = Library.CurrentTheme.Text
+            CL2.TextSize = 14
+            CL2.TextXAlignment = Enum.TextXAlignment.Left
             local Preview = Instance.new("TextButton")
-            Preview.Parent = CFr
+            Preview.Parent = CFr2
             Preview.BackgroundColor3 = Color
-            Preview.Position = UDim2.new(1,-50,0,8)
-            Preview.Size = UDim2.new(0,40,0,20)
+            Preview.Position = UDim2.new(1,-52,0,8)
+            Preview.Size = UDim2.new(0,42,0,20)
             Preview.Text = ""
-            local PC = Instance.new("UICorner")
-            PC.Parent = Preview
-
+            local PC2 = Instance.new("UICorner") PC2.Parent = Preview
+            local PST = Instance.new("UIStroke")
+            PST.Color = Color3.fromRGB(80,80,90)
+            PST.Parent = Preview
             local RGBContainer = Instance.new("Frame")
-            RGBContainer.Parent = CFr
+            RGBContainer.Parent = CFr2
             RGBContainer.BackgroundTransparency = 1
             RGBContainer.Position = UDim2.new(0,0,0,36)
             RGBContainer.Size = UDim2.new(1,0,0,90)
-
             local function UpdateColor()
                 Preview.BackgroundColor3 = Color
-                Library.Flags[text] = {R=Color.R, G=Color.G, B=Color.B}
+                Library.Flags[text] = {R=Color.R,G=Color.G,B=Color.B}
                 pcall(callback, Color)
             end
-
-            local function CreateRGBSlider(name, y, colorComp)
+            local function CreateRGBSlider(name2, y, colorComp)
                 local S = Instance.new("Frame")
                 S.Parent = RGBContainer
-                S.BackgroundColor3 = Color3.fromRGB(30,30,30)
+                S.BackgroundColor3 = Color3.fromRGB(28,28,36)
                 S.Position = UDim2.new(0,10,0,y)
                 S.Size = UDim2.new(1,-20,0,20)
-                local Corner = Instance.new("UICorner") Corner.Parent = S
-                
-                local Fill = Instance.new("Frame")
-                Fill.Parent = S
-                Fill.BackgroundColor3 = name == "R" and Color3.fromRGB(255,50,50) or (name == "G" and Color3.fromRGB(50,255,50) or Color3.fromRGB(50,50,255))
-                Fill.Size = UDim2.new(colorComp, 0, 1, 0)
-                local FC = Instance.new("UICorner") FC.Parent = Fill
-                
-                local Btn = Instance.new("TextButton")
-                Btn.Parent = S
-                Btn.BackgroundTransparency = 1
-                Btn.Size = UDim2.new(1,0,1,0)
-                Btn.Text = ""
-
-                Btn.MouseButton1Down:Connect(function()
+                local Corner2 = Instance.new("UICorner") Corner2.Parent = S
+                local Fill3 = Instance.new("Frame")
+                Fill3.Parent = S
+                Fill3.BackgroundColor3 = name2=="R" and Color3.fromRGB(255,60,60) or (name2=="G" and Color3.fromRGB(60,220,60) or Color3.fromRGB(60,100,255))
+                Fill3.Size = UDim2.new(colorComp,0,1,0)
+                local FC3 = Instance.new("UICorner")
+                FC3.CornerRadius = UDim.new(0,4)
+                FC3.Parent = Fill3
+                local Btn6 = Instance.new("TextButton")
+                Btn6.Parent = S
+                Btn6.BackgroundTransparency = 1
+                Btn6.Size = UDim2.new(1,0,1,0)
+                Btn6.Text = ""
+                Btn6.MouseButton1Down:Connect(function()
                     local move
                     move = RunService.RenderStepped:Connect(function()
                         local Mouse = UserInputService:GetMouseLocation()
                         local RelX = Mouse.X - S.AbsolutePosition.X
-                        local Pct = math.clamp(RelX / S.AbsoluteSize.X, 0, 1)
-                        Fill.Size = UDim2.new(Pct, 0, 1, 0)
-                        
-                        local R, G, B = Color.R, Color.G, Color.B
-                        if name == "R" then R = Pct elseif name == "G" then G = Pct else B = Pct end
-                        Color = Color3.new(R, G, B)
+                        local Pct = math.clamp(RelX/S.AbsoluteSize.X,0,1)
+                        Fill3.Size = UDim2.new(Pct,0,1,0)
+                        local R,G,B = Color.R,Color.G,Color.B
+                        if name2=="R" then R=Pct elseif name2=="G" then G=Pct else B=Pct end
+                        Color = Color3.new(R,G,B)
                         UpdateColor()
-                        
-                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-                            move:Disconnect()
-                        end
+                        if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then move:Disconnect() end
                     end)
                 end)
-                return Fill
+                return Fill3
             end
-
-            local FillR = CreateRGBSlider("R", 5, Color.R)
-            local FillG = CreateRGBSlider("G", 35, Color.G)
-            local FillB = CreateRGBSlider("B", 65, Color.B)
-
+            local FillR = CreateRGBSlider("R",5,Color.R)
+            local FillG = CreateRGBSlider("G",35,Color.G)
+            local FillB = CreateRGBSlider("B",65,Color.B)
             Preview.MouseButton1Click:Connect(function()
                 Opened = not Opened
-                CreateTween(CFr, {Size = UDim2.new(1,0,0, Opened and 130 or 36)}, 0.2)
+                CreateTween(CFr2,{Size=UDim2.new(1,0,0,Opened and 130 or 36)},0.22)
             end)
-            
-            Library.Elements[text] = {
-                Set = function(self, val)
-                    if val.R then
-                        Color = Color3.new(val.R, val.G, val.B)
-                        Preview.BackgroundColor3 = Color
-                        FillR.Size = UDim2.new(val.R,0,1,0)
-                        FillG.Size = UDim2.new(val.G,0,1,0)
-                        FillB.Size = UDim2.new(val.B,0,1,0)
-                    end
+            Library.Elements[text] = {Set=function(self,val)
+                if val.R then
+                    Color=Color3.new(val.R,val.G,val.B)
+                    Preview.BackgroundColor3=Color
+                    FillR.Size=UDim2.new(val.R,0,1,0)
+                    FillG.Size=UDim2.new(val.G,0,1,0)
+                    FillB.Size=UDim2.new(val.B,0,1,0)
                 end
+            end}
+            table.insert(Library.SearchIndex,{Name=text,Tab=name,Instance=CFr2})
+        end
+
+        -- ── [NOVO] ProgressBar ─────────────────────────────────
+        function Tab:ProgressBar(text, value, maxVal, callback)
+            value  = math.clamp(value or 0, 0, maxVal or 100)
+            maxVal = maxVal or 100
+            local PFr = Instance.new("Frame")
+            PFr.Name = "ElementFrame"
+            PFr.Parent = Page
+            PFr.BackgroundColor3 = Library.CurrentTheme.Element
+            PFr.Size = UDim2.new(1,0,0,50)
+            local PC3 = Instance.new("UICorner") PC3.Parent = PFr
+            local PL2 = Instance.new("TextLabel")
+            PL2.Parent = PFr
+            PL2.BackgroundTransparency = 1
+            PL2.Position = UDim2.new(0,10,0,5)
+            PL2.Size = UDim2.new(0.7,-10,0,20)
+            PL2.Font = Enum.Font.GothamMedium
+            PL2.Text = text
+            PL2.TextColor3 = Library.CurrentTheme.Text
+            PL2.TextSize = 14
+            PL2.TextXAlignment = Enum.TextXAlignment.Left
+            -- Valor em destaque
+            local PV = Instance.new("TextLabel")
+            PV.Parent = PFr
+            PV.BackgroundTransparency = 1
+            PV.Position = UDim2.new(1,-70,0,5)
+            PV.Size = UDim2.new(0,60,0,20)
+            PV.Font = Enum.Font.GothamBold
+            PV.Text = tostring(value).."/"..tostring(maxVal)
+            PV.TextColor3 = Library.CurrentTheme.Accent
+            PV.TextSize = 12
+            PV.TextXAlignment = Enum.TextXAlignment.Right
+            -- Track
+            local Track2 = Instance.new("Frame")
+            Track2.Parent = PFr
+            Track2.BackgroundColor3 = Color3.fromRGB(38,38,48)
+            Track2.Position = UDim2.new(0,10,0,36)
+            Track2.Size = UDim2.new(1,-20,0,8)
+            local TC4 = Instance.new("UICorner")
+            TC4.CornerRadius = UDim.new(1,0)
+            TC4.Parent = Track2
+            local Fill4 = Instance.new("Frame")
+            Fill4.Parent = Track2
+            Fill4.BackgroundColor3 = Library.CurrentTheme.Accent
+            Fill4.Size = UDim2.new(math.clamp(value/maxVal,0,1),0,1,0)
+            local FC4 = Instance.new("UICorner")
+            FC4.CornerRadius = UDim.new(1,0)
+            FC4.Parent = Fill4
+            -- [NOVO] Shimmer animado na barra
+            local Shimmer2 = Instance.new("Frame")
+            Shimmer2.Parent = Fill4
+            Shimmer2.BackgroundColor3 = Color3.fromRGB(255,255,255)
+            Shimmer2.BackgroundTransparency = 0.75
+            Shimmer2.Size = UDim2.new(0,40,1,0)
+            Shimmer2.Position = UDim2.new(-0.5,0,0,0)
+            Shimmer2.ClipsDescendants = false
+            local ShC2 = Instance.new("UICorner")
+            ShC2.CornerRadius = UDim.new(1,0)
+            ShC2.Parent = Shimmer2
+            task.spawn(function()
+                while Fill4 and Fill4.Parent do
+                    Shimmer2.Position = UDim2.new(-0.4,0,0,0)
+                    CreateTween(Shimmer2,{Position=UDim2.new(1.4,0,0,0)},1.6)
+                    task.wait(3.5)
+                end
+            end)
+
+            local Obj = {
+                Set = function(self, val)
+                    val = math.clamp(val, 0, maxVal)
+                    value = val
+                    PV.Text = tostring(val).."/"..tostring(maxVal)
+                    CreateTween(Fill4,{Size=UDim2.new(val/maxVal,0,1,0)},0.4)
+                    if callback then pcall(callback,val) end
+                end,
+                Get = function(self) return value end
             }
-            table.insert(Library.SearchIndex, {Name = text, Tab = name, Instance = CFr})
+            Library.Elements[text] = Obj
+            table.insert(Library.SearchIndex,{Name=text,Tab=name,Instance=PFr})
+            return Obj
+        end
+
+        -- ── [NOVO] Separator ───────────────────────────────────
+        function Tab:Separator(text)
+            local SepFrame = Instance.new("Frame")
+            SepFrame.Parent = Page
+            SepFrame.BackgroundTransparency = 1
+            SepFrame.Size = UDim2.new(1,0,0,22)
+            local LeftLine2 = Instance.new("Frame")
+            LeftLine2.Parent = SepFrame
+            LeftLine2.BackgroundColor3 = Library.CurrentTheme.Accent
+            LeftLine2.BackgroundTransparency = 0.65
+            LeftLine2.BorderSizePixel = 0
+            LeftLine2.AnchorPoint = Vector2.new(0,0.5)
+            LeftLine2.Position = UDim2.new(0,0,0.5,0)
+            local RightLine2 = Instance.new("Frame")
+            RightLine2.Parent = SepFrame
+            RightLine2.BackgroundColor3 = Library.CurrentTheme.Accent
+            RightLine2.BackgroundTransparency = 0.65
+            RightLine2.BorderSizePixel = 0
+            RightLine2.AnchorPoint = Vector2.new(1,0.5)
+            RightLine2.Position = UDim2.new(1,0,0.5,0)
+            if text and text ~= "" then
+                local SepLbl = Instance.new("TextLabel")
+                SepLbl.Parent = SepFrame
+                SepLbl.BackgroundTransparency = 1
+                SepLbl.AnchorPoint = Vector2.new(0.5,0.5)
+                SepLbl.Position = UDim2.new(0.5,0,0.5,0)
+                SepLbl.Size = UDim2.new(0,100,1,0)
+                SepLbl.Font = Enum.Font.GothamBold
+                SepLbl.Text = text
+                SepLbl.TextColor3 = Library.CurrentTheme.Accent
+                SepLbl.TextSize = 11
+                SepLbl.TextTransparency = 0.25
+                LeftLine2.Size  = UDim2.new(0.5,-56,0,1)
+                RightLine2.Size = UDim2.new(0.5,-56,0,1)
+            else
+                LeftLine2.Size  = UDim2.new(1,0,0,1)
+                RightLine2.Size = UDim2.new(0,0,0,1)
+            end
+            return SepFrame
         end
 
         return Tab
     end
 
+    -- ── AddConfig (Aba de Configuração) ────────────────────────
     function Window:AddConfig()
         local ConfigTab = Window:Tab(Library:GetText("ConfigTab"))
-        
-        -- // Scripts Section //
+
         ConfigTab:Paragraph(Library:GetText("ScriptsTitle"))
-        
         ConfigTab:Button("Infinite Yield", function()
             loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-            Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Infinite Yield"})
-        end)
-        
+            Library:Notification({Title="Script", Content=Library:GetText("ExecScript").."Infinite Yield", Type="success"})
+        end, "Carrega o executor de comandos Infinite Yield")
+
         ConfigTab:Button("Tiger X", function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/balintTheDevX/Tiger-X-V3/main/Tiger%20X%20V3.5%20Fixed"))()
-            Library:Notification({Title = "Script", Content = Library:GetText("ExecScript") .. "Tiger X"})
-        end)
-        
+            Library:Notification({Title="Script", Content=Library:GetText("ExecScript").."Tiger X", Type="success"})
+        end, "Carrega o Tiger X V3.5")
+
+        ConfigTab:Separator()
         ConfigTab:Paragraph(Library:GetText("ConfigTab"))
 
-        local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English", "Portuguese"}, function(Selected)
+        local LangDropLbl = ConfigTab:Dropdown(Library:GetText("LangDrop"), {"English","Portuguese"}, function(Selected)
             Library.Settings.Language = Selected
-            Library:Notification({Title = "Language", Content = "Language changed to " .. Selected})
-        end)
+            Library:Notification({Title="Language", Content="Language changed to "..Selected, Type="info"})
+        end, "Muda o idioma da interface")
 
         local TransToggle, TransLabel = ConfigTab:Toggle(Library:GetText("TransToggle"), false, function(Val)
             Library.Settings.Transparency = Val
             Library:RefreshTheme()
-        end)
-        
-        -- Get Themes Automatically
+        end, "Torna o fundo da janela semi-transparente")
+
+        local PulseToggle, PulseLabel = ConfigTab:Toggle(Library:GetText("PulseToggle"), Library.Settings.PulseGlow, function(Val)
+            Library.Settings.PulseGlow = Val
+        end, "Ativa o efeito de glow pulsante na borda")
+
+        local ToolTipToggle, ToolTipLabel = ConfigTab:Toggle(Library:GetText("TooltipToggle"), Library.Settings.Tooltips, function(Val)
+            Library.Settings.Tooltips = Val
+        end, "Mostra dicas ao passar o mouse nos elementos")
+
+        ConfigTab:Separator("Temas")
+
         local ThemeNames = {}
-        for name, _ in pairs(Library.Themes) do
-            table.insert(ThemeNames, name)
-        end
+        for n,_ in pairs(Library.Themes) do table.insert(ThemeNames,n) end
         table.sort(ThemeNames)
 
         local ThemeDropLbl = ConfigTab:Dropdown(Library:GetText("ThemeDrop"), ThemeNames, function(Selected)
             Library:SetTheme(Selected)
-        end)
-        
+            Library:Toast("Tema: "..Selected)
+        end, "Escolha o tema visual da interface")
+
+        ConfigTab:Separator()
+
         local SaveBtn = ConfigTab:Button(Library:GetText("SaveBtn"), function()
             SaveConfig()
-            Library:Notification({Title = "Config", Content = Library:GetText("SaveMsg")})
-        end)
+            Library:Notification({Title="Config", Content=Library:GetText("SaveMsg"), Type="success"})
+        end, "Salva as configurações atuais em arquivo")
 
         local LoadBtn = ConfigTab:Button(Library:GetText("LoadBtn"), function()
             if LoadConfig() then
-                Library:Notification({Title = "Config", Content = Library:GetText("LoadMsg")})
+                Library:Notification({Title="Config", Content=Library:GetText("LoadMsg"), Type="info"})
             else
-                Library:Notification({Title = "Error", Content = Library:GetText("LoadErr")})
+                Library:Notification({Title="Error", Content=Library:GetText("LoadErr"), Type="error"})
             end
-        end)
-        
-        -- Loop de Atualização de Texto (Tradução em tempo real)
+        end, "Carrega as configurações salvas")
+
+        -- Loop de atualização de texto (tradução em tempo real)
         task.spawn(function()
             while task.wait(0.5) do
-                if LangDropLbl then LangDropLbl.Text = Library:GetText("LangDrop") end
-                if TransLabel then TransLabel.Text = Library:GetText("TransToggle") end
-                if ThemeDropLbl then ThemeDropLbl.Text = Library:GetText("ThemeDrop") end
-                if SaveBtn then SaveBtn.Text = Library:GetText("SaveBtn") end
-                if LoadBtn then LoadBtn.Text = Library:GetText("LoadBtn") end
-                if SearchBar then SearchBar.PlaceholderText = Library:GetText("SearchPlace") end
+                if LangDropLbl  then LangDropLbl.Set  and nil or (LangDropLbl.Text and function() end)() end
+                if SearchBar    then SearchBar.PlaceholderText = Library:GetText("SearchPlace") end
             end
         end)
     end
